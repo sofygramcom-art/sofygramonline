@@ -3,25 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صوفيگرام | المنصة العالمية 🌍</title>
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>صوفيگرام | متابعة الدور المباشر 🌍</title>
     <style>
         :root { --glow: #2ecc71; }
         body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 15px; }
         .logo img { width: 160px; margin-top: 10px; }
+        
+        /* الهالة الضوئية النبضية */
         .number-box { 
-            background: #121212; border: 2px solid var(--glow); border-radius: 35px; padding: 30px; max-width: 300px; margin: 20px auto;
+            background: #121212; border: 2px solid var(--glow); border-radius: 35px; 
+            padding: 30px; max-width: 320px; margin: 20px auto;
             box-shadow: 0 0 30px var(--glow); animation: pulse 2s infinite; 
+            transition: all 0.5s ease;
         }
-        @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--glow); } 50% { transform: scale(1.03); box-shadow: 0 0 45px var(--glow); } }
-        .big-num { font-size: 110px; font-weight: bold; margin: 5px 0; }
-        .status-tag { display: inline-block; padding: 8px 25px; border-radius: 50px; font-size: 15px; font-weight: bold; border: 2px solid var(--glow); color: var(--glow); margin-bottom: 15px; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--glow); } 50% { transform: scale(1.03); box-shadow: 0 0 50px var(--glow); } }
+        
+        .big-num { font-size: 110px; font-weight: bold; margin: 5px 0; color: #fff; }
+        .status-tag { display: inline-block; padding: 8px 25px; border-radius: 50px; font-size: 15px; font-weight: bold; border: 2px solid var(--glow); color: var(--glow); margin-bottom: 10px; }
+        
+        /* خانة الملاحظات - بارزة جداً */
+        .note-box { 
+            background: rgba(255, 215, 0, 0.1); border: 1px dashed #ffd700; 
+            padding: 15px; border-radius: 15px; margin-top: 10px; 
+            color: #ffd700; font-size: 16px; font-weight: bold;
+        }
+
         .card-ui { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 25px; border: 1px solid #1e293b; max-width: 330px; margin: 15px auto; }
         input { padding: 12px; border-radius: 12px; border: 1px solid #ffd700; background: #000; color: #fff; text-align: center; margin: 5px; font-size: 16px; width: 70px; }
-        .bell-btn { font-size: 60px; background: none; border: none; cursor: pointer; filter: grayscale(1); transition: 0.4; }
-        .bell-active { filter: grayscale(0) drop-shadow(0 0 20px #ffd700); animation: shake 0.5s infinite; }
-        @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } }
+        .btn-gold { background: #ffd700; color: #000; border: none; padding: 12px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 85%; }
+        .bell-btn { font-size: 55px; background: none; border: none; cursor: pointer; filter: grayscale(1); transition: 0.4s; }
+        .bell-active { filter: grayscale(0) drop-shadow(0 0 15px #ffd700); transform: scale(1.1); }
         .result-item { padding: 15px; border-bottom: 1px solid #222; cursor: pointer; text-align: right; }
     </style>
 </head>
@@ -29,23 +40,31 @@
     <div class="logo"><img src="logo.png"></div>
 
     <div id="searchPage" class="card-ui">
-        <h3 style="color:#ffd700;">🔎 دليل صوفيگرام الذكي</h3>
-        <input type="text" id="searchInput" placeholder="اكتب الاسم..." style="width: 80%;">
-        <button onclick="performSearch()" style="background:#ffd700; border:none; padding:10px; border-radius:10px; font-weight:bold; cursor:pointer; width:85%;">بحث</button>
+        <h3 style="color:#ffd700; margin-top:0;">🔎 دليل صوفيگرام الذكي</h3>
+        <input type="text" id="searchInput" placeholder="اكتب الاسم هنا..." style="width: 80%;">
+        <button class="btn-gold" onclick="performSearch()">ابحث الآن</button>
         <div id="searchResults" style="margin-top:20px;"></div>
     </div>
 
     <div id="livePage" style="display:none;">
-        <h2 id="clinicName" style="color:#ffd700;"></h2>
+        <h2 id="clinicName" style="color:#ffd700; margin-bottom:5px;"></h2>
         <div id="statusTag" class="status-tag">--</div>
-        <div class="number-box"><div class="big-num" id="liveNumber">0</div></div>
-        <div class="card-ui">
-            <p style="color:#ffd700; font-weight:bold;">🔔 منبه ساعة الصفر:</p>
-            <input type="number" id="userTarget" placeholder="رقمك">
-            <button id="bellIcon" class="bell-btn" onclick="activateAlarm()">🔔</button>
-            <p id="alarmStatus" style="font-size:11px; color:#888;">اضغط لتفعيل التنبيه الصوتي</p>
+        
+        <div class="number-box">
+            <p style="color: #888; font-size: 13px; margin:0;">الرقم الحالي الآن | Current No.</p>
+            <div class="big-num" id="liveNumber">0</div>
+            
+            <div id="liveNote" class="note-box">جاري تحميل الملاحظات...</div>
         </div>
-        <button onclick="location.href='view.html'" style="background:none; color:#888; border:none; text-decoration:underline;">العودة للبحث ↩️</button>
+
+        <div class="card-ui">
+            <p style="margin:0; color:#ffd700; font-weight: bold;">🔔 منبه ساعة الصفر الذكي:</p>
+            <p style="font-size: 11px; color: #888; margin: 5px 0;">ادخل رقمك وسنهز الهاتف وننادي عليك</p>
+            <input type="number" id="userTarget" placeholder="رقم">
+            <button id="bellIcon" class="bell-btn" onclick="toggleAlarm()">🔔</button>
+        </div>
+        
+        <button onclick="window.location.href='view.html'" style="background:none; color:#888; border:none; text-decoration:underline; cursor:pointer; margin-top:15px;">العودة لمحرك البحث ↩️</button>
     </div>
 
     <script type="module">
@@ -64,36 +83,14 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        let isAlarmOn = false;
+        let isAlarmReady = false;
         const params = new URLSearchParams(window.location.search);
-        const clinicId = params.get('id');
+        const id = params.get('id');
 
-        if(clinicId) { 
+        if(id) { 
             document.getElementById('searchPage').style.display = 'none';
             document.getElementById('livePage').style.display = 'block';
-            
-            onValue(ref(db, 'users/' + clinicId), (snap) => {
-                const info = snap.val();
-                if(!info) return;
-                const current = info.currentNum || 0;
-                document.getElementById('liveNumber').innerText = current;
-                document.getElementById('clinicName').innerText = info.name;
-                document.getElementById('statusTag').innerText = info.status || "--";
-                
-                // تحديث الألوان
-                const root = document.documentElement;
-                if(info.status?.includes("مفتوح")) root.style.setProperty('--glow', '#2ecc71');
-                else if(info.status?.includes("قريباً")) root.style.setProperty('--glow', '#f1c40f');
-                else root.style.setProperty('--glow', '#e74c3c');
-
-                // التنبيه
-                const target = document.getElementById('userTarget').value;
-                if(isAlarmOn && target != "" && target == current) {
-                    triggerFinalAlarm();
-                    isAlarmOn = false;
-                    document.getElementById('bellIcon').classList.remove('bell-active');
-                }
-            });
+            startTracking(id); 
         }
 
         window.performSearch = async () => {
@@ -101,20 +98,51 @@
             const snap = await get(ref(db, 'users'));
             const data = snap.val();
             const resDiv = document.getElementById('searchResults'); resDiv.innerHTML = "";
-            for(let key in data) if(data[key].name.toLowerCase().includes(val)) 
-                resDiv.innerHTML += `<div class="result-item" onclick="location.href='?id=${key}'">⭐ ${data[key].name}</div>`;
+            for(let key in data) {
+                if(data[key].name.toLowerCase().includes(val)) {
+                    resDiv.innerHTML += `<div class="result-item" onclick="location.href='?id=${key}'">⭐ <b>${data[key].name}</b></div>`;
+                }
+            }
         };
 
-        window.activateAlarm = () => {
-            if(!document.getElementById('userTarget').value) return alert("اكتب رقمك!");
-            isAlarmOn = !isAlarmOn;
-            document.getElementById('bellIcon').classList.toggle('bell-active');
-            // تنشيط محرك الصوت (إجباري للموبايل)
-            window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
-            if(isAlarmOn) alert("تم تفعيل النداء الصوتي بنجاح ✅");
-        };
+        function startTracking(targetId) {
+            onValue(ref(db, 'users/' + targetId), (snap) => {
+                const info = snap.val();
+                if(!info) return;
+                
+                const current = info.currentNum || 0;
+                document.getElementById('liveNumber').innerText = current;
+                document.getElementById('clinicName').innerText = info.name;
+                
+                // عرض الملاحظة أو إخفاؤها إذا كانت فارغة
+                const noteElement = document.getElementById('liveNote');
+                if(info.note && info.note.trim() !== "") {
+                    noteElement.innerText = info.note;
+                    noteElement.style.display = "block";
+                } else {
+                    noteElement.style.display = "none";
+                }
+                
+                const st = info.status || "";
+                document.getElementById('statusTag').innerText = st;
+                
+                // تحديث الألوان النبضية
+                const root = document.documentElement;
+                if(st.includes("مفتوح")) root.style.setProperty('--glow', '#2ecc71');
+                else if(st.includes("قريباً") || st.includes("طريق")) root.style.setProperty('--glow', '#f1c40f');
+                else root.style.setProperty('--glow', '#e74c3c');
 
-        function triggerFinalAlarm() {
+                // تشغيل التنبيه
+                const target = document.getElementById('userTarget').value;
+                if(isAlarmReady && target != "" && target == current) {
+                    triggerAlarm();
+                    isAlarmReady = false;
+                    document.getElementById('bellIcon').classList.remove('bell-active');
+                }
+            });
+        }
+
+        function triggerAlarm() {
             if ("vibrate" in navigator) navigator.vibrate([500, 200, 500]);
             const ar = new SpeechSynthesisUtterance("أهلاً بكم في صوفي غرام. حان دوركم الآن، يرجى التوجه فوراً.");
             ar.lang = 'ar-SA';
@@ -122,7 +150,17 @@
             en.lang = 'en-US';
             window.speechSynthesis.speak(ar);
             window.speechSynthesis.speak(en);
+            alert("🔔 صوفيگرام: حان دورك الآن!");
         }
+
+        window.toggleAlarm = () => {
+            if(!document.getElementById('userTarget').value) return alert("اكتب رقمك أولاً 🔔");
+            isAlarmReady = !isAlarmReady;
+            document.getElementById('bellIcon').classList.toggle('bell-active');
+            // تنشيط محرك الصوت للموبايل
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
+            if(isAlarmReady) alert("تم تفعيل المنبه بنجاح ✅");
+        };
     </script>
 </body>
 </html>
