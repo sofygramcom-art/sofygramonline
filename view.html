@@ -83,4 +83,79 @@
             authDomain: "sofygramclinic.firebaseapp.com",
             databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
             projectId: "sofygramclinic",
-            appId: "1:207475452149:web:3f0f
+            appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const dict = {
+            ar: { stitle: "🔎 دليل صوفيگرام العالمي", sdesc: "ابحث عن (طبيب، حلاق، مطعم، أو أي نشاط تجاري) لمتابعة دورك.", sbtn: "بحث الآن", cur: "الرقم الحالي الآن", alarm: "🔔 منبه ساعة الصفر الذكي", back: "العودة للبحث ↩️", ph: "اكتب الاسم هنا..." },
+            en: { stitle: "🔎 Sofygram Global Guide", sdesc: "Search for (Doctor, Barber, Restaurant, or business) to track your turn.", sbtn: "Search Now", cur: "Current Number Now", alarm: "🔔 Zero Hour Alarm", back: "Back to Search ↩️", ph: "Type name here..." },
+            fa: { stitle: "🔎 راهنمای جهانی صوفی‌گرام", sdesc: "برای پیگیری نوبت خود (دکتر، آرایشگر، رستوران) را جستجو کنید.", sbtn: "جستجو", cur: "شماره فعلی", alarm: "🔔 هشدار ساعت صفر", back: "بازگشت", ph: "نام را اینجا بنویسید..." }
+        };
+
+        let curLang = 'ar';
+        let isAlarmReady = false;
+
+        window.toggleMenu = () => { 
+            const m = document.getElementById('lMenu');
+            m.style.display = m.style.display === 'block' ? 'none' : 'block';
+        };
+
+        window.setLang = (l) => {
+            curLang = l; document.getElementById('lMenu').style.display = 'none';
+            const d = dict[l] || dict['en'];
+            document.getElementById('t-stitle').innerText = d.stitle;
+            document.getElementById('t-sdesc').innerText = d.sdesc;
+            document.getElementById('t-sbtn').innerText = d.sbtn;
+            document.getElementById('t-cur').innerText = d.cur;
+            document.getElementById('t-alarm').innerText = d.alarm;
+            document.getElementById('t-back').innerText = d.back;
+            document.getElementById('searchInput').placeholder = d.ph;
+            document.body.dir = (l === 'ar' || l === 'fa') ? 'rtl' : 'ltr';
+            document.getElementById('lContainer').style.left = (l === 'ar' || l === 'fa') ? '15px' : 'auto';
+            document.getElementById('lContainer').style.right = (l === 'ar' || l === 'fa') ? 'auto' : '15px';
+        };
+
+        window.performSearch = async () => {
+            const val = document.getElementById('searchInput').value.toLowerCase();
+            const snap = await get(ref(db, 'users'));
+            const data = snap.val();
+            const resDiv = document.getElementById('searchResults'); resDiv.innerHTML = "";
+            for(let key in data) if(data[key].name.toLowerCase().includes(val)) 
+                resDiv.innerHTML += `<div style="padding:15px; border-bottom:1px solid #333; cursor:pointer;" onclick="location.href='?id=${key}'">⭐ ${data[key].name}</div>`;
+        };
+
+        function startTracking(targetId) {
+            onValue(ref(db, 'users/' + targetId), (snap) => {
+                const info = snap.val(); if(!info) return;
+                const current = info.currentNum || 0;
+                document.getElementById('liveNumber').innerText = current;
+                document.getElementById('clinicName').innerText = info.name;
+                const noteBox = document.getElementById('liveNote');
+                if(info.note) { noteBox.innerText = info.note; noteBox.style.display = "block"; } else { noteBox.style.display = "none"; }
+                const st = info.status || "";
+                document.getElementById('statusTag').innerText = st;
+                const root = document.documentElement;
+                if(st.includes("مفتوح")) root.style.setProperty('--glow', '#2ecc71');
+                else if(st.includes("قريباً")) root.style.setProperty('--glow', '#f1c40f');
+                else root.style.setProperty('--glow', '#e74c3c');
+
+                if(isAlarmReady && document.getElementById('userTarget').value == current && current != 0) {
+                    window.speechSynthesis.speak(new SpeechSynthesisUtterance("حان دورك الآن"));
+                    isAlarmReady = false;
+                    document.getElementById('bellIcon').style.filter = "grayscale(1)";
+                    alert("Sofygram!");
+                }
+            });
+        }
+
+        window.toggleAlarm = () => {
+            if(!document.getElementById('userTarget').value) return alert("يرجى إدخال رقمك أولاً 🔔");
+            isAlarmReady = !isAlarmReady;
+            document.getElementById('bellIcon').style.filter = isAlarmReady ? "grayscale(0) drop-shadow(0 0 15px #ffd700)" : "grayscale(1)";
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
+        };
+    </script>
+</body>
+</html>
