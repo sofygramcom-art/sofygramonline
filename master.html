@@ -3,39 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Master | إدارة الاشتراكات</title>
+    <title>Sofygram Master | الإدارة العليا</title>
     <style>
         body { background: #050a14; color: white; font-family: 'Segoe UI', sans-serif; padding: 20px; }
-        h1 { border-bottom: 2px solid #ffd700; padding-bottom: 10px; display: inline-block; }
+        #authSection { margin-top: 100px; text-align: center; }
+        #masterContent { display: none; } /* مخفي حتى يتم إدخال الرمز */
+        
         .user-card { 
             background: #121212; border: 1px solid #333; padding: 15px; 
-            border-radius: 15px; margin-bottom: 15px; 
+            border-radius: 15px; margin-bottom: 12px; 
             display: flex; justify-content: space-between; align-items: center;
-            transition: 0.3s;
         }
-        .user-card:hover { border-color: #ffd700; }
         .waiting { border: 2px dashed #ffd700; background: rgba(255, 215, 0, 0.05); }
-        .info b { color: #ffd700; font-size: 18px; }
-        .days-left { display: block; font-size: 13px; color: #888; margin-top: 5px; }
-        .active-days { color: #2ecc71; font-weight: bold; }
-        .btn-group { display: flex; gap: 8px; }
-        button { 
-            padding: 10px 15px; border: none; border-radius: 8px; 
-            cursor: pointer; font-weight: bold; font-size: 13px;
-        }
-        .btn-test { background: #3498db; color: white; } /* أزرق للتست */
-        .btn-30 { background: #2ecc71; color: white; } /* أخضر لـ 30 يوم */
-        .btn-stop { background: #e74c3c; color: white; } /* أحمر للإيقاف */
+        .btn-group { display: flex; gap: 5px; flex-wrap: wrap; }
+        button { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        
+        .btn-test { background: #3498db; color: white; }
+        .btn-30 { background: #2ecc71; color: white; }
+        .btn-stop { background: #f39c12; color: white; }
+        .btn-del { background: #e74c3c; color: white; } /* زر الحذف */
+        
+        input[type="password"] { padding: 12px; border-radius: 8px; border: 1px solid #ffd700; background: #000; color: #fff; text-align: center; width: 200px; }
+        .login-btn { background: #ffd700; color: black; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <h1>لوحة تحكم صوفيگرام العليا 👑</h1>
-    <div id="usersList">جاري جلب المشتركين والطلبات...</div>
+    <div id="authSection">
+        <img src="logo.png" style="width: 150px; margin-bottom: 20px;">
+        <h2>الوصول للمنطقة المحظورة 🔐</h2>
+        <input type="password" id="masterPass" placeholder="أدخل الرمز السري للإدارة"> <br>
+        <button class="login-btn" onclick="checkAuth()">دخول بصلاحية مدير</button>
+    </div>
+
+    <div id="masterContent">
+        <h1>لوحة تحكم صوفيگرام العليا 👑</h1>
+        <div id="usersList">جاري تحميل البيانات...</div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+        import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
@@ -49,58 +57,64 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        onValue(ref(db, 'users'), (snapshot) => {
-            const users = snapshot.val();
-            const listDiv = document.getElementById('usersList');
-            listDiv.innerHTML = "";
-
-            if (!users) { listDiv.innerHTML = "لا يوجد مشتركين حالياً."; return; }
-
-            for (let id in users) {
-                const user = users[id];
-                const expiry = user.expiryDate ? new Date(user.expiryDate) : null;
-                const today = new Date();
-                const diffTime = expiry ? expiry - today : 0;
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                
-                const isWaiting = !user.active;
-                const card = document.createElement('div');
-                card.className = `user-card ${isWaiting ? 'waiting' : ''}`;
-                
-                card.innerHTML = `
-                    <div class="info">
-                        <b>${user.name || "بدون اسم"}</b> (@${id}) <br>
-                        <span class="days-left">
-                            ${isWaiting ? '⚠️ بانتظار التفعيل من قبلك' : `حالة الاشتراك: <span class="active-days">${diffDays > 0 ? diffDays + ' يوم متبقي' : 'منتهي'}</span>`}
-                        </span>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn-test" onclick="activate('${id}', 3)">تفعيل تست (3 أيام)</button>
-                        <button class="btn-30" onclick="activate('${id}', 30)">تفعيل 30 يوم</button>
-                        <button class="btn-stop" onclick="stopUser('${id}')">إيقاف</button>
-                    </div>
-                `;
-                listDiv.appendChild(card);
+        // --- وظيفة الدخول ---
+        window.checkAuth = function() {
+            const pass = document.getElementById('masterPass').value;
+            if(pass === "1234") { // <--- غير الرمز "1234" لأي رمز تريده
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('masterContent').style.display = 'block';
+                loadUsers();
+            } else {
+                alert("الرمز السري خطأ! لا يمكن الدخول.");
             }
-        });
+        };
 
-        window.activate = (id, days) => {
-            const expiry = new Date();
-            expiry.setDate(expiry.getDate() + days);
-            update(ref(db, 'users/' + id), {
-                active: true,
-                expiryDate: expiry.toISOString(),
-                status: "● مفتوح الآن | Open"
-            }).then(() => alert(`تم تفعيل حساب @${id} لمدة ${days} أيام`));
+        function loadUsers() {
+            onValue(ref(db, 'users'), (snapshot) => {
+                const users = snapshot.val();
+                const listDiv = document.getElementById('usersList');
+                listDiv.innerHTML = "";
+                if (!users) { listDiv.innerHTML = "لا يوجد بيانات."; return; }
+
+                for (let id in users) {
+                    const user = users[id];
+                    const expiry = user.expiryDate ? new Date(user.expiryDate) : null;
+                    const today = new Date();
+                    const diffDays = expiry ? Math.ceil((expiry - today) / (1000 * 60 * 60 * 24)) : 0;
+                    
+                    const card = document.createElement('div');
+                    card.className = `user-card ${!user.active ? 'waiting' : ''}`;
+                    card.innerHTML = `
+                        <div>
+                            <strong>${user.name}</strong> (@${id}) <br>
+                            <small>${user.active ? 'المتبقي: ' + diffDays + ' يوم' : '⚠️ بانتظار التفعيل'}</small>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn-test" onclick="activeUser('${id}', 3)">تست 3يوم</button>
+                            <button class="btn-30" onclick="activeUser('${id}', 30)">30 يوم</button>
+                            <button class="btn-stop" onclick="stopUser('${id}')">إيقاف</button>
+                            <button class="btn-del" onclick="deleteUser('${id}')">حذف 🗑️</button>
+                        </div>
+                    `;
+                    listDiv.appendChild(card);
+                }
+            });
+        }
+
+        window.activeUser = (id, days) => {
+            const exp = new Date();
+            exp.setDate(exp.getDate() + days);
+            update(ref(db, 'users/' + id), { active: true, expiryDate: exp.toISOString() });
         };
 
         window.stopUser = (id) => {
-            if(confirm("هل أنت متأكد من إيقاف هذا المشترك؟")) {
-                update(ref(db, 'users/' + id), {
-                    active: false,
-                    expiryDate: null,
-                    status: "مغلق - اشتراك منتهي"
-                });
+            update(ref(db, 'users/' + id), { active: false, expiryDate: null });
+        };
+
+        // --- وظيفة الحذف النهائي ---
+        window.deleteUser = (id) => {
+            if(confirm(`هل أنت متأكد من حذف حساب (@${id}) نهائياً؟ لا يمكن التراجع!`)) {
+                remove(ref(db, 'users/' + id)).then(() => alert("تم حذف الحساب بنجاح."));
             }
         };
     </script>
