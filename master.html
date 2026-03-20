@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Sofygram Master | نظام الحماية المتطور 🔐</title>
+    <title>Sofygram Master | الإدارة الذكية 🔐</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
         body { background: #050a14; color: white; font-family: sans-serif; padding: 20px; text-align: center; }
@@ -23,12 +23,11 @@
             <input type="password" id="passInput" placeholder="أدخل الرمز السري"> <br>
             <button class="btn-gold" onclick="attemptLogin()">دخول آمن</button>
         </div>
-
         <div id="securitySection">
-            <p style="color:#e74c3c;">⚠️ تم تجاوز محاولات الدخول!</p>
+            <p style="color:#e74c3c;">⚠️ تجاوزت المحاولات!</p>
             <p>سؤال الأمان: <b>ما هو اسم بلدك المفضل؟</b></p>
-            <input type="text" id="securityAnswer" placeholder="أجب على السؤال"> <br>
-            <button class="btn-gold" style="background:#e74c3c; color:white;" onclick="checkSecurity()">تحقق من الهوية</button>
+            <input type="text" id="securityAnswer" placeholder="أجب هنا"> <br>
+            <button class="btn-gold" style="background:#e74c3c; color:white;" onclick="checkSecurity()">تحقق</button>
         </div>
     </div>
 
@@ -36,11 +35,11 @@
         <div style="display:flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ffd700; padding-bottom: 10px; margin-bottom:20px;">
             <h1>إدارة صوفيگرام</h1>
             <div>
-                <button onclick="changeMasterPass()" style="background:#555; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">⚙️ تغيير الرمز</button>
+                <button onclick="updateMasterPassword()" style="background:#ffd700; color:black; border:none; padding:8px; border-radius:5px; cursor:pointer; font-weight:bold;">⚙️ تغيير رمز الدخول</button>
                 <button onclick="location.reload()" style="background:#333; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">خروج</button>
             </div>
         </div>
-        <div id="usersList">جاري التحميل...</div>
+        <div id="list">جاري التحميل...</div>
     </div>
 
     <script type="module">
@@ -60,78 +59,68 @@
         const db = getDatabase(app);
 
         let attempts = 0;
-        // شفرة الرمز 1992
-        let currentHash = "e10adc3949ba59abbe56e057f20f883e"; 
+        // الرمز الافتراضي 1992 إذا لم يوجد رمز في Firebase
+        let masterHash = "e10adc3949ba59abbe56e057f20f883e"; 
+
+        // جلب الرمز السري من Firebase فور فتح الصفحة
+        get(ref(db, 'admin_settings/masterHash')).then((snap) => {
+            if(snap.exists()) masterHash = snap.val();
+        });
 
         window.attemptLogin = function() {
             const input = document.getElementById('passInput').value;
-            const hashedInput = CryptoJS.MD5(input).toString();
-
-            if (hashedInput === currentHash) {
-                successLogin();
+            if (CryptoJS.MD5(input).toString() === masterHash) {
+                showPanel();
             } else {
                 attempts++;
-                alert(`خطأ! متبقي لديك ${3 - attempts} محاولات.`);
                 if (attempts >= 3) {
                     document.getElementById('inputGroup').style.display = 'none';
                     document.getElementById('securitySection').style.display = 'block';
-                }
+                } else { alert("الرمز خطأ!"); }
             }
         };
 
-        window.checkSecurity = function() {
-            const ans = document.getElementById('securityAnswer').value.trim();
-            if (ans === "السويد") { // <--- جواب سؤال الأمان
-                successLogin();
-            } else {
-                alert("للأسف، الإجابة خاطئة. تواصل مع الدعم الفني.");
-            }
+        window.checkSecurity = () => {
+            if(document.getElementById('securityAnswer').value === "العراق") showPanel();
+            else alert("خطأ!");
         };
 
-        function successLogin() {
+        function showPanel() {
             document.getElementById('loginZone').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'block';
-            loadUsers();
-        }
-
-        function loadUsers() {
-            onValue(ref(db, 'users'), (snapshot) => {
-                const list = document.getElementById('usersList');
-                list.innerHTML = "";
-                const data = snapshot.val();
-                for (let id in data) {
+            onValue(ref(db, 'users'), (snap) => {
+                const list = document.getElementById('list'); list.innerHTML = "";
+                const data = snap.val();
+                for(let id in data) {
                     const u = data[id];
                     const exp = u.expiryDate ? new Date(u.expiryDate) : null;
-                    const days = exp ? Math.ceil((exp - new Date()) / (1000*60*60*24)) : 0;
-                    const div = document.createElement('div');
-                    div.className = 'card';
-                    div.innerHTML = `
-                        <div><b>${u.name}</b> (@${id})<br><small>${u.active ? 'مفعل: ' + days + ' يوم' : '⚠️ طلب تفعيل'}</small></div>
-                        <div>
-                            <button class="status-btn" style="background:#3498db;" onclick="action('${id}', 3)">تست 3يوم</button>
-                            <button class="status-btn" style="background:#2ecc71;" onclick="action('${id}', 30)">30 يوم</button>
-                            <button class="status-btn" style="background:#e74c3c;" onclick="del('${id}')">حذف 🗑️</button>
-                        </div>`;
-                    list.appendChild(div);
+                    const days = exp ? Math.ceil((exp - new Date())/(1000*60*60*24)) : 0;
+                    const d = document.createElement('div'); d.className='card';
+                    d.innerHTML = `<div><b>${u.name}</b><br><small>${u.active?days+' يوم':'طلب جديد'}</small></div>
+                    <div><button class="status-btn" style="background:#3498db;" onclick="act('${id}',3)">تست</button>
+                    <button class="status-btn" style="background:#2ecc71;" onclick="act('${id}',30)">30يوم</button>
+                    <button class="status-btn" style="background:#e74c3c;" onclick="del('${id}')">حذف</button></div>`;
+                    list.appendChild(d);
                 }
             });
         }
 
-        window.action = (id, d) => {
-            const date = new Date();
-            date.setDate(date.getDate() + d);
-            update(ref(db, 'users/' + id), { active: true, expiryDate: date.toISOString() });
+        window.act = (id, n) => {
+            const d = new Date(); d.setDate(d.getDate()+n);
+            update(ref(db, 'users/'+id), {active:true, expiryDate: d.toISOString()});
         };
 
-        window.del = (id) => { if(confirm("حذف نهائي؟")) remove(ref(db, 'users/' + id)); };
+        window.del = (id) => { if(confirm("حذف؟")) remove(ref(db, 'users/'+id)); };
 
-        // --- وظيفة تغيير الرمز من الداخل ---
-        window.changeMasterPass = function() {
-            const newPass = prompt("أدخل الرمز السري الجديد:");
-            if (newPass && newPass.length >= 4) {
-                const newHash = CryptoJS.MD5(newPass).toString();
-                // ملاحظة: للتغيير الدائم ستحتاج لتحديث الكود يدوياً في GitHub أو حفظه في Firebase
-                alert("تم تحديث الرمز في الجلسة الحالية. للتغيير الدائم يرجى تحديث ملف GitHub.");
+        // وظيفة تغيير الرمز وحفظه في Firebase
+        window.updateMasterPassword = function() {
+            const newP = prompt("أدخل الرمز الجديد (أرقام فقط):");
+            if(newP && newP.length >= 4) {
+                const newH = CryptoJS.MD5(newP).toString();
+                set(ref(db, 'admin_settings/masterHash'), newH).then(() => {
+                    alert("تم تغيير الرمز بنجاح! سيتم اعتماده من الدخول القادم.");
+                    location.reload();
+                });
             }
         };
     </script>
