@@ -2,47 +2,76 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>انضم لـ صوفيگرام | تسجيل</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صوفيگرام | تسجيل حساب جديد</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 20px; }
-        .reg-card { background: #111; padding: 25px; border-radius: 20px; border: 2px solid #2ecc71; max-width: 400px; margin: 0 auto; }
-        input { width: 85%; padding: 12px; margin: 10px 0; border-radius: 10px; background: #000; color: #fff; border: 1px solid #333; text-align: center; }
-        button { background: #2ecc71; color: #000; border: none; padding: 15px; width: 90%; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        #qrcode { background: #fff; padding: 10px; display: inline-block; margin-top: 15px; border-radius: 10px; }
+        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        .reg-card { background: #121212; padding: 30px; border-radius: 20px; max-width: 400px; margin: auto; border: 1px solid #2ecc71; }
+        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #333; background: #000; color: #fff; text-align: center; }
+        button { width: 100%; padding: 15px; background: #2ecc71; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; }
+        #qrcode { margin-top: 20px; background: white; padding: 10px; display: inline-block; border-radius: 10px; display: none; }
+        .success-msg { color: #2ecc71; display: none; margin-top: 15px; }
     </style>
 </head>
 <body>
-    <div id="reg-form" class="reg-card">
-        <h2>تسجيل حساب جديد</h2>
-        <input type="text" id="b-id" placeholder="المعرف بالانكليزي (id)">
-        <input type="text" id="b-name" placeholder="اسم العيادة بالعربي">
-        <input type="password" id="b-pass" placeholder="كلمة المرور">
-        <button onclick="register()">إنشاء الحساب 🚀</button>
+    <div class="reg-card">
+        <img src="logo.png" style="width: 150px; margin-bottom: 20px;">
+        <h2>تسجيل عيادة جديدة</h2>
+        <input type="text" id="username" placeholder="اسم المستخدم (بالإنجليزي - مثلاً: dr_ali)">
+        <input type="text" id="clinicName" placeholder="اسم العيادة (مثلاً: عيادة الدكتور علي)">
+        <input type="password" id="password" placeholder="كلمة المرور">
+        <button id="regBtn">إنشاء الحساب وتوليد الباركود 🚀</button>
+
+        <div id="successZone">
+            <p class="success-msg" id="msg">تم التسجيل بنجاح! احفظ الباركود:</p>
+            <div id="qrcode"></div>
+            <p style="font-size: 12px; color: #888; margin-top: 10px;">بانتظار تفعيل الإدارة للاستخدام...</p>
+        </div>
     </div>
-    <div id="result" class="reg-card" style="display:none">
-        <h2 style="color:#2ecc71">تم التسجيل!</h2>
-        <p>هذا باركود عيادتك (احفظه عندك):</p>
-        <div id="qrcode"></div>
-        <p style="color:#f1c40f">بانتظار التفعيل من الإدارة...</p>
-    </div>
-    <script>
-        const firebaseConfig = { apiKey: "..", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com", projectId: "sofygramclinic" };
-        firebase.initializeApp(firebaseConfig);
-        function register() {
-            const id = document.getElementById('b-id').value.toLowerCase();
-            const name = document.getElementById('b-name').value;
-            firebase.database().ref('businesses/' + id).set({
-                name: name, password: document.getElementById('b-pass').value,
-                num: 0, active: false, expiry: ""
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
+            authDomain: "sofygramclinic.firebaseapp.com",
+            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
+            projectId: "sofygramclinic",
+            storageBucket: "sofygramclinic.firebasestorage.app",
+            messagingSenderId: "207475452149",
+            appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        document.getElementById('regBtn').onclick = function() {
+            const user = document.getElementById('username').value.trim();
+            const name = document.getElementById('clinicName').value.trim();
+            const pass = document.getElementById('password').value;
+
+            if(!user || !name || !pass) return alert("يرجى ملء كافة الحقول");
+
+            set(ref(db, 'users/' + user), {
+                name: name,
+                password: pass,
+                status: "مغلق - بانتظار التفعيل",
+                currentNum: 0,
+                active: false // يحتاج تفعيل من صفحة الماستر
             }).then(() => {
-                document.getElementById('reg-form').style.display = 'none';
-                document.getElementById('result').style.display = 'block';
-                new QRCode(document.getElementById("qrcode"), window.location.href.replace('register.html', 'view.html?id=' + id));
+                document.getElementById('msg').style.display = 'block';
+                const qrDiv = document.getElementById('qrcode');
+                qrDiv.style.display = 'inline-block';
+                qrDiv.innerHTML = "";
+                // توليد رابط فريد لهذا الدكتور
+                new QRCode(qrDiv, {
+                    text: `https://sofygram.com/view.html?id=${user}`,
+                    width: 200, height: 200
+                });
+                alert("تم إرسال طلبك للإدارة");
             });
-        }
+        };
     </script>
 </body>
 </html>
