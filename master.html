@@ -2,96 +2,98 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Sofygram Master | الإدارة العليا 👑</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صوفيگرام ماستر | الإدارة المالية والتقنية 👑</title>
     <style>
-        body { background: #050a14; color: white; font-family: sans-serif; padding: 20px; text-align: center; }
-        .card { background: #121212; border: 1px solid #333; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; text-align: right; border-right: 5px solid #ffd700; }
-        input { padding: 12px; border-radius: 8px; border: 1px solid #ffd700; background: #000; color: #fff; text-align: center; margin: 10px; }
-        .btn-gold { background: #ffd700; color: #000; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .status-btn { padding: 6px 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 11px; font-weight: bold; margin-left: 5px; color: white; }
-        .pass-box { background: #222; color: #ffd700; padding: 2px 8px; border-radius: 4px; font-family: monospace; display: none; margin-top: 5px; }
+        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; padding: 15px; }
+        .master-card { background: #121212; padding: 20px; border-radius: 20px; max-width: 600px; margin: auto; border: 1px solid #ffd700; }
+        .user-row { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; 
+            border-right: 5px solid #888; transition: 0.3s;
+        }
+        /* تمييز الحالات بالألوان */
+        .active-user { border-right-color: #2ecc71; background: rgba(46, 204, 113, 0.1); }
+        .waiting-user { border-right-color: #f1c40f; background: rgba(241, 196, 15, 0.1); }
+        
+        .btn { padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; margin: 2px; }
+        .btn-activate { background: #2ecc71; color: white; }
+        .btn-wait { background: #f1c40f; color: black; }
+        .btn-delete { background: #e74c3c; color: white; }
+        
+        .pay-status { font-size: 20px; margin-left: 10px; }
+        .search-box { width: 90%; padding: 12px; margin-bottom: 20px; border-radius: 10px; border: 1px solid #ffd700; background: #000; color: #fff; }
     </style>
 </head>
 <body>
-
-    <div id="loginZone">
-        <img src="logo.png" style="width:140px; margin-bottom:20px;">
-        <h2>المنطقة المحظورة 🔐</h2>
-        <div id="inputGroup">
-            <input type="password" id="passInput" placeholder="أدخل الرمز السري"> <br>
-            <button class="btn-gold" onclick="attemptLogin()">دخول المدير</button>
-        </div>
-    </div>
-
-    <div id="adminPanel" style="display:none;">
-        <div style="display:flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ffd700; padding-bottom: 10px; margin-bottom:20px;">
-            <h1>إدارة صوفيگرام العليا 👑</h1>
-            <div>
-                <button onclick="updateMasterPassword()" style="background:#ffd700; color:black; border:none; padding:8px; border-radius:5px; cursor:pointer; font-weight:bold;">⚙️ تغيير رمزي</button>
-                <button onclick="location.reload()" style="background:#333; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">خروج</button>
-            </div>
-        </div>
-        <div id="list">جاري تحميل المشتركين...</div>
+    <div class="master-card">
+        <img src="logo.png" style="width:120px; margin-bottom:15px;">
+        <h2>لوحة التحكم العليا 👑</h2>
+        <input type="text" id="mSearch" class="search-box" placeholder="بحث عن عيادة أو محل..." onkeyup="filterUsers()">
+        
+        <div id="usersList">جاري تحميل المشتركين...</div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update, remove, set, get } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+        import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
             authDomain: "sofygramclinic.firebaseapp.com",
             databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
             projectId: "sofygramclinic",
-            storageBucket: "sofygramclinic.firebasestorage.app",
-            messagingSenderId: "207475452149",
             appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
         };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        let masterHash = "e10adc3949ba59abbe56e057f20f883e"; // 1992 افتراضي
-        get(ref(db, 'admin_settings/masterHash')).then(s => { if(s.exists()) masterHash = s.val(); });
+        onValue(ref(db, 'users'), (snap) => {
+            const users = snap.val();
+            const list = document.getElementById('usersList');
+            list.innerHTML = "";
+            
+            for(let id in users) {
+                const u = users[id];
+                const isPaid = u.paidStatus === "yes";
+                const isWaiting = u.paidStatus === "waiting";
+                
+                let payIcon = isPaid ? "✅" : (isWaiting ? "⏳" : "❌");
+                let rowClass = u.active ? (isPaid ? "active-user" : "waiting-user") : "";
 
-        window.attemptLogin = () => {
-            const p = document.getElementById('passInput').value;
-            if(CryptoJS.MD5(p).toString() === masterHash) show(); else alert("خطأ!");
-        };
-
-        function show() {
-            document.getElementById('loginZone').style.display = 'none';
-            document.getElementById('adminPanel').style.display = 'block';
-            onValue(ref(db, 'users'), (snap) => {
-                const list = document.getElementById('list'); list.innerHTML = "";
-                const data = snap.val();
-                for(let id in data) {
-                    const u = data[id];
-                    const d = document.createElement('div'); d.className='card';
-                    d.innerHTML = `
-                        <div>
-                            <b>${u.name}</b> (@${id}) <br>
-                            <span id="p-${id}" class="pass-box">${u.password}</span>
+                list.innerHTML += `
+                    <div class="user-row ${rowClass}" data-name="${u.name.toLowerCase()}">
+                        <div style="text-align: right;">
+                            <span class="pay-status">${payIcon}</span>
+                            <b>${u.name}</b> <br>
+                            <small style="color:#888;">ID: ${id}</small>
                         </div>
                         <div>
-                            <button class="status-btn" style="background:#8e44ad;" onclick="document.getElementById('p-${id}').style.display='inline-block'">👁️ كشف الرمز</button>
-                            <button class="status-btn" style="background:#3498db;" onclick="act('${id}',3)">تست</button>
-                            <button class="status-btn" style="background:#2ecc71;" onclick="act('${id}',30)">30يوم</button>
-                            <button class="status-btn" style="background:#e74c3c;" onclick="del('${id}')">حذف</button>
-                        </div>`;
-                    list.appendChild(d);
-                }
-            });
-        }
+                            <button class="btn btn-activate" onclick="upStatus('${id}', true, 'yes')">تم الدفع ✅</button>
+                            <button class="btn btn-wait" onclick="upStatus('${id}', true, 'waiting')">تجربة ⏳</button>
+                            <button class="btn btn-delete" onclick="delUser('${id}')">حذف 🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }
+        });
 
-        window.act = (id, n) => {
-            const d = new Date(); d.setDate(d.getDate()+n);
-            update(ref(db, 'users/'+id), {active:true, expiryDate: d.toISOString()});
+        window.upStatus = (id, active, pay) => {
+            update(ref(db, `users/${id}`), { active: active, paidStatus: pay })
+            .then(() => alert("تم تحديث الحالة بنجاح 🚀"));
         };
-        window.del = (id) => { if(confirm("حذف نهائي؟")) remove(ref(db, 'users/'+id)); };
-        window.updateMasterPassword = () => {
-            const n = prompt("الرمز الجديد:");
-            if(n && n.length>=4) set(ref(db, 'admin_settings/masterHash'), CryptoJS.MD5(n).toString()).then(()=>alert("تم!"));
+
+        window.delUser = (id) => {
+            if(confirm("هل أنت متأكد من حذف هذا المشترك نهائياً؟")) {
+                remove(ref(db, `users/${id}`));
+            }
+        };
+
+        window.filterUsers = () => {
+            const val = document.getElementById('mSearch').value.toLowerCase();
+            document.querySelectorAll('.user-row').forEach(row => {
+                row.style.display = row.getAttribute('data-name').includes(val) ? "flex" : "none";
+            });
         };
     </script>
 </body>
