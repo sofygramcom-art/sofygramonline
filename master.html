@@ -8,7 +8,6 @@
         :root { --glow: #ffd700; }
         body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; transition: 0.5s; }
         
-        /* أزرار اللغة العلوية */
         .lang-switch { position: absolute; top: 20px; left: 20px; display: flex; gap: 10px; z-index: 1000; }
         .l-btn { cursor: pointer; background: rgba(255,215,0,0.1); border: 1px solid var(--glow); color: var(--glow); padding: 5px 12px; border-radius: 8px; font-weight: bold; font-size: 12px; }
         .l-btn.active { background: var(--glow); color: #000; }
@@ -18,8 +17,8 @@
         .active-user { border-right-color: #2ecc71; }
         .expired-user { border-right-color: #e74c3c; opacity: 0.8; }
 
-        input { padding: 12px; border-radius: 12px; border: 1px solid var(--glow); background: #000; color: #fff; text-align: center; margin: 5px; width: 85%; font-size: 16px; }
-        .btn-entry { background: #2ecc71; color: white; padding: 15px; width: 90%; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 18px; margin-top: 10px; }
+        input { padding: 12px; border-radius: 12px; border: 1px solid var(--glow); background: #000; color: #fff; text-align: center; margin: 5px; width: 85%; font-size: 16px; outline: none; }
+        .btn-entry { background: #2ecc71; color: white; padding: 15px; width: 90%; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 18px; margin-top: 10px; box-shadow: 0 4px 0 #27ae60; }
         
         .btn-group { display: flex; flex-direction: column; gap: 5px; min-width: 140px; }
         .btn { padding: 10px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; }
@@ -27,7 +26,6 @@
         .btn-trial { background: #f1c40f; color: black; }
         .btn-pass { background: #9b59b6; color: white; }
         .btn-del { background: #e74c3c; color: white; }
-        
         .days-badge { background: #ffd700; color: #000; padding: 3px 10px; border-radius: 8px; font-weight: bold; font-size: 13px; }
     </style>
 </head>
@@ -43,7 +41,7 @@
         <h2 id="t-lock">قفل الإدارة العليا 👑</h2>
         <div id="passArea"><input type="password" id="mPass" placeholder="كلمة المرور"></div>
         <div id="secArea" style="display:none;">
-            <p id="t-sec-msg" style="color:#e74c3c; font-size:12px;">⚠️ تم قفل الكلمة. استخدم سؤال الأمان:</p>
+            <p id="t-sec-msg" style="color:#e74c3c; font-size:12px; font-weight:bold;">⚠️ تم قفل الكلمة. استخدم سؤال الأمان:</p>
             <input type="text" id="mSec" placeholder="ما هو بلدك؟">
         </div>
         <button onclick="masterLogin()" class="btn-entry" id="t-entry">دخول الملك 👑</button>
@@ -53,13 +51,11 @@
         <h2 id="t-mtitle">إدارة الصلاحيات والوقت 👑</h2>
         <input type="text" id="mSearch" placeholder="..." onkeyup="filterUsers()">
         <div id="usersList">جاري التحميل...</div>
-        <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
-        <button onclick="changeMasterPass()" style="background:none; color:#888; border:1px solid #444; padding:10px; border-radius:10px; cursor:pointer;" id="t-change-pass">⚙️ تغيير كلمة سر الماستر</button>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, onValue, get, update, remove } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+        import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
@@ -73,29 +69,35 @@
 
         let attempts = 0;
         let curLang = 'ar';
+        
+        // كلمة السر المشفرة برمجياً
+        const MASTER_KEY = "1992"; 
+        const SEC_ANSWER = "العراق";
+
         const dict = {
-            ar: { lock: "قفل الإدارة العليا 👑", entry: "دخول الملك 👑", mtitle: "إدارة الصلاحيات والوقت 👑", ph: "ابحث عن مشترك...", f30: "تفعيل شهر (30)", f3: "تجربة (3 أيام)", fdel: "حذف المشترك", fpass: "👁️ كشف الرمز", secMsg: "⚠️ تم قفل الكلمة. استخدم سؤال الأمان:", chPass: "⚙️ تغيير كلمة سر الماستر", exp: "ينتهي في:" },
-            en: { lock: "Master Lock 👑", entry: "King Login 👑", mtitle: "Subscription Manager 👑", ph: "Search user...", f30: "Activate 30 Days", f3: "Trial 3 Days", fdel: "Delete User", fpass: "👁️ View Pass", secMsg: "⚠️ Password Locked. Use Security Question:", chPass: "⚙️ Change Master Password", exp: "Expires on:" }
+            ar: { lock: "قفل الإدارة العليا 👑", entry: "دخول الملك 👑", mtitle: "إدارة الصلاحيات والوقت 👑", ph: "ابحث عن مشترك...", f30: "تفعيل شهر (30)", f3: "تجربة (3 أيام)", fdel: "حذف المشترك", fpass: "👁️ كشف الرمز", secMsg: "⚠️ تم قفل الكلمة. استخدم سؤال الأمان:", exp: "ينتهي في:" },
+            en: { lock: "Master Lock 👑", entry: "King Login 👑", mtitle: "Subscription Manager 👑", ph: "Search user...", f30: "Activate 30 Days", f3: "Trial 3 Days", fdel: "Delete User", fpass: "👁️ View Pass", secMsg: "⚠️ Password Locked. Use Security Question:", exp: "Expires on:" }
         };
 
-        window.masterLogin = async () => {
+        window.masterLogin = () => {
             const p = document.getElementById('mPass').value;
             const s = document.getElementById('mSec').value;
-            const snap = await get(ref(db, 'admin_settings/master_config'));
-            const config = snap.val();
 
             if (attempts >= 3) {
-                if (s === config.security_answer) unlock();
-                else alert("خطأ!"); return;
+                if (s === SEC_ANSWER) unlock();
+                else alert(curLang === 'ar' ? "سؤال الأمان خطأ!" : "Security answer incorrect!");
+                return;
             }
 
-            if (p === config.password) unlock();
-            else {
+            if (p === MASTER_KEY) {
+                unlock();
+            } else {
                 attempts++;
-                alert("رمز خطأ! متبقي: " + (3-attempts));
+                alert(curLang === 'ar' ? `رمز خطأ! متبقي: ${3-attempts}` : `Wrong Pass! Remaining: ${3-attempts}`);
                 if (attempts >= 3) {
                     document.getElementById('passArea').style.display='none';
                     document.getElementById('secArea').style.display='block';
+                    document.getElementById('t-lock').innerText = curLang === 'ar' ? "تحقق الأمان 🛡️" : "Security Check 🛡️";
                 }
             }
         };
@@ -116,55 +118,4 @@
                     const expiry = u.expiryDate ? new Date(u.expiryDate) : null;
                     let daysLeft = expiry ? Math.ceil((expiry - today) / (1000 * 60 * 60 * 24)) : 0;
                     let rowClass = daysLeft > 0 ? "active-user" : "expired-user";
-                    list.innerHTML += `
-                        <div class="user-row ${rowClass}" data-name="${u.name.toLowerCase()}">
-                            <div>
-                                <b>${u.name}</b> <span class="days-badge">${daysLeft > 0 ? daysLeft + ' يوم' : 'منتهي'}</span> <br>
-                                <small>${dict[curLang].exp} ${expiry ? expiry.toLocaleDateString('en-GB') : '---'}</small>
-                            </div>
-                            <div class="btn-group">
-                                <button class="btn btn-full" onclick="setSub('${id}', 30)">${dict[curLang].f30}</button>
-                                <button class="btn btn-trial" onclick="setSub('${id}', 3)">${dict[curLang].f3}</button>
-                                <button class="btn btn-pass" onclick="alert('رمز ${u.name}: ${u.password}')">${dict[curLang].fpass}</button>
-                                <button class="btn btn-del" onclick="delUser('${id}')">${dict[curLang].fdel}</button>
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-        }
-
-        window.setSub = (id, days) => {
-            const exp = new Date(); exp.setDate(exp.getDate() + days);
-            update(ref(db, `users/${id}`), { active: true, expiryDate: exp.toISOString(), startDate: new Date().toLocaleDateString('en-GB') })
-            .then(() => alert("✅ OK"));
-        };
-
-        window.delUser = (id) => { if(confirm("حذف؟")) remove(ref(db, `users/${id}`)); };
-        
-        window.changeMasterPass = () => {
-            const newP = prompt("أدخل كلمة سر الماستر الجديدة:");
-            if(newP) update(ref(db, 'admin_settings/master_config'), { password: newP }).then(() => alert("تم التغيير ✅"));
-        };
-
-        window.setLang = (l) => {
-            curLang = l;
-            document.querySelectorAll('.l-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(l === 'ar' ? 'btnAr' : 'btnEn').classList.add('active');
-            document.getElementById('t-lock').innerText = dict[l].lock;
-            document.getElementById('t-entry').innerText = dict[l].entry;
-            document.getElementById('t-mtitle').innerText = dict[l].mtitle;
-            document.getElementById('mSearch').placeholder = dict[l].ph;
-            document.getElementById('t-sec-msg').innerText = dict[l].secMsg;
-            document.getElementById('t-change-pass').innerText = dict[l].chPass;
-            document.body.dir = (l === 'ar') ? 'rtl' : 'ltr';
-            if (document.getElementById('masterBox').style.display === 'block') loadUsers();
-        };
-
-        window.filterUsers = () => {
-            const v = document.getElementById('mSearch').value.toLowerCase();
-            document.querySelectorAll('.user-row').forEach(r => r.style.display = r.getAttribute('data-name').includes(v) ? "flex" : "none");
-        };
-    </script>
-</body>
-</html>
+                    list.
