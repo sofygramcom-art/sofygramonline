@@ -3,40 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صوفيگرام | منصة المشاهد</title>
+    <title>صوفيگرام | منصة المشاهد الذكية</title>
     <style>
-        body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 15px; }
-        .header-logo img { width: 180px; margin-top: 10px; }
-        .clinic-box { background: #121212; border: 1px solid #333; border-radius: 20px; padding: 25px; margin: 20px auto; max-width: 350px; display: none; }
-        .big-num { font-size: 90px; font-weight: bold; color: #fff; margin: 10px 0; }
-        .status-tag { display: inline-block; padding: 5px 15px; border-radius: 50px; font-size: 13px; border: 1px solid #2ecc71; color: #2ecc71; }
-        .search-container { margin-top: 30px; padding: 20px; background: #0a1122; border-radius: 15px; border: 1px solid #1e293b; }
-        input { width: 90%; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #000; color: #fff; text-align: center; }
-        .search-result { margin-top: 15px; background: #1a2233; padding: 15px; border-radius: 10px; border-left: 4px solid #ffd700; display: none; text-align: right; }
+        :root { --glow: #2ecc71; }
+        body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 15px; overflow-x: hidden; }
+        .logo img { width: 180px; margin-top: 10px; filter: drop-shadow(0 0 10px rgba(255,215,0,0.3)); }
+        
+        /* الهالة الضوئية النبضية */
+        .number-box { 
+            background: #121212; border: 2px solid var(--glow); border-radius: 35px; 
+            padding: 40px; max-width: 300px; margin: 25px auto;
+            box-shadow: 0 0 25px var(--glow);
+            animation: pulse 2s infinite; transition: 0.5s;
+        }
+        @keyframes pulse { 0% { box-shadow: 0 0 15px var(--glow); } 50% { box-shadow: 0 0 40px var(--glow); } 100% { box-shadow: 0 0 15px var(--glow); } }
+        
+        .big-num { font-size: 110px; font-weight: bold; color: #fff; margin: 10px 0; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
+        .status-tag { display: inline-block; padding: 8px 25px; border-radius: 50px; font-size: 16px; font-weight: bold; border: 2px solid var(--glow); color: var(--glow); margin-bottom: 10px; }
+        
+        /* قسم التنبيه الذكي */
+        .alarm-section { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid #1e293b; max-width: 320px; margin: 30px auto; }
+        input[type="number"] { width: 80px; padding: 12px; border-radius: 12px; border: 1px solid #ffd700; background: #000; color: #fff; font-size: 20px; text-align: center; }
+        .bell-btn { background: none; border: none; font-size: 45px; cursor: pointer; filter: grayscale(1); transition: 0.3s; }
+        .bell-active { filter: grayscale(0) drop-shadow(0 0 10px #ffd700); transform: scale(1.1); }
     </style>
 </head>
 <body>
-    <div class="header-logo"><img src="logo.png"></div>
+    <div class="logo"><img src="logo.png"></div>
+    <h2 id="clinic-name" style="color:#ffd700; margin-top:20px;">جاري التحميل...</h2>
+    <div id="status-box" class="status-tag">--</div>
 
-    <div id="mainClinic" class="clinic-box">
-        <h2 id="name-display" style="color:#2ecc71;">--</h2>
-        <div id="status-display" class="status-tag">--</div>
-        <div class="big-num" id="num-display">0</div>
-        <p id="note-display" style="color:#ffd700; font-size:14px;"></p>
+    <div id="glow-card" class="number-box">
+        <p style="color: #888; font-size: 14px; margin:0;">الرقم الحالي الآن | Current No.</p>
+        <div class="big-num" id="live-num">0</div>
+        <p id="live-note" style="color:#aaa; font-size:14px; margin:0;"></p>
     </div>
 
-    <div class="search-container">
-        <h3>🔍 ابحث عن عيادة أو نشاط:</h3>
-        <input type="text" id="searchInput" placeholder="اكتب الاسم هنا (مثلاً: غازي)...">
-        
-        <div id="searchResult" class="search-result">
-            <h4 id="res-name" style="margin:0; color:#ffd700;"></h4>
-            <p style="margin:5px 0;">الرقم الحالي: <b id="res-num" style="font-size:20px;"></b></p>
-            <p style="margin:5px 0;">الحالة: <span id="res-status"></span></p>
-            <p style="margin:5px 0; font-size:12px; color:#888;">ملاحظة: <span id="res-note"></span></p>
-            <button id="goToClinic" style="width:100%; background:#2ecc71; border:none; padding:8px; border-radius:5px; color:white; margin-top:10px;">دخول لصفحة العيادة</button>
-        </div>
+    <div class="alarm-section">
+        <p style="margin-top:0; color:#ffd700;">🔔 ادخل رقمك ليصلك تنبيه "ساعة الصفر":</p>
+        <input type="number" id="myNumber" placeholder="رقمك">
+        <button id="bellBtn" class="bell-btn" onclick="toggleAlarm()">🔔</button>
+        <p id="alarmStatus" style="font-size:12px; color:#888; margin-top:10px;">الجرس غير مفعل</p>
     </div>
+
+    <audio id="alarmSound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
@@ -54,49 +64,43 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // 1. جلب بيانات الدكتور من الرابط (id=...)
         const urlParams = new URLSearchParams(window.location.search);
         const clinicId = urlParams.get('id');
+        let alarmOn = false;
 
-        if (clinicId) {
-            document.getElementById('mainClinic').style.display = 'block';
-            onValue(ref(db, 'users/' + clinicId), (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    document.getElementById('name-display').innerText = data.name;
-                    document.getElementById('num-display').innerText = data.currentNum || 0;
-                    document.getElementById('status-display').innerText = data.status || "مفتوح";
-                    document.getElementById('note-display').innerText = data.note || "";
+        onValue(ref(db, 'users/' + clinicId), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const num = data.currentNum || 0;
+                document.getElementById('live-num').innerText = num;
+                document.getElementById('clinic-name').innerText = data.name;
+                document.getElementById('live-note').innerText = data.note || "";
+                
+                // التحكم بالألوان والحالات
+                const status = data.status || "";
+                const root = document.documentElement;
+                if(status.includes("مفتوح")) { root.style.setProperty('--glow', '#2ecc71'); }
+                else if(status.includes("قريباً") || status.includes("طريق")) { root.style.setProperty('--glow', '#f1c40f'); }
+                else { root.style.setProperty('--glow', '#e74c3c'); }
+                document.getElementById('status-box').innerText = status;
+
+                // نظام التنبيه
+                const myNum = document.getElementById('myNumber').value;
+                if(alarmOn && myNum == num) {
+                    const audio = document.getElementById('alarmSound');
+                    audio.play();
+                    alert("🔔 صوفيگرام تنبيه: وصل دورك الآن!");
+                    toggleAlarm(); // إطفاء الجرس بعد التنبيه
                 }
-            });
-        }
-
-        // 2. ميزة البحث الشامل في كل الدكاترة
-        const searchInput = document.getElementById('searchInput');
-        onValue(ref(db, 'users'), (snapshot) => {
-            const allUsers = snapshot.val();
-            searchInput.addEventListener('input', (e) => {
-                const val = e.target.value.trim();
-                let foundId = null;
-
-                if (val.length > 1) {
-                    for (let id in allUsers) {
-                        if (allUsers[id].name.includes(val)) {
-                            foundId = id;
-                            const d = allUsers[id];
-                            document.getElementById('searchResult').style.display = 'block';
-                            document.getElementById('res-name').innerText = d.name;
-                            document.getElementById('res-num').innerText = d.currentNum || 0;
-                            document.getElementById('res-status').innerText = d.status || "مفتوح";
-                            document.getElementById('res-note').innerText = d.note || "لا توجد ملاحظات";
-                            document.getElementById('goToClinic').onclick = () => { window.location.href = 'view.html?id=' + id; };
-                            return;
-                        }
-                    }
-                }
-                document.getElementById('searchResult').style.display = 'none';
-            });
+            }
         });
+
+        window.toggleAlarm = () => {
+            if(!document.getElementById('myNumber').value) return alert("يرجى كتابة رقمك أولاً");
+            alarmOn = !alarmOn;
+            document.getElementById('bellBtn').classList.toggle('bell-active');
+            document.getElementById('alarmStatus').innerText = alarmOn ? "تم تفعيل التنبيه (سيعمل بالخلفية)" : "الجرس غير مفعل";
+        };
     </script>
 </body>
 </html>
