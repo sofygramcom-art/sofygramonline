@@ -3,32 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صوفيگرام | Sofygram</title>
+    <title>صوفيگرام | المشاهد</title>
     <style>
-        body { background-color: #050a14; color: white; font-family: 'Segoe UI', Tahoma, sans-serif; text-align: center; margin: 0; padding: 15px; }
-        .header-logo img { width: 220px; margin-top: 20px; filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3)); }
-        .activity-name { color: #2ecc71; font-size: 26px; font-weight: bold; margin: 15px 0; }
-        .status-tag { display: inline-block; border: 1px solid #2ecc71; color: #2ecc71; padding: 6px 18px; border-radius: 50px; font-size: 14px; background: rgba(46, 204, 113, 0.05); }
-        .number-card { background: #121212; border: 1px solid #333; border-radius: 25px; padding: 40px; max-width: 320px; margin: 25px auto; }
-        .big-number { font-size: 120px; font-weight: bold; color: #fff; line-height: 1; margin: 10px 0; }
-        .search-area { margin-top: 50px; padding: 25px; background: #0a1122; border-radius: 20px; border: 1px solid #1e293b; }
-        input[type="text"] { width: 90%; padding: 15px; border-radius: 12px; border: 1px solid #333; background: #000; color: #fff; text-align: center; font-size: 16px; }
+        body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 15px; }
+        .header-logo img { width: 220px; margin-top: 15px; }
+        .activity-name { color: #2ecc71; font-size: 28px; font-weight: bold; margin: 10px 0; }
+        .status-tag { display: inline-block; border: 1px solid #2ecc71; color: #2ecc71; padding: 6px 18px; border-radius: 50px; font-size: 14px; }
+        .number-card { background: #121212; border: 1px solid #333; border-radius: 25px; padding: 35px; max-width: 320px; margin: 20px auto; }
+        .big-number { font-size: 110px; font-weight: bold; color: #fff; margin: 5px 0; }
+        .note-display { color: #ffd700; background: rgba(255, 215, 0, 0.1); padding: 10px; border-radius: 10px; margin: 10px auto; max-width: 300px; font-size: 14px; }
+        
+        .search-section { margin-top: 40px; padding: 20px; background: #0a1122; border-radius: 20px; border: 1px solid #1e293b; }
+        input[type="text"] { width: 90%; padding: 15px; border-radius: 12px; border: 1px solid #333; background: #000; color: #fff; text-align: center; }
     </style>
 </head>
 <body>
-
-    <div class="header-logo"><img src="logo.png" alt="Sofygram"></div>
-    <div class="activity-name" id="actName">دكتور علي الجبوري</div>
-    <div class="status-tag" id="actStatus">● مفتوح الآن | Open</div>
+    <div class="header-logo"><img src="logo.png"></div>
+    <div class="activity-name" id="display-name">جاري التحميل...</div>
+    <div class="status-tag" id="display-status">--</div>
 
     <div class="number-card">
         <p style="color: #888; font-size: 14px;">الرقم الحالي الآن | Current No.</p>
-        <div class="big-number" id="numDisplay">--</div>
+        <div class="big-number" id="display-num">0</div>
     </div>
 
-    <div class="search-area">
-        <h3 style="color: #2ecc71;">🔍 ابحث عن نشاط آخر | Search:</h3>
-        <input type="text" placeholder="اكتب اسم العيادة أو الحلاق...">
+    <div id="display-note" class="note-display" style="display:none;"></div>
+
+    <div class="search-section">
+        <h3 style="color: #2ecc71; font-size: 16px;">🔍 ابحث عن عيادة أو نشاط آخر:</h3>
+        <input type="text" id="searchInput" placeholder="اكتب اسم العيادة هنا...">
     </div>
 
     <script type="module">
@@ -51,8 +54,15 @@
         onValue(ref(db, 'live_data'), (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                document.getElementById('numDisplay').innerText = data.currentNum || 0;
-                document.getElementById('actStatus').innerText = data.status || "● مفتوح الآن | Open";
+                document.getElementById('display-num').innerText = data.currentNum ?? 0;
+                document.getElementById('display-name').innerText = data.name || "صوفيگرام";
+                document.getElementById('display-status').innerText = data.status || "مفتوح";
+                if(data.note) {
+                    document.getElementById('display-note').innerText = data.note;
+                    document.getElementById('display-note').style.display = 'block';
+                } else {
+                    document.getElementById('display-note').style.display = 'none';
+                }
             }
         });
     </script>
