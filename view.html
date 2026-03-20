@@ -5,22 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sofygram International | صوفيگرام العالمية 🌍</title>
     <style>
-        :root { --glow: #e74c3c; } /* الأحمر الناري المودرن */
+        :root { --glow: #e74c3c; } 
         body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; transition: 0.5s; overflow-x: hidden; }
         
-        /* أيقونة الكرة الأرضية لاختيار اللغة */
-        .lang-icon { position: absolute; top: 15px; left: 15px; cursor: pointer; font-size: 24px; color: #ffd700; transition: 0.3s; z-shadow: 0 0 10px #ffd700; }
-        .lang-icon:hover { transform: scale(1.1); filter: drop-shadow(0 0 15px #ffd700); }
+        /* قائمة اللغات المنسدلة */
+        .lang-container { position: absolute; top: 15px; left: 15px; text-align: left; z-index: 1000; }
+        .lang-icon { cursor: pointer; font-size: 28px; filter: drop-shadow(0 0 5px #ffd700); transition: 0.3s; }
+        .lang-menu { display: none; background: #121212; border: 1px solid #ffd700; border-radius: 12px; padding: 10px; position: absolute; top: 35px; left: 0; width: 150px; box-shadow: 0 5px 20px rgba(0,0,0,0.8); }
+        .lang-item { padding: 8px; cursor: pointer; border-bottom: 1px solid #222; font-size: 14px; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
+        .lang-item:hover { background: rgba(255,215,0,0.1); color: #ffd700; }
 
-        /* الشعار المتوهج */
         .logo img { width: 140px; margin-top: 10px; filter: drop-shadow(0 0 10px rgba(255,215,0,0.4)); animation: logoGlow 3s infinite; }
         @keyframes logoGlow { 0%, 100% { filter: drop-shadow(0 0 8px rgba(255,215,0,0.3)); } 50% { filter: drop-shadow(0 0 20px rgba(255,215,0,0.6)); } }
 
-        /* الهالة الضوئية النبضية */
         .number-box { 
-            background: #121212; border: 2px solid var(--glow); border-radius: 35px; 
-            padding: 25px; max-width: 320px; margin: 15px auto;
-            box-shadow: 0 0 30px var(--glow); animation: pulse 2s infinite; 
+            background: #121212; border: 2px solid var(--glow); border-radius: 35px; padding: 25px; 
+            max-width: 320px; margin: 15px auto; box-shadow: 0 0 30px var(--glow); animation: pulse 2s infinite; 
         }
         @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--glow); } 50% { transform: scale(1.02); box-shadow: 0 0 45px var(--glow); } }
         
@@ -30,38 +30,46 @@
         
         .card-ui { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 25px; border: 1px solid #1e293b; max-width: 330px; margin: 15px auto; }
         input { padding: 12px; border-radius: 12px; border: 1px solid #ffd700; background: #000; color: #fff; text-align: center; width: 70px; font-size: 18px; }
-        .bell-btn { font-size: 55px; background: none; border: none; cursor: pointer; filter: grayscale(1); transition: 0.4s; }
-        .bell-active { filter: grayscale(0) drop-shadow(0 0 15px #ffd700); }
+        .btn-gold { background:#ffd700; color:#000; border:none; padding:12px; border-radius:12px; font-weight:bold; width:90%; cursor:pointer; margin-top:10px; }
     </style>
 </head>
 <body>
-    <div class="lang-icon" onclick="openLangMenu()">🌐</div>
+    <div class="lang-container">
+        <div class="lang-icon" onclick="toggleMenu()">🌐</div>
+        <div class="lang-menu" id="lMenu">
+            <div class="lang-item" onclick="setLang('ar')">🇮🇶 العربية</div>
+            <div class="lang-item" onclick="setLang('en')">🇺🇸 English</div>
+            <div class="lang-item" onclick="setLang('fa')">🇮🇷 فارسی</div>
+            <div class="lang-item" onclick="setLang('tr')">🇹🇷 Türkçe</div>
+            <div class="lang-item" onclick="setLang('sv')">🇸🇪 Svenska</div>
+            <div class="lang-item" onclick="setLang('de')">🇩🇪 Deutsch</div>
+            <div class="lang-item" onclick="setLang('fr')">🇫🇷 Français</div>
+        </div>
+    </div>
 
     <div class="logo"><img src="logo.png"></div>
 
     <div id="searchPage" class="card-ui">
-        <h3 id="txt-search-title" style="color:#ffd700; margin-top:0;">🔎 دليل صوفيگرام الذكي</h3>
-        <input type="text" id="searchInput" placeholder="اكتب الاسم هنا..." style="width: 80%;">
-        <button id="txt-search-btn" onclick="performSearch()" style="background:#ffd700; color:#000; border:none; padding:12px; border-radius:12px; font-weight:bold; margin-top:10px; width:85%; cursor:pointer;">بحث</button>
+        <h3 id="t-stitle" style="color:#ffd700;">🔎 دليل صوفيگرام الذكي</h3>
+        <input type="text" id="searchInput" placeholder="...">
+        <button id="t-sbtn" onclick="performSearch()" class="btn-gold">بحث</button>
         <div id="searchResults" style="margin-top:20px;"></div>
     </div>
 
     <div id="livePage" style="display:none;">
-        <h2 id="clinicName" style="color:#ffd700; margin-bottom:5px;"></h2>
+        <h2 id="clinicName" style="color:#ffd700;"></h2>
         <div id="statusTag" class="status-tag">--</div>
-        
         <div class="number-box">
-            <p id="txt-current-no" style="color: #888; font-size: 13px; margin:0;">الرقم الحالي الآن | Current No.</p>
+            <p id="t-cur" style="color:#888; font-size:13px; margin:0;">الرقم الحالي الآن</p>
             <div class="big-num" id="liveNumber">0</div>
             <div id="liveNote" class="note-box"></div>
         </div>
-
         <div class="card-ui">
-            <p id="txt-alarm-title" style="margin:0; color:#ffd700; font-weight: bold;">🔔 منبه ساعة الصفر الذكي</p>
+            <p id="t-alarm" style="margin:0; color:#ffd700; font-weight:bold;">🔔 منبه ساعة الصفر الذكي</p>
             <input type="number" id="userTarget" placeholder="0">
-            <button id="bellIcon" class="bell-btn" onclick="toggleAlarm()">🔔</button>
+            <button onclick="toggleAlarm()" style="background:none; border:none; font-size:55px; cursor:pointer;" id="bellIcon">🔔</button>
         </div>
-        <button id="txt-back" onclick="window.location.href='view.html'" style="background:none; color:#888; border:none; text-decoration:underline; cursor:pointer; margin-top:15px;">العودة للبحث ↩️</button>
+        <button id="t-back" onclick="location.href='view.html'" style="background:none; color:#888; border:none; text-decoration:underline; cursor:pointer; margin-top:10px;">العودة</button>
     </div>
 
     <script type="module">
@@ -78,25 +86,48 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        const dictionary = {
+            ar: { stitle: "🔎 دليل صوفيگرام الذكي", sbtn: "بحث الآن", cur: "الرقم الحالي الآن", alarm: "🔔 منبه ساعة الصفر الذكي", back: "العودة للبحث ↩️", voice: "أهلاً بكم في صوفي غرام. حان دوركم الآن.", ph: "اكتب الاسم هنا..." },
+            en: { stitle: "🔎 Sofygram Smart Guide", sbtn: "Search Now", cur: "Current Number Now", alarm: "🔔 Zero Hour Alarm", back: "Back to Search ↩️", voice: "Welcome to Sofygram. It is your turn now.", ph: "Type name here..." },
+            fa: { stitle: "🔎 راهنمای هوشمند صوفی‌گرام", sbtn: "اکنون جستجو کنید", cur: "شماره فعلی اکنون", alarm: "🔔 هشدار ساعت صفر", back: "بازگشت به جستجو ↩️", voice: "به صوفی گرام خوش آمدید. نوبت شماست.", ph: "نام را اینجا تایپ کنید..." },
+            tr: { stitle: "🔎 Sofygram Akıllı Rehber", sbtn: "Şimdi Ara", cur: "Şu Anki Numara", alarm: "🔔 Sıfır Saat Alarmı", back: "Aramaya Dön ↩️", voice: "Sofygram'a hoş geldiniz. Şimdi senin sıran.", ph: "İsmi buraya yazın..." },
+            sv: { stitle: "🔎 Sofygram Smart Guide", sbtn: "Sök nu", cur: "Aktuellt nummer nu", alarm: "🔔 Noll-timme larm", back: "Tillbaka till sök ↩️", voice: "Välkommen till Sofygram. Det är din tur nu.", ph: "Skriv namn här..." },
+            de: { stitle: "🔎 Sofygram Smart Guide", sbtn: "Jetzt suchen", cur: "Aktuelle Nummer jetzt", alarm: "🔔 Nullstunden-Alarm", back: "Zurück zur Suche ↩️", voice: "Willkommen bei Sofygram. Du bist an der Reihe.", ph: "Namen hier eingeben..." },
+            fr: { stitle: "🔎 Sofygram Guide Intelligent", sbtn: "Rechercher", cur: "Numéro actuel", alarm: "🔔 Alarme Heure Zéro", back: "Retour à la recherche ↩️", voice: "Bienvenue sur Sofygram. C'est ton tour.", ph: "Tapez le nom ici..." }
+        };
+
+        let curLang = 'ar';
         let isAlarmReady = false;
 
-        // دالة الترحيب الصوتية عند الفتح
+        window.toggleMenu = () => { 
+            const m = document.getElementById('lMenu');
+            m.style.display = m.style.display === 'block' ? 'none' : 'block';
+        };
+
+        window.setLang = (l) => {
+            curLang = l;
+            document.getElementById('lMenu').style.display = 'none';
+            document.getElementById('t-stitle').innerText = dictionary[l].stitle;
+            document.getElementById('t-sbtn').innerText = dictionary[l].sbtn;
+            document.getElementById('t-cur').innerText = dictionary[l].cur;
+            document.getElementById('t-alarm').innerText = dictionary[l].alarm;
+            document.getElementById('t-back').innerText = dictionary[l].back;
+            document.getElementById('searchInput').placeholder = dictionary[l].ph;
+            document.body.dir = (l === 'ar' || l === 'fa') ? 'rtl' : 'ltr';
+            document.querySelector('.lang-container').style.left = (l === 'ar' || l === 'fa') ? '15px' : 'auto';
+            document.querySelector('.lang-container').style.right = (l === 'ar' || l === 'fa') ? 'auto' : '15px';
+        };
+
+        // تفعيل الصوت عند الدخول
         window.addEventListener('load', () => {
-            // خدعة تقنية: تشغيل نداء صامت لتنشيط الصوت في الموبايلات
-            window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
-            
             setTimeout(() => {
-                const welcomeMsg = new SpeechSynthesisUtterance("Welcome to Sofygram. The world's first calling application.");
-                welcomeMsg.lang = 'en-US';
-                welcomeMsg.rate = 0.8; // سرعة هادئة وفخمة
-                welcomeMsg.volume = 1.0;
-                window.speechSynthesis.speak(welcomeMsg);
-            }, 1000); // تأخير بسيط لضمان تحميل الصفحة
+                const w = new SpeechSynthesisUtterance("Welcome to Sofygram.");
+                w.lang = 'en-US'; w.rate = 0.8; window.speechSynthesis.speak(w);
+            }, 1000);
         });
 
         const params = new URLSearchParams(window.location.search);
         const id = params.get('id');
-
         if(id) { 
             document.getElementById('searchPage').style.display = 'none';
             document.getElementById('livePage').style.display = 'block';
@@ -108,63 +139,40 @@
             const snap = await get(ref(db, 'users'));
             const data = snap.val();
             const resDiv = document.getElementById('searchResults'); resDiv.innerHTML = "";
-            for(let key in data) {
-                if(data[key].name.toLowerCase().includes(val)) {
-                    resDiv.innerHTML += `<div style="padding:15px; border-bottom:1px solid #333; cursor:pointer;" onclick="location.href='?id=${key}'">⭐ ${data[key].name}</div>`;
-                }
-            }
+            for(let key in data) if(data[key].name.toLowerCase().includes(val)) 
+                resDiv.innerHTML += `<div style="padding:15px; border-bottom:1px solid #333; cursor:pointer;" onclick="location.href='?id=${key}'">⭐ ${data[key].name}</div>`;
         };
 
         function startTracking(targetId) {
             onValue(ref(db, 'users/' + targetId), (snap) => {
-                const info = snap.val();
-                if(!info) return;
-                
+                const info = snap.val(); if(!info) return;
                 const current = info.currentNum || 0;
                 document.getElementById('liveNumber').innerText = current;
                 document.getElementById('clinicName').innerText = info.name;
                 document.getElementById('liveNote').innerText = info.note || "";
-                
                 const st = info.status || "";
                 document.getElementById('statusTag').innerText = st;
-                
-                // تحديث الألوان النبضية (أحمر ناري)
                 const root = document.documentElement;
-                if(st.includes("مفتوح")) root.style.setProperty('--glow', '#2ecc71'); // أخضر للمفتوح
-                else if(st.includes("قريباً")) root.style.setProperty('--glow', '#f1c40f'); // أصفر للقريب
-                else root.style.setProperty('--glow', '#e74c3c'); // أحمر ناري للمغلق
+                if(st.includes("مفتوح")) root.style.setProperty('--glow', '#2ecc71');
+                else if(st.includes("قريباً")) root.style.setProperty('--glow', '#f1c40f');
+                else root.style.setProperty('--glow', '#e74c3c');
 
-                // تشغيل التنبيه الصوتي والاهتزاز
                 if(isAlarmReady && document.getElementById('userTarget').value == current && current != 0) {
-                    triggerMegaAlarm();
+                    const msg = new SpeechSynthesisUtterance(dictionary[curLang].voice);
+                    msg.lang = curLang === 'ar' ? 'ar-SA' : (curLang === 'fa' ? 'fa-IR' : (curLang === 'tr' ? 'tr-TR' : 'en-US'));
+                    window.speechSynthesis.speak(msg);
                     isAlarmReady = false;
-                    document.getElementById('bellIcon').classList.remove('bell-active');
+                    document.getElementById('bellIcon').style.filter = "grayscale(1)";
+                    alert("Sofygram: " + dictionary[curLang].voice);
                 }
             });
         }
 
-        async function triggerMegaAlarm() {
-            if ("vibrate" in navigator) { navigator.vibrate([500, 200, 500, 200, 500]); }
-            
-            const ar = new SpeechSynthesisUtterance("أهلاً بكم في منصة صوفي غرام العالمية. لقد حان دوركم الآن، يرجى التوجه فوراً. شكراً لكم.");
-            ar.lang = 'ar-SA'; ar.rate = 0.8;
-            const en = new SpeechSynthesisUtterance("Welcome to Sofygram International. It is your turn now, please proceed. Thank you.");
-            en.lang = 'en-US'; en.rate = 0.8;
-            
-            window.speechSynthesis.speak(ar);
-            window.speechSynthesis.speak(en);
-            alert("🔔 صوفيگرام: حان دورك الآن!");
-        }
-
         window.toggleAlarm = () => {
-            if(!document.getElementById('userTarget').value) return alert("اكتب رقمك!");
+            if(!document.getElementById('userTarget').value) return alert("!");
             isAlarmReady = !isAlarmReady;
-            document.getElementById('bellIcon').classList.toggle('bell-active');
-            window.speechSynthesis.speak(new SpeechSynthesisUtterance("")); // لتنشيط الصوت في آيفون وأندرويد
-        };
-
-        window.openLangMenu = () => {
-            alert("قائمة اللغات قيد التطوير. حالياً ندعم العربية والإنجليزية كجزء أساسي من التصميم.");
+            document.getElementById('bellIcon').style.filter = isAlarmReady ? "grayscale(0) drop-shadow(0 0 10px #ffd700)" : "grayscale(1)";
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
         };
     </script>
 </body>
