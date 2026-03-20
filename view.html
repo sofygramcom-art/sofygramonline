@@ -8,30 +8,30 @@
         :root { --glow: #e74c3c; } 
         body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; transition: 0.5s; overflow-x: hidden; }
         
-        /* قائمة اللغات المنسدلة */
-        .lang-container { position: absolute; top: 20px; left: 20px; text-align: left; z-index: 1000; }
+        /* أيقونة الكرة الأرضية في الزاوية */
+        .lang-container { position: absolute; top: 15px; left: 15px; z-index: 1000; }
         .lang-icon { cursor: pointer; font-size: 30px; filter: drop-shadow(0 0 8px #ffd700); transition: 0.3s; }
-        .lang-menu { display: none; background: #121212; border: 1px solid #ffd700; border-radius: 15px; padding: 10px; position: absolute; top: 40px; left: 0; width: 160px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); }
+        .lang-menu { display: none; background: #121212; border: 1px solid #ffd700; border-radius: 15px; padding: 10px; position: absolute; top: 40px; left: 0; width: 150px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); }
         .lang-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #222; font-size: 14px; transition: 0.2s; display: flex; align-items: center; gap: 10px; text-align: right; }
         .lang-item:hover { background: rgba(255,215,0,0.1); color: #ffd700; }
 
         .logo img { width: 140px; margin-top: 15px; filter: drop-shadow(0 0 10px rgba(255,215,0,0.4)); }
 
-        /* الهالة النبضية */
+        /* الهالة الحمراء النبضية */
         .number-box { 
             background: #121212; border: 2px solid var(--glow); border-radius: 40px; padding: 25px; 
-            max-width: 330px; margin: 15px auto; box-shadow: 0 0 30px var(--glow); animation: pulse 2s infinite; 
+            max-width: 320px; margin: 15px auto; box-shadow: 0 0 30px var(--glow); animation: pulse 2s infinite; 
         }
         @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--glow); } 50% { transform: scale(1.02); box-shadow: 0 0 45px var(--glow); } }
         
         .big-num { font-size: 110px; font-weight: bold; margin: 5px 0; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.2); }
         .status-tag { display: inline-block; padding: 8px 25px; border-radius: 50px; font-size: 15px; font-weight: bold; border: 2px solid var(--glow); color: var(--glow); margin-bottom: 10px; background: rgba(0,0,0,0.4); }
-        
+        .note-box { background: rgba(255, 215, 0, 0.1); border: 1px dashed #ffd700; padding: 12px; border-radius: 15px; margin-top: 10px; color: #ffd700; font-weight: bold; font-size: 15px; }
+
         .card-ui { background: rgba(255,255,255,0.03); padding: 25px; border-radius: 30px; border: 1px solid #1e293b; max-width: 340px; margin: 15px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input { padding: 14px; border-radius: 12px; border: 2px solid #ffd700; background: #000; color: #fff; text-align: center; width: 85%; font-size: 18px; outline: none; margin-bottom: 15px; }
-        .btn-gold { background:#ffd700; color:#000; border:none; padding:15px; border-radius:12px; font-weight:bold; width:90%; cursor:pointer; font-size: 16px; }
+        input { padding: 12px; border-radius: 12px; border: 2px solid #ffd700; background: #000; color: #fff; text-align: center; width: 85%; font-size: 18px; outline: none; margin-bottom: 10px; }
+        .btn-gold { background:#ffd700; color:#000; border:none; padding:15px; border-radius:12px; font-weight:bold; width:95%; cursor:pointer; font-size: 16px; margin-top: 5px; }
         .bell-btn { font-size: 60px; background: none; border: none; cursor: pointer; filter: grayscale(1); transition: 0.4s; }
-        .note-box { background: rgba(255, 215, 0, 0.1); border: 1px dashed #ffd700; padding: 12px; border-radius: 15px; margin-top: 10px; color: #ffd700; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -51,11 +51,9 @@
 
     <div id="searchPage" class="card-ui">
         <h2 id="t-stitle" style="color:#ffd700; margin-bottom: 5px;">🔎 دليل صوفيگرام العالمي</h2>
-        <p id="t-sdesc" style="font-size: 13px; color: #bbb; margin-bottom: 20px;">ابحث عن (طبيب، حلاق، مطعم، أو أي نشاط تجاري) لمتابعة دورك من هاتفك.</p>
-        
-        <input type="text" id="searchInput" placeholder="...">
+        <p id="t-sdesc" style="font-size: 13px; color: #bbb; margin-bottom: 20px;">ابحث عن (طبيب، حلاق، مطعم، أو أي نشاط تجاري) لمتابعة دورك.</p>
+        <input type="text" id="searchInput" placeholder="اكتب الاسم هنا...">
         <button id="t-sbtn" onclick="performSearch()" class="btn-gold">بحث الآن | Search Now</button>
-        
         <div id="searchResults" style="margin-top:20px; max-height: 250px; overflow-y: auto;"></div>
     </div>
 
@@ -73,7 +71,7 @@
             <br>
             <button id="bellIcon" class="bell-btn" onclick="toggleAlarm()">🔔</button>
         </div>
-        <button id="t-back" onclick="location.href='view.html'" style="background:none; color:#888; border:none; text-decoration:underline; cursor:pointer;">العودة للبحث</button>
+        <button id="t-back" onclick="location.href='view.html'" style="background:none; color:#888; border:none; text-decoration:underline; cursor:pointer;">العودة</button>
     </div>
 
     <script type="module">
@@ -85,27 +83,4 @@
             authDomain: "sofygramclinic.firebaseapp.com",
             databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
             projectId: "sofygramclinic",
-            appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        const dict = {
-            ar: { stitle: "🔎 دليل صوفيگرام العالمي", sdesc: "ابحث عن (طبيب، حلاق، مطعم، أو أي نشاط تجاري) لمتابعة دورك من هاتفك.", sbtn: "بحث الآن", cur: "الرقم الحالي الآن | Current No.", alarm: "🔔 منبه ساعة الصفر الذكي", back: "العودة للبحث ↩️", ph: "اكتب اسم النشاط هنا..." },
-            en: { stitle: "🔎 Sofygram Global Guide", sdesc: "Search for (Doctor, Barber, Restaurant, or any business) to track your turn.", sbtn: "Search Now", cur: "Current Number Now", alarm: "🔔 Zero Hour Alarm", back: "Back to Search ↩️", ph: "Type name here..." },
-            fa: { stitle: "🔎 راهنمای جهانی صوفی‌گرام", sdesc: "برای پیگیری نوبت خود (دکتر، آرایشگر، رستوران) را جستجو کنید.", sbtn: "جستجو", cur: "شماره فعلی", alarm: "🔔 هشدار ساعت صفر", back: "بازگشت", ph: "نام را اینجا بنویسید..." }
-        };
-
-        let curLang = 'ar';
-        let isAlarmReady = false;
-
-        window.toggleMenu = () => { 
-            const m = document.getElementById('lMenu');
-            m.style.display = m.style.display === 'block' ? 'none' : 'block';
-        };
-
-        window.setLang = (l) => {
-            curLang = l;
-            document.getElementById('lMenu').style.display = 'none';
-            const d = dict[l] || dict['en'];
-            document.getElementById('
+            appId: "1:207475452149:web:3f0f
