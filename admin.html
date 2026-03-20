@@ -1,129 +1,69 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="admin-html">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Online | Admin Panel</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <title>Sofygram Admin | لوحة التحكم</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --main-color: #2ecc71; --bg-color: #000; }
-        body { background: var(--bg-color); color: #fff; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 20px; transition: 0.3s; }
-        .lang-btn { position: absolute; top: 15px; left: 15px; background: #222; border: 1px solid var(--main-color); color: var(--main-color); padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
-        
-        .card { background: #111; padding: 25px; border-radius: 20px; border: 2px solid var(--main-color); max-width: 500px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .num-display { font-size: 8rem; color: #f39c12; margin: 5px 0; font-weight: bold; }
-        input { padding: 12px; border-radius: 12px; border: 1px solid #333; width: 88%; background: #000; color: #fff; margin-bottom: 15px; text-align: center; font-size: 1rem; outline: none; }
-        input:focus { border-color: var(--main-color); }
-        
-        .btn-group { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-        button { border: none; padding: 15px 25px; font-size: 1.2rem; border-radius: 12px; cursor: pointer; font-weight: bold; color: #fff; transition: 0.2s; }
-        .btn-next { background: var(--main-color); flex: 2; color: #000; }
-        .btn-prev { background: #e67e22; flex: 1; }
-        .timer-tag { background: #222; padding: 8px 15px; border-radius: 10px; color: #f1c40f; font-size: 0.8rem; margin-bottom: 15px; display: inline-block; border: 1px solid #444; }
-        
-        [lang="en"] { direction: ltr; }
+        body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        .admin-card { background: #121212; padding: 25px; border-radius: 25px; max-width: 450px; margin: auto; border: 1px solid #ffd700; }
+        .btn-ctrl { width: 80px; height: 80px; border-radius: 50%; border: none; font-size: 35px; cursor: pointer; color: white; margin: 10px; }
+        .plus { background: #2ecc71; } .minus { background: #e74c3c; }
+        select, textarea { width: 100%; margin: 10px 0; padding: 12px; border-radius: 10px; background: #1e293b; color: white; border: 1px solid #333; }
+        .payment-box { margin-top: 25px; padding: 15px; border: 1px dashed #ffd700; border-radius: 15px; background: rgba(255, 215, 0, 0.05); }
     </style>
 </head>
 <body>
-
-    <button class="lang-btn" onclick="toggleLang()" id="lang-btn">English</button>
-
-    <div class="card">
-        <div id="expiry-timer" class="timer-tag">جاري فحص حالة الاشتراك...</div>
-        <h2 id="display-title">لوحة التحكم</h2>
-        
-        <input type="text" id="name-in" placeholder="اسم النشاط">
-        <input type="text" id="msg-in" placeholder="ملاحظات للزبائن">
-        
-        <div class="num-display" id="num-out">0</div>
-        
-        <div class="btn-group">
-            <button class="btn-prev" id="btn-prev" onclick="changeNum(-1)">السابق</button>
-            <button class="btn-next" id="btn-next" onclick="changeNum(1)">التالي</button>
+    <div class="admin-card">
+        <img src="logo.png" style="width:180px; margin-bottom:20px;">
+        <div style="display: flex; align-items: center; justify-content: center;">
+            <button class="btn-ctrl plus" onclick="change(1)">+</button>
+            <span id="num" style="font-size: 70px; font-weight: bold; min-width: 80px;">0</span>
+            <button class="btn-ctrl minus" onclick="change(-1)">-</button>
         </div>
+        <select id="status"><option>● مفتوح الآن | Open</option><option>○ مغلق حالياً | Closed</option></select>
+        <textarea id="note" placeholder="ملاحظة للجمهور..."></textarea>
+        <button id="saveBtn" style="width: 100%; padding: 15px; background: #ffd700; border-radius: 10px; font-weight: bold;">تحديث البيانات</button>
         
-        <button style="background:#444; width:100%; border-radius:12px;" id="btn-reset" onclick="resetNum()">تصفير العداد (0)</button>
+        <div class="payment-box">
+            <p>لتجديد الاشتراك (ZainCash): 07807466488</p>
+            <a href="https://wa.me/9647807466488" style="color:#25d366; text-decoration:none;"><i class="fab fa-whatsapp"></i> راسل الإدارة</a>
+        </div>
     </div>
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const bizID = urlParams.get('id') || 'test_user';
-        let currentLang = 'ar';
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
-        const translations = {
-            ar: { title: "لوحة التحكم", namePlc: "اسم النشاط", msgPlc: "ملاحظات للزبائن", prev: "السابق", next: "التالي", reset: "تصفير العداد (0)", langBtn: "English", wait: "بانتظار التفعيل ❌", expired: "الاشتراك منتهي ⚠️", remaining: "باقي للاشتراك: " },
-            en: { title: "Control Panel", namePlc: "Business Name", msgPlc: "Notes for Customers", prev: "Prev", next: "Next", reset: "Reset Counter (0)", langBtn: "العربية", wait: "Waiting for Activation ❌", expired: "Subscription Expired ⚠️", remaining: "Remaining: " }
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
+            authDomain: "sofygramclinic.firebaseapp.com",
+            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
+            projectId: "sofygramclinic",
+            storageBucket: "sofygramclinic.firebasestorage.app",
+            messagingSenderId: "207475452149",
+            appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
         };
 
-        const firebaseConfig = { apiKey: "AIzaSyBqlRUShD3182zmliJrDUzBXQjL_eXSKtY", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com", projectId: "sofygramclinic" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
         let currentNum = 0;
 
-        function toggleLang() {
-            currentLang = currentLang === 'ar' ? 'en' : 'ar';
-            const html = document.getElementById('admin-html');
-            const data = translations[currentLang];
-            html.setAttribute('lang', currentLang);
-            html.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
-            document.getElementById('display-title').innerText = data.title;
-            document.getElementById('name-in').placeholder = data.namePlc;
-            document.getElementById('msg-in').placeholder = data.msgPlc;
-            document.getElementById('btn-prev').innerText = data.prev;
-            document.getElementById('btn-next').innerText = data.next;
-            document.getElementById('btn-reset').innerText = data.reset;
-            document.getElementById('lang-btn').innerText = data.langBtn;
-            updateExpiryUI(); 
-        }
+        window.change = (val) => {
+            currentNum += val;
+            if(currentNum < 0) currentNum = 0;
+            document.getElementById('num').innerText = currentNum;
+        };
 
-        let expiryData = null;
-        let activeStatus = false;
-
-        db.ref('businesses/' + bizID).on('value', (snapshot) => {
-            const data = snapshot.val();
-            if(data) {
-                currentNum = data.num || 0;
-                activeStatus = data.active;
-                expiryData = data.expiry;
-                document.getElementById('num-out').innerText = currentNum;
-                document.getElementById('name-in').value = data.name || "";
-                document.getElementById('msg-in').value = data.msg || "";
-                updateExpiryUI();
-            }
-        });
-
-        function updateExpiryUI() {
-            const timer = document.getElementById('expiry-timer');
-            const data = translations[currentLang];
-            if (activeStatus === false) {
-                timer.innerText = data.wait;
-                timer.style.color = "#e74c3c";
-            } else if (expiryData) {
-                const diff = new Date(expiryData) - new Date();
-                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-                if (days <= 0) {
-                    timer.innerText = data.expired;
-                    timer.style.color = "#e74c3c";
-                } else {
-                    timer.innerText = data.remaining + days + (currentLang === 'ar' ? " يوم" : " Days");
-                    timer.style.color = "#f1c40f";
-                }
-            }
-        }
-
-        function sync() {
-            db.ref('businesses/' + bizID).update({
-                num: currentNum,
-                name: document.getElementById('name-in').value,
-                msg: document.getElementById('msg-in').value
+        document.getElementById('saveBtn').onclick = () => {
+            set(ref(db, 'live_data'), {
+                currentNum: currentNum,
+                status: document.getElementById('status').value,
+                note: document.getElementById('note').value
             });
-        }
-
-        function changeNum(step) { currentNum += step; if(currentNum < 0) currentNum = 0; sync(); }
-        function resetNum() { if(confirm(currentLang === 'ar' ? "تصفير؟" : "Reset?")) { currentNum = 0; sync(); } }
-        document.getElementById('name-in').oninput = sync;
-        document.getElementById('msg-in').oninput = sync;
+            alert("تم التحديث!");
+        };
     </script>
 </body>
 </html>
