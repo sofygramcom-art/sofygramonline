@@ -3,46 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صوفيگرام | متابعة الدور المباشر 🌍</title>
+    <title>Sofygram International | صوفيگرام العالمية 🌍</title>
     <style>
         :root { --glow: #2ecc71; }
-        body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 15px; }
-        .logo img { width: 160px; margin-top: 10px; }
+        body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; transition: 0.5s; }
         
-        /* الهالة الضوئية النبضية */
+        /* شريط اختيار اللغة الفخم */
+        .lang-bar { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 50px; }
+        .lang-btn { cursor: pointer; font-size: 20px; transition: 0.3s; filter: grayscale(1); border: 2px solid transparent; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; }
+        .lang-btn.active { filter: grayscale(0); border-color: #ffd700; transform: scale(1.2); box-shadow: 0 0 10px #ffd700; }
+
+        .logo img { width: 140px; margin-top: 5px; }
         .number-box { 
             background: #121212; border: 2px solid var(--glow); border-radius: 35px; 
-            padding: 30px; max-width: 320px; margin: 20px auto;
+            padding: 25px; max-width: 320px; margin: 15px auto;
             box-shadow: 0 0 30px var(--glow); animation: pulse 2s infinite; 
-            transition: all 0.5s ease;
         }
-        @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--glow); } 50% { transform: scale(1.03); box-shadow: 0 0 50px var(--glow); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
         
-        .big-num { font-size: 110px; font-weight: bold; margin: 5px 0; color: #fff; }
+        .big-num { font-size: 110px; font-weight: bold; margin: 5px 0; }
         .status-tag { display: inline-block; padding: 8px 25px; border-radius: 50px; font-size: 15px; font-weight: bold; border: 2px solid var(--glow); color: var(--glow); margin-bottom: 10px; }
+        .note-box { background: rgba(255,215,0,0.1); border: 1px dashed #ffd700; padding: 12px; border-radius: 15px; margin-top: 10px; color: #ffd700; font-weight: bold; }
         
-        /* خانة الملاحظات - بارزة جداً */
-        .note-box { 
-            background: rgba(255, 215, 0, 0.1); border: 1px dashed #ffd700; 
-            padding: 15px; border-radius: 15px; margin-top: 10px; 
-            color: #ffd700; font-size: 16px; font-weight: bold;
-        }
-
         .card-ui { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 25px; border: 1px solid #1e293b; max-width: 330px; margin: 15px auto; }
-        input { padding: 12px; border-radius: 12px; border: 1px solid #ffd700; background: #000; color: #fff; text-align: center; margin: 5px; font-size: 16px; width: 70px; }
-        .btn-gold { background: #ffd700; color: #000; border: none; padding: 12px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 85%; }
+        input { padding: 12px; border-radius: 12px; border: 1px solid #ffd700; background: #000; color: #fff; text-align: center; width: 70px; font-size: 18px; }
         .bell-btn { font-size: 55px; background: none; border: none; cursor: pointer; filter: grayscale(1); transition: 0.4s; }
-        .bell-active { filter: grayscale(0) drop-shadow(0 0 15px #ffd700); transform: scale(1.1); }
-        .result-item { padding: 15px; border-bottom: 1px solid #222; cursor: pointer; text-align: right; }
+        .bell-active { filter: grayscale(0) drop-shadow(0 0 15px #ffd700); }
     </style>
 </head>
 <body>
+    <div class="lang-bar">
+        <div class="lang-btn active" onclick="setLang('ar')" title="العربية">🇮🇶</div>
+        <div class="lang-btn" onclick="setLang('en')" title="English">🇺🇸</div>
+        <div class="lang-btn" onclick="setLang('fa')" title="فارسی">🇮🇷</div>
+        <div class="lang-btn" onclick="setLang('tr')" title="Türkçe">🇹🇷</div>
+    </div>
+
     <div class="logo"><img src="logo.png"></div>
 
     <div id="searchPage" class="card-ui">
-        <h3 style="color:#ffd700; margin-top:0;">🔎 دليل صوفيگرام الذكي</h3>
-        <input type="text" id="searchInput" placeholder="اكتب الاسم هنا..." style="width: 80%;">
-        <button class="btn-gold" onclick="performSearch()">ابحث الآن</button>
+        <h3 id="txt-search-title" style="color:#ffd700;">🔎 دليل صوفيگرام الذكي</h3>
+        <input type="text" id="searchInput" placeholder="..." style="width: 80%;">
+        <button id="txt-search-btn" onclick="performSearch()" style="background:#ffd700; color:#000; border:none; padding:12px; border-radius:12px; font-weight:bold; margin-top:10px; width:85%; cursor:pointer;">بحث</button>
         <div id="searchResults" style="margin-top:20px;"></div>
     </div>
 
@@ -51,20 +53,17 @@
         <div id="statusTag" class="status-tag">--</div>
         
         <div class="number-box">
-            <p style="color: #888; font-size: 13px; margin:0;">الرقم الحالي الآن | Current No.</p>
+            <p id="txt-current-no" style="color: #888; font-size: 13px; margin:0;">الرقم الحالي الآن</p>
             <div class="big-num" id="liveNumber">0</div>
-            
-            <div id="liveNote" class="note-box">جاري تحميل الملاحظات...</div>
+            <div id="liveNote" class="note-box"></div>
         </div>
 
         <div class="card-ui">
-            <p style="margin:0; color:#ffd700; font-weight: bold;">🔔 منبه ساعة الصفر الذكي:</p>
-            <p style="font-size: 11px; color: #888; margin: 5px 0;">ادخل رقمك وسنهز الهاتف وننادي عليك</p>
-            <input type="number" id="userTarget" placeholder="رقم">
+            <p id="txt-alarm-title" style="margin:0; color:#ffd700; font-weight: bold;">🔔 منبه ساعة الصفر الذكي</p>
+            <input type="number" id="userTarget" placeholder="0">
             <button id="bellIcon" class="bell-btn" onclick="toggleAlarm()">🔔</button>
         </div>
-        
-        <button onclick="window.location.href='view.html'" style="background:none; color:#888; border:none; text-decoration:underline; cursor:pointer; margin-top:15px;">العودة لمحرك البحث ↩️</button>
+        <button id="txt-back" onclick="window.location.href='view.html'" style="background:none; color:#888; border:none; text-decoration:underline; cursor:pointer; margin-top:15px;">العودة للبحث</button>
     </div>
 
     <script type="module">
@@ -76,14 +75,39 @@
             authDomain: "sofygramclinic.firebaseapp.com",
             databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
             projectId: "sofygramclinic",
-            storageBucket: "sofygramclinic.firebasestorage.app",
-            messagingSenderId: "207475452149",
             appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
         };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // قاموس اللغات العالمي
+        const langData = {
+            ar: { searchTitle: "🔎 دليل صوفيگرام الذكي", searchBtn: "بحث الآن", currentNo: "الرقم الحالي الآن", alarmTitle: "🔔 منبه ساعة الصفر الذكي", back: "العودة للبحث ↩️", placeholder: "اكتب الاسم...", voice: "أهلاً بكم في صوفي غرام. حان دوركم الآن." },
+            en: { searchTitle: "🔎 Sofygram Smart Guide", searchBtn: "Search Now", currentNo: "Current Number Now", alarmTitle: "🔔 Zero Hour Alarm", back: "Back to Search ↩️", placeholder: "Type name...", voice: "Welcome to Sofygram. It is your turn now." },
+            fa: { searchTitle: "🔎 راهنمای هوشمند صوفی‌گرام", searchBtn: "اکنون جستجو کنید", currentNo: "شماره فعلی اکنون", alarmTitle: "🔔 هشدار ساعت صفر", back: "بازگشت به جستجو ↩️", placeholder: "نام را تایپ کنید...", voice: "به صوفی گرام خوش آمدید. نوبت شماست." },
+            tr: { searchTitle: "🔎 Sofygram Akıllı Rehber", searchBtn: "Şimdi Ara", currentNo: "Şu Anki Numara", alarmTitle: "🔔 Sıfır Saat Alarmı", back: "Aramaya Dön ↩️", placeholder: "İsim yazın...", voice: "Sofygram'a hoş geldiniz. Şimdi senin sıran." }
+        };
+
+        let currentLang = 'ar';
         let isAlarmReady = false;
+
+        window.setLang = (l) => {
+            currentLang = l;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // تحديث النصوص
+            document.getElementById('txt-search-title').innerText = langData[l].searchTitle;
+            document.getElementById('txt-search-btn').innerText = langData[l].searchBtn;
+            document.getElementById('txt-current-no').innerText = langData[l].currentNo;
+            document.getElementById('txt-alarm-title').innerText = langData[l].alarmTitle;
+            document.getElementById('txt-back').innerText = langData[l].back;
+            document.getElementById('searchInput').placeholder = langData[l].placeholder;
+            
+            // تغيير اتجاه الصفحة
+            document.body.dir = (l === 'en' || l === 'tr') ? 'ltr' : 'rtl';
+        };
+
         const params = new URLSearchParams(window.location.search);
         const id = params.get('id');
 
@@ -98,68 +122,41 @@
             const snap = await get(ref(db, 'users'));
             const data = snap.val();
             const resDiv = document.getElementById('searchResults'); resDiv.innerHTML = "";
-            for(let key in data) {
-                if(data[key].name.toLowerCase().includes(val)) {
-                    resDiv.innerHTML += `<div class="result-item" onclick="location.href='?id=${key}'">⭐ <b>${data[key].name}</b></div>`;
-                }
-            }
+            for(let key in data) if(data[key].name.toLowerCase().includes(val)) 
+                resDiv.innerHTML += `<div style="padding:15px; border-bottom:1px solid #333; cursor:pointer;" onclick="location.href='?id=${key}'">⭐ ${data[key].name}</div>`;
         };
 
         function startTracking(targetId) {
             onValue(ref(db, 'users/' + targetId), (snap) => {
-                const info = snap.val();
-                if(!info) return;
-                
+                const info = snap.val(); if(!info) return;
                 const current = info.currentNum || 0;
                 document.getElementById('liveNumber').innerText = current;
                 document.getElementById('clinicName').innerText = info.name;
-                
-                // عرض الملاحظة أو إخفاؤها إذا كانت فارغة
-                const noteElement = document.getElementById('liveNote');
-                if(info.note && info.note.trim() !== "") {
-                    noteElement.innerText = info.note;
-                    noteElement.style.display = "block";
-                } else {
-                    noteElement.style.display = "none";
-                }
+                document.getElementById('liveNote').innerText = info.note || "";
                 
                 const st = info.status || "";
                 document.getElementById('statusTag').innerText = st;
-                
-                // تحديث الألوان النبضية
                 const root = document.documentElement;
                 if(st.includes("مفتوح")) root.style.setProperty('--glow', '#2ecc71');
-                else if(st.includes("قريباً") || st.includes("طريق")) root.style.setProperty('--glow', '#f1c40f');
+                else if(st.includes("قريباً")) root.style.setProperty('--glow', '#f1c40f');
                 else root.style.setProperty('--glow', '#e74c3c');
 
-                // تشغيل التنبيه
-                const target = document.getElementById('userTarget').value;
-                if(isAlarmReady && target != "" && target == current) {
-                    triggerAlarm();
+                if(isAlarmReady && document.getElementById('userTarget').value == current && current != 0) {
+                    const msg = new SpeechSynthesisUtterance(langData[currentLang].voice);
+                    msg.lang = currentLang === 'ar' ? 'ar-SA' : (currentLang === 'fa' ? 'fa-IR' : (currentLang === 'tr' ? 'tr-TR' : 'en-US'));
+                    window.speechSynthesis.speak(msg);
                     isAlarmReady = false;
                     document.getElementById('bellIcon').classList.remove('bell-active');
+                    alert("🔔 Sofygram Alert!");
                 }
             });
         }
 
-        function triggerAlarm() {
-            if ("vibrate" in navigator) navigator.vibrate([500, 200, 500]);
-            const ar = new SpeechSynthesisUtterance("أهلاً بكم في صوفي غرام. حان دوركم الآن، يرجى التوجه فوراً.");
-            ar.lang = 'ar-SA';
-            const en = new SpeechSynthesisUtterance("Welcome to Sofygram. It is your turn now, please proceed.");
-            en.lang = 'en-US';
-            window.speechSynthesis.speak(ar);
-            window.speechSynthesis.speak(en);
-            alert("🔔 صوفيگرام: حان دورك الآن!");
-        }
-
         window.toggleAlarm = () => {
-            if(!document.getElementById('userTarget').value) return alert("اكتب رقمك أولاً 🔔");
+            if(!document.getElementById('userTarget').value) return alert("!");
             isAlarmReady = !isAlarmReady;
             document.getElementById('bellIcon').classList.toggle('bell-active');
-            // تنشيط محرك الصوت للموبايل
             window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
-            if(isAlarmReady) alert("تم تفعيل المنبه بنجاح ✅");
         };
     </script>
 </body>
