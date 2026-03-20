@@ -120,3 +120,80 @@
             curLang = l;
             document.getElementById('lMenu').style.display = 'none';
             document.getElementById('t-stitle').innerText = dictionary[l].stitle;
+            document.getElementById('t-sbtn').innerText = dictionary[l].sbtn;
+            document.getElementById('t-cur').innerText = dictionary[l].cur;
+            document.getElementById('t-alarm').innerText = dictionary[l].alarm;
+            document.getElementById('t-back').innerText = dictionary[l].back;
+            document.getElementById('searchInput').placeholder = dictionary[l].ph;
+            
+            // ضبط الاتجاه ومسافة الأمان
+            const isRtl = (l === 'ar' || l === 'fa');
+            document.body.dir = isRtl ? 'rtl' : 'ltr';
+            const container = document.getElementById('lContainer');
+            if(isRtl) {
+                container.style.left = '20px'; container.style.right = 'auto';
+            } else {
+                container.style.right = '20px'; container.style.left = 'auto';
+            }
+        };
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const w = new SpeechSynthesisUtterance("Welcome to Sofygram.");
+                w.lang = 'en-US'; w.rate = 0.8; window.speechSynthesis.speak(w);
+            }, 1000);
+        });
+
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        if(id) { 
+            document.getElementById('searchPage').style.display = 'none';
+            document.getElementById('livePage').style.display = 'block';
+            startTracking(id); 
+        }
+
+        window.performSearch = async () => {
+            const val = document.getElementById('searchInput').value.toLowerCase();
+            const snap = await get(ref(db, 'users'));
+            const data = snap.val();
+            const resDiv = document.getElementById('searchResults'); resDiv.innerHTML = "";
+            for(let key in data) if(data[key].name.toLowerCase().includes(val)) 
+                resDiv.innerHTML += `<div style="padding:15px; border-bottom:1px solid #333; cursor:pointer;" onclick="location.href='?id=${key}'">⭐ ${data[key].name}</div>`;
+        };
+
+        function startTracking(targetId) {
+            onValue(ref(db, 'users/' + targetId), (snap) => {
+                const info = snap.val(); if(!info) return;
+                const current = info.currentNum || 0;
+                document.getElementById('liveNumber').innerText = current;
+                document.getElementById('clinicName').innerText = info.name;
+                const noteBox = document.getElementById('liveNote');
+                if(info.note) { noteBox.innerText = info.note; noteBox.style.display = "block"; } else { noteBox.style.display = "none"; }
+                
+                const st = info.status || "";
+                document.getElementById('statusTag').innerText = st;
+                const root = document.documentElement;
+                if(st.includes("مفتوح")) root.style.setProperty('--glow', '#2ecc71');
+                else if(st.includes("قريباً")) root.style.setProperty('--glow', '#f1c40f');
+                else root.style.setProperty('--glow', '#e74c3c');
+
+                if(isAlarmReady && document.getElementById('userTarget').value == current && current != 0) {
+                    const msg = new SpeechSynthesisUtterance(dictionary[curLang].voice);
+                    msg.lang = (curLang === 'ar') ? 'ar-SA' : (curLang === 'fa' ? 'fa-IR' : (curLang === 'tr' ? 'tr-TR' : 'en-US'));
+                    window.speechSynthesis.speak(msg);
+                    isAlarmReady = false;
+                    document.getElementById('bellIcon').style.filter = "grayscale(1)";
+                    alert("Sofygram Alert!");
+                }
+            });
+        }
+
+        window.toggleAlarm = () => {
+            if(!document.getElementById('userTarget').value) return alert("يرجى إدخال رقمك أولاً 🔔");
+            isAlarmReady = !isAlarmReady;
+            document.getElementById('bellIcon').style.filter = isAlarmReady ? "grayscale(0) drop-shadow(0 0 20px #ffd700)" : "grayscale(1)";
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
+        };
+    </script>
+</body>
+</html>
