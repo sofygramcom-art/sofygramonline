@@ -8,36 +8,41 @@
         :root { --glow: #e74c3c; } 
         body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; transition: 0.5s; overflow-x: hidden; }
         
-        /* أيقونة الكرة الأرضية في الزاوية */
-        .lang-container { position: absolute; top: 15px; left: 15px; z-index: 1000; }
-        .lang-icon { cursor: pointer; font-size: 30px; filter: drop-shadow(0 0 8px #ffd700); transition: 0.3s; }
-        .lang-menu { display: none; background: #121212; border: 1px solid #ffd700; border-radius: 15px; padding: 10px; position: absolute; top: 40px; left: 0; width: 150px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); }
-        .lang-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #222; font-size: 14px; transition: 0.2s; display: flex; align-items: center; gap: 10px; text-align: right; }
-        .lang-item:hover { background: rgba(255,215,0,0.1); color: #ffd700; }
+        /* أيقونة الكرة الأرضية - تصميم مضيء */
+        .lang-icon { position: absolute; top: 20px; left: 20px; cursor: pointer; font-size: 35px; filter: drop-shadow(0 0 10px #3498db); transition: 0.3s; z-index: 10; }
+        
+        /* قائمة اللغات - تظهر في المنتصف كـ نافذة احترافية */
+        .lang-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
+        .lang-modal { background: #121212; border: 2px solid #ffd700; border-radius: 30px; padding: 25px; width: 280px; box-shadow: 0 0 30px #ffd700; }
+        .lang-item { padding: 15px; cursor: pointer; border-bottom: 1px solid #222; font-size: 18px; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .lang-item:hover { background: rgba(255,215,0,0.1); color: #ffd700; border-radius: 10px; }
 
-        .logo img { width: 140px; margin-top: 15px; filter: drop-shadow(0 0 10px rgba(255,215,0,0.4)); }
+        .logo img { width: 150px; margin-top: 15px; filter: drop-shadow(0 0 10px rgba(255,215,0,0.3)); }
 
         /* الهالة الحمراء النبضية */
         .number-box { 
-            background: #121212; border: 2px solid var(--glow); border-radius: 40px; padding: 25px; 
-            max-width: 320px; margin: 15px auto; box-shadow: 0 0 30px var(--glow); animation: pulse 2s infinite; 
+            background: #121212; border: 2px solid var(--glow); border-radius: 40px; padding: 30px; 
+            max-width: 320px; margin: 20px auto; box-shadow: 0 0 30px var(--glow); animation: pulse 2s infinite; 
         }
-        @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--glow); } 50% { transform: scale(1.02); box-shadow: 0 0 45px var(--glow); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--glow); } 50% { transform: scale(1.02); box-shadow: 0 0 50px var(--glow); } }
         
-        .big-num { font-size: 110px; font-weight: bold; margin: 5px 0; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.2); }
-        .status-tag { display: inline-block; padding: 8px 25px; border-radius: 50px; font-size: 15px; font-weight: bold; border: 2px solid var(--glow); color: var(--glow); margin-bottom: 10px; background: rgba(0,0,0,0.4); }
-        .note-box { background: rgba(255, 215, 0, 0.1); border: 1px dashed #ffd700; padding: 12px; border-radius: 15px; margin-top: 10px; color: #ffd700; font-weight: bold; font-size: 15px; }
-
-        .card-ui { background: rgba(255,255,255,0.03); padding: 25px; border-radius: 30px; border: 1px solid #1e293b; max-width: 340px; margin: 15px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input { padding: 12px; border-radius: 12px; border: 2px solid #ffd700; background: #000; color: #fff; text-align: center; width: 85%; font-size: 18px; outline: none; margin-bottom: 10px; }
-        .btn-gold { background:#ffd700; color:#000; border:none; padding:15px; border-radius:12px; font-weight:bold; width:95%; cursor:pointer; font-size: 16px; margin-top: 5px; }
-        .bell-btn { font-size: 60px; background: none; border: none; cursor: pointer; filter: grayscale(1); transition: 0.4s; }
+        .big-num { font-size: 115px; font-weight: bold; margin: 5px 0; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.2); }
+        .status-tag { display: inline-block; padding: 10px 30px; border-radius: 50px; font-size: 16px; font-weight: bold; border: 2px solid var(--glow); color: var(--glow); margin-bottom: 10px; background: rgba(0,0,0,0.5); }
+        
+        .card-ui { background: rgba(255,255,255,0.03); padding: 30px; border-radius: 35px; border: 1px solid #1e293b; max-width: 350px; margin: 20px auto; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        input { padding: 15px; border-radius: 15px; border: 2px solid #ffd700; background: #000; color: #fff; text-align: center; width: 85%; font-size: 18px; outline: none; margin-bottom: 15px; }
+        .btn-gold { background:#ffd700; color:#000; border:none; padding:18px; border-radius:18px; font-weight:bold; width:95%; cursor:pointer; font-size: 18px; transition: 0.3s; }
+        .btn-gold:hover { transform: scale(1.05); background: #ffea00; }
+        .bell-btn { font-size: 65px; background: none; border: none; cursor: pointer; filter: grayscale(1); transition: 0.4s; }
+        .note-box { background: rgba(255, 215, 0, 0.1); border: 1px dashed #ffd700; padding: 15px; border-radius: 18px; margin-top: 15px; color: #ffd700; font-weight: bold; font-size: 16px; }
     </style>
 </head>
 <body>
-    <div class="lang-container" id="lContainer">
-        <div class="lang-icon" onclick="toggleMenu()">🌐</div>
-        <div class="lang-menu" id="lMenu">
+    <div class="lang-icon" onclick="openLang()">🌐</div>
+
+    <div class="lang-overlay" id="lOverlay" onclick="closeLang()">
+        <div class="lang-modal" onclick="event.stopPropagation()">
+            <h3 style="color:#ffd700; margin-bottom:15px;">Choose Language</h3>
             <div class="lang-item" onclick="setLang('ar')">🇮🇶 العربية</div>
             <div class="lang-item" onclick="setLang('en')">🇺🇸 English</div>
             <div class="lang-item" onclick="setLang('fa')">🇮🇷 فارسی</div>
@@ -51,9 +56,9 @@
 
     <div id="searchPage" class="card-ui">
         <h2 id="t-stitle" style="color:#ffd700; margin-bottom: 5px;">🔎 دليل صوفيگرام العالمي</h2>
-        <p id="t-sdesc" style="font-size: 13px; color: #bbb; margin-bottom: 20px;">ابحث عن (طبيب، حلاق، مطعم، أو أي نشاط تجاري) لمتابعة دورك.</p>
-        <input type="text" id="searchInput" placeholder="اكتب الاسم هنا...">
-        <button id="t-sbtn" onclick="performSearch()" class="btn-gold">بحث الآن | Search Now</button>
+        <p id="t-sdesc" style="font-size: 14px; color: #bbb; margin-bottom: 25px;">ابحث عن (طبيب، حلاق، مطعم، أو أي نشاط تجاري) لمتابعة دورك لايف.</p>
+        <input type="text" id="searchInput" placeholder="...">
+        <button id="t-sbtn" onclick="performSearch()" class="btn-gold">بحث الآن</button>
         <div id="searchResults" style="margin-top:20px; max-height: 250px; overflow-y: auto;"></div>
     </div>
 
@@ -61,17 +66,17 @@
         <h2 id="clinicName" style="color:#ffd700;"></h2>
         <div id="statusTag" class="status-tag">--</div>
         <div class="number-box">
-            <p id="t-cur" style="color:#888; font-size:13px; margin:0;">الرقم الحالي الآن</p>
+            <p id="t-cur" style="color:#888; font-size:14px; margin:0;">الرقم الحالي الآن</p>
             <div class="big-num" id="liveNumber">0</div>
             <div id="liveNote" class="note-box"></div>
         </div>
         <div class="card-ui">
-            <p id="t-alarm" style="margin:0; color:#ffd700; font-weight:bold;">🔔 منبه ساعة الصفر الذكي</p>
-            <input type="number" id="userTarget" placeholder="0" style="width: 70px;">
+            <p id="t-alarm" style="margin:0; color:#ffd700; font-weight:bold; font-size:18px;">🔔 منبه ساعة الصفر الذكي</p>
+            <input type="number" id="userTarget" placeholder="0" style="width: 80px; margin-top:10px;">
             <br>
             <button id="bellIcon" class="bell-btn" onclick="toggleAlarm()">🔔</button>
         </div>
-        <button id="t-back" onclick="location.href='view.html'" style="background:none; color:#888; border:none; text-decoration:underline; cursor:pointer;">العودة</button>
+        <button id="t-back" onclick="location.href='view.html'" style="background:none; color:#888; border:none; text-decoration:underline; cursor:pointer; margin-top:10px;">العودة</button>
     </div>
 
     <script type="module">
@@ -89,21 +94,20 @@
         const db = getDatabase(app);
 
         const dict = {
-            ar: { stitle: "🔎 دليل صوفيگرام العالمي", sdesc: "ابحث عن (طبيب، حلاق، مطعم، أو أي نشاط تجاري) لمتابعة دورك.", sbtn: "بحث الآن", cur: "الرقم الحالي الآن", alarm: "🔔 منبه ساعة الصفر الذكي", back: "العودة للبحث ↩️", ph: "اكتب الاسم هنا..." },
-            en: { stitle: "🔎 Sofygram Global Guide", sdesc: "Search for (Doctor, Barber, Restaurant, or business) to track your turn.", sbtn: "Search Now", cur: "Current Number Now", alarm: "🔔 Zero Hour Alarm", back: "Back to Search ↩️", ph: "Type name here..." },
-            fa: { stitle: "🔎 راهنمای جهانی صوفی‌گرام", sdesc: "برای پیگیری نوبت خود (دکتر، آرایشگر، رستوران) را جستجو کنید.", sbtn: "جستجو", cur: "شماره فعلی", alarm: "🔔 هشدار ساعت صفر", back: "بازگشت", ph: "نام را اینجا بنویسید..." }
+            ar: { stitle: "🔎 دليل صوفيگرام العالمي", sdesc: "ابحث عن (طبيب، حلاق، مطعم، أو أي نشاط تجاري) لمتابعة دورك لايف.", sbtn: "بحث الآن", cur: "الرقم الحالي الآن", alarm: "🔔 منبه ساعة الصفر الذكي", back: "العودة ↩️", ph: "اكتب الاسم هنا..." },
+            en: { stitle: "🔎 Sofygram Akıllı Rehber", sdesc: "Search for (Clinic, Barber, Restaurant) to track your turn live.", sbtn: "Şimdi Ara", cur: "Current Number Now", alarm: "🔔 Zero Hour Alarm", back: "Back ↩️", ph: "İsmi buraya yazın..." },
+            fa: { stitle: "🔎 راهنمای جهانی صوفی‌گرام", sdesc: "جستجو برای (پزشک، آرایشگاه، رستوران) برای پیگیری نوبت.", sbtn: "جستجو", cur: "شماره فعلی", alarm: "🔔 هشدار ساعت صفر", back: "بازگشت", ph: "نام را اینجا بنویسید..." },
+            tr: { stitle: "🔎 Sofygram Akıllı Rehber", sdesc: "Sıranızı canlı takip etmek için (Klinik, Berber, Restoran) arayın.", sbtn: "Şimdi Ara", cur: "Şu Anki Numara", alarm: "🔔 Sıfır Saat Alarmı", back: "Geri Dön", ph: "İsmi buraya yazın..." }
         };
 
         let curLang = 'ar';
         let isAlarmReady = false;
 
-        window.toggleMenu = () => { 
-            const m = document.getElementById('lMenu');
-            m.style.display = m.style.display === 'block' ? 'none' : 'block';
-        };
+        window.openLang = () => document.getElementById('lOverlay').style.display = 'flex';
+        window.closeLang = () => document.getElementById('lOverlay').style.display = 'none';
 
         window.setLang = (l) => {
-            curLang = l; document.getElementById('lMenu').style.display = 'none';
+            curLang = l; closeLang();
             const d = dict[l] || dict['en'];
             document.getElementById('t-stitle').innerText = d.stitle;
             document.getElementById('t-sdesc').innerText = d.sdesc;
@@ -113,8 +117,6 @@
             document.getElementById('t-back').innerText = d.back;
             document.getElementById('searchInput').placeholder = d.ph;
             document.body.dir = (l === 'ar' || l === 'fa') ? 'rtl' : 'ltr';
-            document.getElementById('lContainer').style.left = (l === 'ar' || l === 'fa') ? '15px' : 'auto';
-            document.getElementById('lContainer').style.right = (l === 'ar' || l === 'fa') ? 'auto' : '15px';
         };
 
         window.performSearch = async () => {
