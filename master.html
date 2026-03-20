@@ -2,44 +2,37 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Sofygram Master | الإدارة الذكية 🔐</title>
+    <title>Sofygram Master | الإدارة العليا 👑</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
         body { background: #050a14; color: white; font-family: sans-serif; padding: 20px; text-align: center; }
-        .card { background: #121212; border: 1px solid #333; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; text-align: right; }
+        .card { background: #121212; border: 1px solid #333; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; text-align: right; border-right: 5px solid #ffd700; }
         input { padding: 12px; border-radius: 8px; border: 1px solid #ffd700; background: #000; color: #fff; text-align: center; margin: 10px; }
         .btn-gold { background: #ffd700; color: #000; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        #securitySection { display: none; background: rgba(231, 76, 60, 0.1); padding: 20px; border-radius: 15px; border: 1px solid #e74c3c; }
-        #adminPanel { display: none; }
-        .status-btn { padding: 6px 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; margin-left: 5px; color: white; }
+        .status-btn { padding: 6px 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 11px; font-weight: bold; margin-left: 5px; color: white; }
+        .pass-box { background: #222; color: #ffd700; padding: 2px 8px; border-radius: 4px; font-family: monospace; display: none; margin-top: 5px; }
     </style>
 </head>
 <body>
 
     <div id="loginZone">
         <img src="logo.png" style="width:140px; margin-bottom:20px;">
-        <h2>لوحة التحكم العليا 👑</h2>
+        <h2>المنطقة المحظورة 🔐</h2>
         <div id="inputGroup">
             <input type="password" id="passInput" placeholder="أدخل الرمز السري"> <br>
-            <button class="btn-gold" onclick="attemptLogin()">دخول آمن</button>
-        </div>
-        <div id="securitySection">
-            <p style="color:#e74c3c;">⚠️ تجاوزت المحاولات!</p>
-            <p>سؤال الأمان: <b>ما هو اسم بلدك المفضل؟</b></p>
-            <input type="text" id="securityAnswer" placeholder="أجب هنا"> <br>
-            <button class="btn-gold" style="background:#e74c3c; color:white;" onclick="checkSecurity()">تحقق</button>
+            <button class="btn-gold" onclick="attemptLogin()">دخول المدير</button>
         </div>
     </div>
 
-    <div id="adminPanel">
+    <div id="adminPanel" style="display:none;">
         <div style="display:flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ffd700; padding-bottom: 10px; margin-bottom:20px;">
-            <h1>إدارة صوفيگرام</h1>
+            <h1>إدارة صوفيگرام العليا 👑</h1>
             <div>
-                <button onclick="updateMasterPassword()" style="background:#ffd700; color:black; border:none; padding:8px; border-radius:5px; cursor:pointer; font-weight:bold;">⚙️ تغيير رمز الدخول</button>
+                <button onclick="updateMasterPassword()" style="background:#ffd700; color:black; border:none; padding:8px; border-radius:5px; cursor:pointer; font-weight:bold;">⚙️ تغيير رمزي</button>
                 <button onclick="location.reload()" style="background:#333; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">خروج</button>
             </div>
         </div>
-        <div id="list">جاري التحميل...</div>
+        <div id="list">جاري تحميل المشتركين...</div>
     </div>
 
     <script type="module">
@@ -58,34 +51,15 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        let attempts = 0;
-        // الرمز الافتراضي 1992 إذا لم يوجد رمز في Firebase
-        let masterHash = "e10adc3949ba59abbe56e057f20f883e"; 
+        let masterHash = "e10adc3949ba59abbe56e057f20f883e"; // 1992 افتراضي
+        get(ref(db, 'admin_settings/masterHash')).then(s => { if(s.exists()) masterHash = s.val(); });
 
-        // جلب الرمز السري من Firebase فور فتح الصفحة
-        get(ref(db, 'admin_settings/masterHash')).then((snap) => {
-            if(snap.exists()) masterHash = snap.val();
-        });
-
-        window.attemptLogin = function() {
-            const input = document.getElementById('passInput').value;
-            if (CryptoJS.MD5(input).toString() === masterHash) {
-                showPanel();
-            } else {
-                attempts++;
-                if (attempts >= 3) {
-                    document.getElementById('inputGroup').style.display = 'none';
-                    document.getElementById('securitySection').style.display = 'block';
-                } else { alert("الرمز خطأ!"); }
-            }
+        window.attemptLogin = () => {
+            const p = document.getElementById('passInput').value;
+            if(CryptoJS.MD5(p).toString() === masterHash) show(); else alert("خطأ!");
         };
 
-        window.checkSecurity = () => {
-            if(document.getElementById('securityAnswer').value === "السويد") showPanel();
-            else alert("خطأ!");
-        };
-
-        function showPanel() {
+        function show() {
             document.getElementById('loginZone').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'block';
             onValue(ref(db, 'users'), (snap) => {
@@ -93,13 +67,18 @@
                 const data = snap.val();
                 for(let id in data) {
                     const u = data[id];
-                    const exp = u.expiryDate ? new Date(u.expiryDate) : null;
-                    const days = exp ? Math.ceil((exp - new Date())/(1000*60*60*24)) : 0;
                     const d = document.createElement('div'); d.className='card';
-                    d.innerHTML = `<div><b>${u.name}</b><br><small>${u.active?days+' يوم':'طلب جديد'}</small></div>
-                    <div><button class="status-btn" style="background:#3498db;" onclick="act('${id}',3)">تست</button>
-                    <button class="status-btn" style="background:#2ecc71;" onclick="act('${id}',30)">30يوم</button>
-                    <button class="status-btn" style="background:#e74c3c;" onclick="del('${id}')">حذف</button></div>`;
+                    d.innerHTML = `
+                        <div>
+                            <b>${u.name}</b> (@${id}) <br>
+                            <span id="p-${id}" class="pass-box">${u.password}</span>
+                        </div>
+                        <div>
+                            <button class="status-btn" style="background:#8e44ad;" onclick="document.getElementById('p-${id}').style.display='inline-block'">👁️ كشف الرمز</button>
+                            <button class="status-btn" style="background:#3498db;" onclick="act('${id}',3)">تست</button>
+                            <button class="status-btn" style="background:#2ecc71;" onclick="act('${id}',30)">30يوم</button>
+                            <button class="status-btn" style="background:#e74c3c;" onclick="del('${id}')">حذف</button>
+                        </div>`;
                     list.appendChild(d);
                 }
             });
@@ -109,19 +88,10 @@
             const d = new Date(); d.setDate(d.getDate()+n);
             update(ref(db, 'users/'+id), {active:true, expiryDate: d.toISOString()});
         };
-
-        window.del = (id) => { if(confirm("حذف؟")) remove(ref(db, 'users/'+id)); };
-
-        // وظيفة تغيير الرمز وحفظه في Firebase
-        window.updateMasterPassword = function() {
-            const newP = prompt("أدخل الرمز الجديد (أرقام فقط):");
-            if(newP && newP.length >= 4) {
-                const newH = CryptoJS.MD5(newP).toString();
-                set(ref(db, 'admin_settings/masterHash'), newH).then(() => {
-                    alert("تم تغيير الرمز بنجاح! سيتم اعتماده من الدخول القادم.");
-                    location.reload();
-                });
-            }
+        window.del = (id) => { if(confirm("حذف نهائي؟")) remove(ref(db, 'users/'+id)); };
+        window.updateMasterPassword = () => {
+            const n = prompt("الرمز الجديد:");
+            if(n && n.length>=4) set(ref(db, 'admin_settings/masterHash'), CryptoJS.MD5(n).toString()).then(()=>alert("تم!"));
         };
     </script>
 </body>
