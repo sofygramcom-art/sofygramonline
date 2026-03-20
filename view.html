@@ -1,21 +1,128 @@
-<audio id="megaAlarm" preload="auto">
-    <source src="https://f.top4top.io/m_26368p3o71.mp3" type="audio/mpeg">
-    </audio>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صوفيگرام | المنصة العالمية 🌍</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <style>
+        :root { --glow: #2ecc71; }
+        body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 15px; }
+        .logo img { width: 160px; margin-top: 10px; }
+        .number-box { 
+            background: #121212; border: 2px solid var(--glow); border-radius: 35px; padding: 30px; max-width: 300px; margin: 20px auto;
+            box-shadow: 0 0 30px var(--glow); animation: pulse 2s infinite; 
+        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--glow); } 50% { transform: scale(1.03); box-shadow: 0 0 45px var(--glow); } }
+        .big-num { font-size: 110px; font-weight: bold; margin: 5px 0; }
+        .status-tag { display: inline-block; padding: 8px 25px; border-radius: 50px; font-size: 15px; font-weight: bold; border: 2px solid var(--glow); color: var(--glow); margin-bottom: 15px; }
+        .card-ui { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 25px; border: 1px solid #1e293b; max-width: 330px; margin: 15px auto; }
+        input { padding: 12px; border-radius: 12px; border: 1px solid #ffd700; background: #000; color: #fff; text-align: center; margin: 5px; font-size: 16px; width: 70px; }
+        .bell-btn { font-size: 60px; background: none; border: none; cursor: pointer; filter: grayscale(1); transition: 0.4; }
+        .bell-active { filter: grayscale(0) drop-shadow(0 0 20px #ffd700); animation: shake 0.5s infinite; }
+        @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } }
+        .result-item { padding: 15px; border-bottom: 1px solid #222; cursor: pointer; text-align: right; }
+    </style>
+</head>
+<body>
+    <div class="logo"><img src="logo.png"></div>
 
-<script>
-function triggerFinalVoice() {
-    // 1. الاهتزاز القوي
-    if ("vibrate" in navigator) { navigator.vibrate([500, 200, 500, 200, 500]); }
-    
-    // 2. تشغيل ملف الصوت المسجل (أكثر استقراراً في الموبايل)
-    const audio = document.getElementById('megaAlarm');
-    audio.play().catch(e => {
-        // إذا فشل التشغيل التلقائي، نستخدم النداء الاحتياطي
-        const msg = new SpeechSynthesisUtterance("حان دورك الآن في صوفي غرام");
-        window.speechSynthesis.speak(msg);
-    });
+    <div id="searchPage" class="card-ui">
+        <h3 style="color:#ffd700;">🔎 دليل صوفيگرام الذكي</h3>
+        <input type="text" id="searchInput" placeholder="اكتب الاسم..." style="width: 80%;">
+        <button onclick="performSearch()" style="background:#ffd700; border:none; padding:10px; border-radius:10px; font-weight:bold; cursor:pointer; width:85%;">بحث</button>
+        <div id="searchResults" style="margin-top:20px;"></div>
+    </div>
 
-    // 3. إظهار رسالة تنبيه منبثقة تجبر المستخدم على الانتباه
-    alert("🔔 صوفيگرام: وصل دورك الآن! يرجى التوجه فوراً.");
-}
-</script>
+    <div id="livePage" style="display:none;">
+        <h2 id="clinicName" style="color:#ffd700;"></h2>
+        <div id="statusTag" class="status-tag">--</div>
+        <div class="number-box"><div class="big-num" id="liveNumber">0</div></div>
+        <div class="card-ui">
+            <p style="color:#ffd700; font-weight:bold;">🔔 منبه ساعة الصفر:</p>
+            <input type="number" id="userTarget" placeholder="رقمك">
+            <button id="bellIcon" class="bell-btn" onclick="activateAlarm()">🔔</button>
+            <p id="alarmStatus" style="font-size:11px; color:#888;">اضغط لتفعيل التنبيه الصوتي</p>
+        </div>
+        <button onclick="location.href='view.html'" style="background:none; color:#888; border:none; text-decoration:underline;">العودة للبحث ↩️</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
+            authDomain: "sofygramclinic.firebaseapp.com",
+            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
+            projectId: "sofygramclinic",
+            storageBucket: "sofygramclinic.firebasestorage.app",
+            messagingSenderId: "207475452149",
+            appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let isAlarmOn = false;
+        const params = new URLSearchParams(window.location.search);
+        const clinicId = params.get('id');
+
+        if(clinicId) { 
+            document.getElementById('searchPage').style.display = 'none';
+            document.getElementById('livePage').style.display = 'block';
+            
+            onValue(ref(db, 'users/' + clinicId), (snap) => {
+                const info = snap.val();
+                if(!info) return;
+                const current = info.currentNum || 0;
+                document.getElementById('liveNumber').innerText = current;
+                document.getElementById('clinicName').innerText = info.name;
+                document.getElementById('statusTag').innerText = info.status || "--";
+                
+                // تحديث الألوان
+                const root = document.documentElement;
+                if(info.status?.includes("مفتوح")) root.style.setProperty('--glow', '#2ecc71');
+                else if(info.status?.includes("قريباً")) root.style.setProperty('--glow', '#f1c40f');
+                else root.style.setProperty('--glow', '#e74c3c');
+
+                // التنبيه
+                const target = document.getElementById('userTarget').value;
+                if(isAlarmOn && target != "" && target == current) {
+                    triggerFinalAlarm();
+                    isAlarmOn = false;
+                    document.getElementById('bellIcon').classList.remove('bell-active');
+                }
+            });
+        }
+
+        window.performSearch = async () => {
+            const val = document.getElementById('searchInput').value.toLowerCase();
+            const snap = await get(ref(db, 'users'));
+            const data = snap.val();
+            const resDiv = document.getElementById('searchResults'); resDiv.innerHTML = "";
+            for(let key in data) if(data[key].name.toLowerCase().includes(val)) 
+                resDiv.innerHTML += `<div class="result-item" onclick="location.href='?id=${key}'">⭐ ${data[key].name}</div>`;
+        };
+
+        window.activateAlarm = () => {
+            if(!document.getElementById('userTarget').value) return alert("اكتب رقمك!");
+            isAlarmOn = !isAlarmOn;
+            document.getElementById('bellIcon').classList.toggle('bell-active');
+            // تنشيط محرك الصوت (إجباري للموبايل)
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
+            if(isAlarmOn) alert("تم تفعيل النداء الصوتي بنجاح ✅");
+        };
+
+        function triggerFinalAlarm() {
+            if ("vibrate" in navigator) navigator.vibrate([500, 200, 500]);
+            const ar = new SpeechSynthesisUtterance("أهلاً بكم في صوفي غرام. حان دوركم الآن، يرجى التوجه فوراً.");
+            ar.lang = 'ar-SA';
+            const en = new SpeechSynthesisUtterance("Welcome to Sofygram. It is your turn now, please proceed.");
+            en.lang = 'en-US';
+            window.speechSynthesis.speak(ar);
+            window.speechSynthesis.speak(en);
+        }
+    </script>
+</body>
+</html>
