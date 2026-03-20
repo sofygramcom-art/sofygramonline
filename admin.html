@@ -3,37 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صوفيگرام | لوحة السكرتير</title>
+    <title>Sofygram Admin | لوحة السكرتير</title>
     <style>
         body { background: #050a14; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
-        .admin-card { background: #121212; padding: 25px; border-radius: 20px; max-width: 400px; margin: auto; border: 1px solid #ffd700; }
-        .num-display { font-size: 80px; font-weight: bold; margin: 20px 0; }
-        .btn { width: 70px; height: 70px; border-radius: 50%; border: none; font-size: 30px; cursor: pointer; color: white; margin: 5px; }
+        .card { background: #121212; padding: 25px; border-radius: 20px; max-width: 400px; margin: auto; border: 1px solid #ffd700; }
+        .num { font-size: 90px; font-weight: bold; color: #fff; margin: 20px 0; }
+        .btn { width: 75px; height: 75px; border-radius: 50%; border: none; font-size: 35px; cursor: pointer; color: white; margin: 10px; }
         .plus { background: #2ecc71; } .minus { background: #e74c3c; }
-        input, select, textarea { width: 95%; padding: 10px; margin: 10px 0; border-radius: 8px; background: #1e293b; color: white; border: 1px solid #333; }
-        #loginSection { display: block; } #controlSection { display: none; }
+        input, select, textarea { width: 95%; padding: 12px; margin: 10px 0; border-radius: 10px; background: #1e293b; color: white; border: 1px solid #333; }
+        #loginBox { display: block; } #controlBox { display: none; }
+        .days-info { color: #ffd700; font-size: 14px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
-    <div id="loginSection" class="admin-card">
-        <img src="logo.png" style="width: 150px; margin-bottom: 20px;">
+
+    <div id="loginBox" class="card">
+        <img src="logo.png" style="width:150px; margin-bottom:20px;">
         <h3>دخول السكرتير</h3>
-        <input type="text" id="userLogin" placeholder="اسم المستخدم">
-        <input type="password" id="passLogin" placeholder="كلمة المرور">
-        <button onclick="window.login()" style="width:100%; padding:15px; background:#ffd700; border:none; border-radius:10px; font-weight:bold;">دخول</button>
+        <input type="text" id="userInput" placeholder="اسم المستخدم">
+        <input type="password" id="passInput" placeholder="كلمة المرور">
+        <button onclick="window.login()" style="width:100%; padding:15px; background:#ffd700; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">دخول للمنصة</button>
     </div>
 
-    <div id="controlSection" class="admin-card">
-        <h2 id="helloName" style="color:#ffd700;">أهلاً بك</h2>
-        <div class="num-display" id="currentNum">0</div>
+    <div id="controlBox" class="card">
+        <div id="daysCount" class="days-info"></div>
+        <h2 id="clinicTitle" style="color:#ffd700; margin:0;"></h2>
+        <div class="num" id="currentNum">0</div>
         <button class="btn plus" onclick="window.change(1)">+</button>
         <button class="btn minus" onclick="window.change(-1)">-</button>
-        <select id="statusNow">
+        <select id="actStatus">
             <option>● مفتوح الآن | Open</option>
             <option>○ مغلق حالياً | Closed</option>
         </select>
-        <textarea id="adminNote" placeholder="اكتب ملاحظة للزبائن..."></textarea>
-        <button onclick="window.update()" style="width:100%; padding:15px; background:#2ecc71; border:none; border-radius:10px; color:white; font-weight:bold;">تحديث العرض للمشاهدين 🚀</button>
+        <textarea id="actNote" placeholder="اكتب ملاحظة للجمهور..."></textarea>
+        <button onclick="window.updateData()" style="width:100%; padding:15px; background:#2ecc71; border:none; border-radius:10px; color:white; font-weight:bold; cursor:pointer;">تحديث البيانات لايف 🚀</button>
     </div>
 
     <script type="module">
@@ -52,30 +55,42 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        let loggedId = "";
-        let num = 0;
+        let activeUser = "";
+        let numVal = 0;
 
         window.login = function() {
-            const user = document.getElementById('userLogin').value;
-            const pass = document.getElementById('passLogin').value;
-            get(child(ref(db), `users/${user}`)).then((snapshot) => {
-                if(snapshot.exists() && snapshot.val().password === pass) {
-                    loggedId = user;
-                    num = snapshot.val().currentNum || 0;
-                    document.getElementById('currentNum').innerText = num;
-                    document.getElementById('helloName').innerText = snapshot.val().name;
-                    document.getElementById('loginSection').style.display = 'none';
-                    document.getElementById('controlSection').style.display = 'block';
-                } else { alert("خطأ في البيانات أو الحساب غير مفعل"); }
+            const u = document.getElementById('userInput').value;
+            const p = document.getElementById('passInput').value;
+            get(child(ref(db), `users/${u}`)).then((snap) => {
+                if(snap.exists() && snap.val().password === p) {
+                    const data = snap.val();
+                    const expiry = data.expiryDate ? new Date(data.expiryDate) : null;
+                    const today = new Date();
+
+                    if(!data.active || (expiry && expiry < today)) {
+                        alert("عذراً، حسابك غير مفعل أو اشتراكك منتهي. تواصل مع الإدارة.");
+                        return;
+                    }
+
+                    activeUser = u;
+                    numVal = data.currentNum || 0;
+                    const daysLeft = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+                    
+                    document.getElementById('daysCount').innerText = `📅 باقي ${daysLeft} يوم على انتهاء الاشتراك`;
+                    document.getElementById('clinicTitle').innerText = data.name;
+                    document.getElementById('currentNum').innerText = numVal;
+                    document.getElementById('loginBox').style.display = 'none';
+                    document.getElementById('controlBox').style.display = 'block';
+                } else { alert("خطأ في اسم المستخدم أو كلمة المرور"); }
             });
         };
 
-        window.change = (val) => { num += val; if(num < 0) num = 0; document.getElementById('currentNum').innerText = num; };
+        window.change = (v) => { numVal += v; if(numVal<0) numVal=0; document.getElementById('currentNum').innerText = numVal; };
 
-        window.update = function() {
-            set(ref(db, 'users/' + loggedId + '/currentNum'), num);
-            set(ref(db, 'users/' + loggedId + '/status'), document.getElementById('statusNow').value);
-            set(ref(db, 'users/' + loggedId + '/note'), document.getElementById('adminNote').value);
+        window.updateData = function() {
+            set(ref(db, `users/${activeUser}/currentNum`), numVal);
+            set(ref(db, `users/${activeUser}/status`), document.getElementById('actStatus').value);
+            set(ref(db, `users/${activeUser}/note`), document.getElementById('actNote').value);
             alert("تم التحديث بنجاح!");
         };
     </script>
