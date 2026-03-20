@@ -3,62 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صوفيگرام ماستر | الإدارة العليا 👑</title>
+    <title>Sofygram Master | الإدارة العليا 👑</title>
     <style>
         :root { --glow: #ffd700; }
-        body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; transition: 0.5s; }
+        body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
         
-        /* نظام اللغات */
-        .lang-icon { position: absolute; top: 15px; left: 15px; cursor: pointer; font-size: 30px; filter: drop-shadow(0 0 8px var(--glow)); z-index: 1000; }
-        .lang-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
-        .lang-modal { background: #121212; border: 2px solid var(--glow); border-radius: 30px; padding: 20px; width: 260px; }
-        .lang-item { padding: 12px; cursor: pointer; border-bottom: 1px solid #222; display: flex; align-items: center; justify-content: center; gap: 10px; }
-
-        .master-card { background: #121212; padding: 25px; border-radius: 30px; max-width: 650px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 20px rgba(255, 215, 0, 0.1); }
-        .user-row { 
-            display: flex; justify-content: space-between; align-items: center; 
-            background: #1e293b; padding: 15px; border-radius: 15px; margin-bottom: 12px; 
-            border-right: 5px solid #888; text-align: right; transition: 0.3s;
-        }
+        .master-card { background: #121212; padding: 25px; border-radius: 30px; max-width: 600px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
+        .user-row { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 15px; border-radius: 15px; margin-bottom: 12px; border-right: 5px solid #888; text-align: right; }
         .active-user { border-right-color: #2ecc71; }
-        .trial-user { border-right-color: #f1c40f; }
         .expired-user { border-right-color: #e74c3c; opacity: 0.8; }
 
-        .days-badge { background: #ffd700; color: #000; padding: 3px 10px; border-radius: 8px; font-weight: bold; font-size: 13px; }
-        .btn-group { display: flex; flex-direction: column; gap: 5px; min-width: 120px; }
-        .btn { padding: 8px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 11px; transition: 0.2s; }
-        .btn-full { background: #2ecc71; color: white; }
-        .btn-trial { background: #f1c40f; color: black; }
+        input { padding: 12px; border-radius: 12px; border: 1px solid var(--glow); background: #000; color: #fff; text-align: center; margin: 10px; width: 80%; font-size: 16px; }
+        .btn-entry { background: #2ecc71; color: white; padding: 15px; width: 85%; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 18px; box-shadow: 0 4px 0 #27ae60; }
+        .btn-entry:active { transform: translateY(4px); box-shadow: none; }
+        
+        .btn { padding: 8px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 11px; margin: 2px; }
         .btn-pass { background: #9b59b6; color: white; }
         .btn-del { background: #e74c3c; color: white; }
-        
-        input { padding: 12px; border-radius: 12px; border: 1px solid var(--glow); background: #000; color: #fff; text-align: center; margin: 5px; }
-        .search-box { width: 90%; margin-bottom: 20px; }
     </style>
 </head>
 <body>
-    <div class="lang-icon" onclick="openLang()">🌐</div>
-
-    <div class="lang-overlay" id="lOverlay" onclick="closeLang()">
-        <div class="lang-modal" onclick="event.stopPropagation()">
-            <div class="lang-item" onclick="setLang('ar')">🇮🇶 العربية</div>
-            <div class="lang-item" onclick="setLang('en')">🇺🇸 English</div>
-            <div class="lang-item" onclick="setLang('fa')">🇮🇷 فارسی</div>
-            <div class="lang-item" onclick="setLang('tr')">🇹🇷 Türkçe</div>
-        </div>
-    </div>
 
     <div id="authBox" class="master-card">
-        <img src="logo.png" style="width:120px;">
-        <h2 id="t-lock-title">قفل الإدارة العليا 👑</h2>
-        <input type="password" id="mPass" placeholder="كلمة المرور">
-        <input type="text" id="mSec" placeholder="سؤال الأمان: ما هو بلدك؟">
-        <button onclick="masterLogin()" class="btn-full" style="width:90%; padding:15px; margin-top:10px; font-size:16px;">دخول الملك 👑</button>
+        <img src="logo.png" style="width:130px; margin-bottom:10px;">
+        <h2 id="lockTitle">قفل الإدارة العليا 👑</h2>
+        
+        <div id="passArea">
+            <input type="password" id="mPass" placeholder="كلمة المرور">
+        </div>
+
+        <div id="secArea" style="display:none;">
+            <p style="color:#e74c3c; font-size:13px;">⚠️ تم قفل كلمة السر. استخدم سؤال الأمان:</p>
+            <input type="text" id="mSec" placeholder="ما هو بلدك؟">
+        </div>
+
+        <button onclick="masterLogin()" class="btn-entry">دخول الملك 👑</button>
     </div>
 
     <div id="masterBox" class="master-card" style="display:none;">
-        <h2 id="t-mtitle">إدارة الصلاحيات والوقت 👑</h2>
-        <input type="text" id="mSearch" class="search-box" placeholder="ابحث عن مشترك..." onkeyup="filterUsers()">
+        <h2 style="color:#ffd700;">إدارة الصلاحيات والوقت 👑</h2>
+        <input type="text" id="mSearch" placeholder="ابحث عن مشترك..." onkeyup="filterUsers()" style="width:90%;">
         <div id="usersList">جاري التحميل...</div>
     </div>
 
@@ -76,16 +60,43 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // نظام الأمان (عدل من هنا)
+        let attempts = 0;
+        const correctPass = "1234"; // غير الرمز من هنا
+        const correctSec = "العراق"; // سؤال الأمان
+
         window.masterLogin = () => {
             const p = document.getElementById('mPass').value;
             const s = document.getElementById('mSec').value;
-            if(p === "1234" && s === "العراق") {
-                document.getElementById('authBox').style.display = 'none';
-                document.getElementById('masterBox').style.display = 'block';
-                loadUsers();
-            } else { alert("بيانات الأمان غير صحيحة!"); }
+
+            // إذا كان في مرحلة سؤال الأمان
+            if (attempts >= 3) {
+                if (s === correctSec) {
+                    unlockMaster();
+                } else {
+                    alert("سؤال الأمان خاطئ أيضاً!");
+                }
+                return;
+            }
+
+            // محاولة الدخول بكلمة السر
+            if (p === correctPass) {
+                unlockMaster();
+            } else {
+                attempts++;
+                alert(`كلمة السر خطأ! المحاولات المتبقية: ${3 - attempts}`);
+                if (attempts >= 3) {
+                    document.getElementById('passArea').style.display = 'none';
+                    document.getElementById('secArea').style.display = 'block';
+                    document.getElementById('lockTitle').innerText = "تحقق الأمان المتقدم 🛡️";
+                }
+            }
         };
+
+        function unlockMaster() {
+            document.getElementById('authBox').style.display = 'none';
+            document.getElementById('masterBox').style.display = 'block';
+            loadUsers();
+        }
 
         function loadUsers() {
             onValue(ref(db, 'users'), (snap) => {
@@ -97,22 +108,16 @@
                     const u = users[id];
                     const expiry = u.expiryDate ? new Date(u.expiryDate) : null;
                     let daysLeft = expiry ? Math.ceil((expiry - today) / (1000 * 60 * 60 * 24)) : 0;
-
-                    let statusClass = daysLeft > 3 ? "active-user" : (daysLeft > 0 ? "trial-user" : "expired-user");
-                    let niceDate = expiry ? expiry.toLocaleDateString('en-GB') : '---';
+                    let statusClass = daysLeft > 0 ? "active-user" : "expired-user";
 
                     list.innerHTML += `
                         <div class="user-row ${statusClass}" data-name="${u.name.toLowerCase()}">
                             <div>
-                                <b>${u.name}</b> <span class="days-badge">${daysLeft > 0 ? daysLeft + ' يوم' : 'منتهي'}</span>
-                                <div style="font-size:11px; color:#aaa; margin-top:5px;">
-                                    📅 اشتراك: ${u.startDate || '---'} | ⏳ ينتهي: ${niceDate}
-                                </div>
+                                <b>${u.name}</b> <br>
+                                <small>ينتهي في: ${expiry ? expiry.toLocaleDateString('en-GB') : '---'}</small>
                             </div>
-                            <div class="btn-group">
-                                <button class="btn btn-full" onclick="setSub('${id}', 30)">تفعيل 30 يوم</button>
-                                <button class="btn btn-trial" onclick="setSub('${id}', 3)">تجربة 3 أيام</button>
-                                <button class="btn btn-pass" onclick="revealPass('${u.password}')">👁️ كشف الرمز</button>
+                            <div>
+                                <button class="btn btn-pass" onclick="alert('رمز المشترك: ${u.password}')">👁️ كشف الرمز</button>
                                 <button class="btn btn-del" onclick="delUser('${id}')">حذف</button>
                             </div>
                         </div>
@@ -121,31 +126,10 @@
             });
         }
 
-        window.setSub = (id, days) => {
-            const start = new Date(); const expiry = new Date();
-            expiry.setDate(start.getDate() + days);
-            update(ref(db, `users/${id}`), {
-                active: true,
-                startDate: start.toLocaleDateString('en-GB'),
-                expiryDate: expiry.toISOString()
-            }).then(() => alert("تم التفعيل ✅"));
-        };
-
-        window.revealPass = (p) => alert("كلمة سر هذا المشترك هي: " + p);
         window.delUser = (id) => { if(confirm("حذف نهائي؟")) remove(ref(db, `users/${id}`)); };
         window.filterUsers = () => {
             const val = document.getElementById('mSearch').value.toLowerCase();
             document.querySelectorAll('.user-row').forEach(r => r.style.display = r.getAttribute('data-name').includes(val) ? "flex" : "none");
-        };
-
-        // نظام اللغات
-        window.openLang = () => document.getElementById('lOverlay').style.display = 'flex';
-        window.closeLang = () => document.getElementById('lOverlay').style.display = 'none';
-        window.setLang = (l) => {
-            closeLang();
-            document.body.dir = (l === 'ar' || l === 'fa') ? 'rtl' : 'ltr';
-            document.getElementById('t-lock-title').innerText = l === 'ar' ? 'قفل الإدارة العليا' : 'Master Lock';
-            document.getElementById('t-mtitle').innerText = l === 'ar' ? 'إدارة الصلاحيات والوقت' : 'Subscription Manager';
         };
     </script>
 </body>
