@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>ماستر صوفيگرام</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; padding: 20px; }
+        .row { background: #111; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; border: 1px solid #333; }
+        button { padding: 10px; border-radius: 5px; cursor: pointer; border: none; font-weight: bold; }
+        .on { background: #2ecc71; } .off { background: #e74c3c; color: #fff; }
+    </style>
+</head>
+<body>
+    <h1>التحكم بالاشتراكات 💰</h1>
+    <div id="list"></div>
+    <script>
+        const firebaseConfig = { apiKey: "..", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com", projectId: "sofygramclinic" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        db.ref('businesses').on('value', (snap) => {
+            const list = document.getElementById('list'); list.innerHTML = "";
+            const data = snap.val();
+            if(data) Object.keys(data).forEach(id => {
+                const b = data[id];
+                list.innerHTML += `<div class="row">
+                    <div><b>${b.name}</b> (@${id})<br><small>${b.active ? 'مفعل' : 'موقف'}</small></div>
+                    <button class="${b.active ? 'off' : 'on'}" onclick="toggle('${id}', ${!b.active})">${b.active ? 'إيقاف' : 'تفعيل 30 يوم'}</button>
+                </div>`;
+            });
+        });
+        function toggle(id, state) {
+            let exp = "";
+            if(state) { let d = new Date(); d.setDate(d.getDate() + 30); exp = d.toISOString(); }
+            db.ref('businesses/' + id).update({ active: state, expiry: exp });
+        }
+    </script>
+</body>
+</html>
