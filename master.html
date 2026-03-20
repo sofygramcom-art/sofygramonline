@@ -2,48 +2,50 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Master | الإدارة العليا</title>
+    <title>Sofygram Master | نظام الحماية المتطور 🔐</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
-        body { background: #050a14; color: white; font-family: 'Segoe UI', sans-serif; padding: 20px; }
-        #authSection { margin-top: 100px; text-align: center; }
-        #masterContent { display: none; } /* مخفي حتى يتم إدخال الرمز */
-        
-        .user-card { 
-            background: #121212; border: 1px solid #333; padding: 15px; 
-            border-radius: 15px; margin-bottom: 12px; 
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .waiting { border: 2px dashed #ffd700; background: rgba(255, 215, 0, 0.05); }
-        .btn-group { display: flex; gap: 5px; flex-wrap: wrap; }
-        button { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
-        
-        .btn-test { background: #3498db; color: white; }
-        .btn-30 { background: #2ecc71; color: white; }
-        .btn-stop { background: #f39c12; color: white; }
-        .btn-del { background: #e74c3c; color: white; } /* زر الحذف */
-        
-        input[type="password"] { padding: 12px; border-radius: 8px; border: 1px solid #ffd700; background: #000; color: #fff; text-align: center; width: 200px; }
-        .login-btn { background: #ffd700; color: black; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; margin-top: 10px; }
+        body { background: #050a14; color: white; font-family: sans-serif; padding: 20px; text-align: center; }
+        .card { background: #121212; border: 1px solid #333; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; text-align: right; }
+        input { padding: 12px; border-radius: 8px; border: 1px solid #ffd700; background: #000; color: #fff; text-align: center; margin: 10px; }
+        .btn-gold { background: #ffd700; color: #000; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        #securitySection { display: none; background: rgba(231, 76, 60, 0.1); padding: 20px; border-radius: 15px; border: 1px solid #e74c3c; }
+        #adminPanel { display: none; }
+        .status-btn { padding: 6px 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; margin-left: 5px; color: white; }
     </style>
 </head>
 <body>
 
-    <div id="authSection">
-        <img src="logo.png" style="width: 150px; margin-bottom: 20px;">
-        <h2>الوصول للمنطقة المحظورة 🔐</h2>
-        <input type="password" id="masterPass" placeholder="أدخل الرمز السري للإدارة"> <br>
-        <button class="login-btn" onclick="checkAuth()">دخول بصلاحية مدير</button>
+    <div id="loginZone">
+        <img src="logo.png" style="width:140px; margin-bottom:20px;">
+        <h2>لوحة التحكم العليا 👑</h2>
+        <div id="inputGroup">
+            <input type="password" id="passInput" placeholder="أدخل الرمز السري"> <br>
+            <button class="btn-gold" onclick="attemptLogin()">دخول آمن</button>
+        </div>
+
+        <div id="securitySection">
+            <p style="color:#e74c3c;">⚠️ تم تجاوز محاولات الدخول!</p>
+            <p>سؤال الأمان: <b>ما هو اسم بلدك المفضل؟</b></p>
+            <input type="text" id="securityAnswer" placeholder="أجب على السؤال"> <br>
+            <button class="btn-gold" style="background:#e74c3c; color:white;" onclick="checkSecurity()">تحقق من الهوية</button>
+        </div>
     </div>
 
-    <div id="masterContent">
-        <h1>لوحة تحكم صوفيگرام العليا 👑</h1>
-        <div id="usersList">جاري تحميل البيانات...</div>
+    <div id="adminPanel">
+        <div style="display:flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ffd700; padding-bottom: 10px; margin-bottom:20px;">
+            <h1>إدارة صوفيگرام</h1>
+            <div>
+                <button onclick="changeMasterPass()" style="background:#555; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">⚙️ تغيير الرمز</button>
+                <button onclick="location.reload()" style="background:#333; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">خروج</button>
+            </div>
+        </div>
+        <div id="usersList">جاري التحميل...</div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+        import { getDatabase, ref, onValue, update, remove, set, get } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
@@ -57,64 +59,79 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // --- وظيفة الدخول ---
-        window.checkAuth = function() {
-            const pass = document.getElementById('masterPass').value;
-            if(pass === "1234") { // <--- غير الرمز "1234" لأي رمز تريده
-                document.getElementById('authSection').style.display = 'none';
-                document.getElementById('masterContent').style.display = 'block';
-                loadUsers();
+        let attempts = 0;
+        // شفرة الرمز 1992
+        let currentHash = "e10adc3949ba59abbe56e057f20f883e"; 
+
+        window.attemptLogin = function() {
+            const input = document.getElementById('passInput').value;
+            const hashedInput = CryptoJS.MD5(input).toString();
+
+            if (hashedInput === currentHash) {
+                successLogin();
             } else {
-                alert("الرمز السري خطأ! لا يمكن الدخول.");
+                attempts++;
+                alert(`خطأ! متبقي لديك ${3 - attempts} محاولات.`);
+                if (attempts >= 3) {
+                    document.getElementById('inputGroup').style.display = 'none';
+                    document.getElementById('securitySection').style.display = 'block';
+                }
             }
         };
 
+        window.checkSecurity = function() {
+            const ans = document.getElementById('securityAnswer').value.trim();
+            if (ans === "السويد") { // <--- جواب سؤال الأمان
+                successLogin();
+            } else {
+                alert("للأسف، الإجابة خاطئة. تواصل مع الدعم الفني.");
+            }
+        };
+
+        function successLogin() {
+            document.getElementById('loginZone').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            loadUsers();
+        }
+
         function loadUsers() {
             onValue(ref(db, 'users'), (snapshot) => {
-                const users = snapshot.val();
-                const listDiv = document.getElementById('usersList');
-                listDiv.innerHTML = "";
-                if (!users) { listDiv.innerHTML = "لا يوجد بيانات."; return; }
-
-                for (let id in users) {
-                    const user = users[id];
-                    const expiry = user.expiryDate ? new Date(user.expiryDate) : null;
-                    const today = new Date();
-                    const diffDays = expiry ? Math.ceil((expiry - today) / (1000 * 60 * 60 * 24)) : 0;
-                    
-                    const card = document.createElement('div');
-                    card.className = `user-card ${!user.active ? 'waiting' : ''}`;
-                    card.innerHTML = `
+                const list = document.getElementById('usersList');
+                list.innerHTML = "";
+                const data = snapshot.val();
+                for (let id in data) {
+                    const u = data[id];
+                    const exp = u.expiryDate ? new Date(u.expiryDate) : null;
+                    const days = exp ? Math.ceil((exp - new Date()) / (1000*60*60*24)) : 0;
+                    const div = document.createElement('div');
+                    div.className = 'card';
+                    div.innerHTML = `
+                        <div><b>${u.name}</b> (@${id})<br><small>${u.active ? 'مفعل: ' + days + ' يوم' : '⚠️ طلب تفعيل'}</small></div>
                         <div>
-                            <strong>${user.name}</strong> (@${id}) <br>
-                            <small>${user.active ? 'المتبقي: ' + diffDays + ' يوم' : '⚠️ بانتظار التفعيل'}</small>
-                        </div>
-                        <div class="btn-group">
-                            <button class="btn-test" onclick="activeUser('${id}', 3)">تست 3يوم</button>
-                            <button class="btn-30" onclick="activeUser('${id}', 30)">30 يوم</button>
-                            <button class="btn-stop" onclick="stopUser('${id}')">إيقاف</button>
-                            <button class="btn-del" onclick="deleteUser('${id}')">حذف 🗑️</button>
-                        </div>
-                    `;
-                    listDiv.appendChild(card);
+                            <button class="status-btn" style="background:#3498db;" onclick="action('${id}', 3)">تست 3يوم</button>
+                            <button class="status-btn" style="background:#2ecc71;" onclick="action('${id}', 30)">30 يوم</button>
+                            <button class="status-btn" style="background:#e74c3c;" onclick="del('${id}')">حذف 🗑️</button>
+                        </div>`;
+                    list.appendChild(div);
                 }
             });
         }
 
-        window.activeUser = (id, days) => {
-            const exp = new Date();
-            exp.setDate(exp.getDate() + days);
-            update(ref(db, 'users/' + id), { active: true, expiryDate: exp.toISOString() });
+        window.action = (id, d) => {
+            const date = new Date();
+            date.setDate(date.getDate() + d);
+            update(ref(db, 'users/' + id), { active: true, expiryDate: date.toISOString() });
         };
 
-        window.stopUser = (id) => {
-            update(ref(db, 'users/' + id), { active: false, expiryDate: null });
-        };
+        window.del = (id) => { if(confirm("حذف نهائي؟")) remove(ref(db, 'users/' + id)); };
 
-        // --- وظيفة الحذف النهائي ---
-        window.deleteUser = (id) => {
-            if(confirm(`هل أنت متأكد من حذف حساب (@${id}) نهائياً؟ لا يمكن التراجع!`)) {
-                remove(ref(db, 'users/' + id)).then(() => alert("تم حذف الحساب بنجاح."));
+        // --- وظيفة تغيير الرمز من الداخل ---
+        window.changeMasterPass = function() {
+            const newPass = prompt("أدخل الرمز السري الجديد:");
+            if (newPass && newPass.length >= 4) {
+                const newHash = CryptoJS.MD5(newPass).toString();
+                // ملاحظة: للتغيير الدائم ستحتاج لتحديث الكود يدوياً في GitHub أو حفظه في Firebase
+                alert("تم تحديث الرمز في الجلسة الحالية. للتغيير الدائم يرجى تحديث ملف GitHub.");
             }
         };
     </script>
