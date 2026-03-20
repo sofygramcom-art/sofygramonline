@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="view-html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofygram Online | Live Queue</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        :root { --main-color: #2ecc71; --bg-color: #000; }
+        body { background: var(--bg-color); color: #fff; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; transition: 0.3s; }
+        .lang-btn { position: absolute; top: 15px; left: 15px; background: #222; border: 1px solid var(--main-color); color: var(--main-color); padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
+        
+        .container { padding: 20px; display: flex; flex-direction: column; justify-content: center; min-height: 80vh; }
+        #view-name { font-size: 2.2rem; color: var(--main-color); margin-bottom: 5px; }
+        .msg-tag { color: #f39c12; background: rgba(243,156,18,0.1); padding: 8px 15px; border-radius: 12px; display: inline-block; margin-bottom: 20px; font-size: 1.1rem; }
+        
+        .num-label { font-size: 1.2rem; color: #888; text-transform: uppercase; }
+        .num-box { font-size: 10rem; font-weight: bold; margin: -10px 0; color: #fff; text-shadow: 0 0 30px rgba(46,204,113,0.4); }
+        
+        .alert-card { background: #111; padding: 20px; border-radius: 25px; border: 1px solid #333; max-width: 380px; margin: 20px auto; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .alert-card p { margin-bottom: 10px; color: #ccc; }
+        input[type="number"] { background: #000; border: 2px solid #f39c12; color: #fff; padding: 12px; width: 80px; text-align: center; font-size: 1.8rem; border-radius: 15px; outline: none; }
+        
+        /* English Adjustments */
+        [lang="en"] { direction: ltr; }
+    </style>
+</head>
+<body>
+
+    <button class="lang-btn" onclick="toggleLang()" id="lang-btn">English</button>
+
+    <div class="container" id="main-content">
+        <h1 id="view-name">Sofygram Online</h1>
+        <div id="view-msg" class="msg-tag">...</div>
+        
+        <p class="num-label" id="label-now">الرقم الحالي</p>
+        <div class="num-box" id="view-num">0</div>
+        
+        <div class="alert-card">
+            <p id="alert-text">🔔 نبهني بصوت عند وصول الرقم إلى:</p>
+            <input type="number" id="target-num" value="0">
+        </div>
+    </div>
+
+    <audio id="beep-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const bizID = urlParams.get('id') || 'demo';
+        
+        // إعدادات Firebase
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBqlRUShD3182zmliJrDUzBXQjL_eXSKtY", 
+            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com", 
+            projectId: "sofygramclinic" 
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        
+        let lastBeeped = -1;
+        let currentLang = 'ar';
+
+        const translations = {
+            ar: { labelNow: "الرقم الحالي", alertText: "🔔 نبهني بصوت عند وصول الرقم إلى:", langBtn: "English", expiryMsg: "الخدمة متوقفة مؤقتاً للتجديد 🛑" },
+            en: { labelNow: "CURRENT NUMBER", alertText: "🔔 Notify me with sound at number:", langBtn: "العربية", expiryMsg: "Service temporarily suspended for renewal 🛑" }
+        };
+
+        function toggleLang() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            const html = document.getElementById('view-html');
+            const data = translations[currentLang];
+
+            html.setAttribute('lang', currentLang);
+            html.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+            document.getElementById('label-now').innerText = data.labelNow;
+            document.getElementById('alert-text').innerText = data.alertText;
+            document.getElementById('lang-btn').innerText = data.langBtn;
+        }
+
+        db.ref('businesses/' + bizID).on('value', (snapshot) => {
+            const data = snapshot.val();
+            if(data) {
+                // فحص تاريخ الانتهاء
+                const today = new Date();
+                const expiry = new Date(data.expiry);
+                if(data.active === false || (data.expiry && today > expiry)) {
+                    document.getElementById('main-content').innerHTML = `<h2 style='color:#e74c3c;margin-top:50px'>${translations[currentLang].expiryMsg}</h2>`;
+                    return;
+                }
+
+                document.getElementById('view-num').innerText = data.num || 0;
+                document.getElementById('view-name').innerText = data.name || bizID;
+                document.getElementById('view-msg').innerText = data.msg || "";
+
+                // نظام التنبيه الصوتي الذكي
+                const target = document.getElementById('target-num').value;
+                if(target != 0 && data.num == target && data.num != lastBeeped) {
+                    document.getElementById('beep-sound').play();
+                    lastBeeped = data.num;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
