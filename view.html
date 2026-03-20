@@ -9,7 +9,6 @@
         body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 15px; }
         .logo img { width: 160px; margin-top: 10px; filter: drop-shadow(0 0 8px rgba(255,215,0,0.2)); }
         
-        /* الهالة الضوئية النبضية */
         .number-box { 
             background: #121212; border: 2px solid var(--glow); border-radius: 35px; 
             padding: 30px; max-width: 300px; margin: 20px auto;
@@ -21,14 +20,12 @@
         .big-num { font-size: 110px; font-weight: bold; margin: 5px 0; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
         .status-tag { display: inline-block; padding: 8px 25px; border-radius: 50px; font-size: 15px; font-weight: bold; border: 2px solid var(--glow); color: var(--glow); margin-bottom: 15px; }
         
-        /* صناديق البحث والتنبيه */
         .card-ui { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 25px; border: 1px solid #1e293b; max-width: 330px; margin: 15px auto; }
         input { padding: 12px; border-radius: 12px; border: 1px solid #ffd700; background: #000; color: #fff; text-align: center; margin: 5px; font-size: 16px; }
         .btn-gold { background: #ffd700; color: #000; border: none; padding: 12px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 80%; margin-top: 10px; }
         .bell-btn { font-size: 50px; background: none; border: none; cursor: pointer; filter: grayscale(1); transition: 0.4s; padding: 10px; }
         .bell-active { filter: grayscale(0) drop-shadow(0 0 15px #ffd700); transform: scale(1.2); }
         .result-item { padding: 15px; border-bottom: 1px solid #222; cursor: pointer; transition: 0.3s; text-align: right; }
-        .result-item:hover { background: rgba(255,215,0,0.1); }
     </style>
 </head>
 <body>
@@ -36,14 +33,13 @@
 
     <div id="searchPage" class="card-ui">
         <h3 style="color:#ffd700; margin-top:0;">🔎 دليل صوفيگرام الذكي</h3>
-        <p style="font-size: 13px; color: #888;">ابحث عن اسم العيادة أو المحل لمتابعة دورك</p>
-        <input type="text" id="searchInput" placeholder="اكتب الاسم هنا..." style="width: 80%;">
+        <input type="text" id="searchInput" placeholder="اكتب اسم العيادة أو النشاط..." style="width: 85%;">
         <button class="btn-gold" onclick="performSearch()">ابحث الآن</button>
-        <div id="searchResults" style="margin-top:20px; max-height: 300px; overflow-y: auto;"></div>
+        <div id="searchResults" style="margin-top:20px;"></div>
     </div>
 
     <div id="livePage" style="display:none;">
-        <h2 id="clinicName" style="color:#ffd700; margin-bottom:5px; text-shadow: 0 2px 4px #000;"></h2>
+        <h2 id="clinicName" style="color:#ffd700; margin-bottom:5px;"></h2>
         <div id="statusTag" class="status-tag">--</div>
         
         <div class="number-box">
@@ -54,7 +50,7 @@
 
         <div class="card-ui">
             <p style="margin:0; color:#ffd700; font-weight: bold;">🔔 منبه ساعة الصفر الذكي:</p>
-            <p style="font-size: 11px; color: #888; margin: 5px 0;">ادخل رقمك وسنقوم بمناداتك فوراً</p>
+            <p style="font-size: 11px; color: #888; margin: 5px 0;">سنقوم بهز الهاتف ومناداتك فوراً</p>
             <input type="number" id="userTarget" placeholder="رقمك" style="width:70px;">
             <button id="bellIcon" class="bell-btn" onclick="toggleSmartAlarm()">🔔</button>
         </div>
@@ -96,17 +92,15 @@
             resDiv.innerHTML = "";
             for(let key in data) {
                 if(data[key].name.toLowerCase().includes(val)) {
-                    resDiv.innerHTML += `<div class="result-item" onclick="location.href='?id=${key}'">⭐ <b>${data[key].name}</b> <br> <small style="color:#ffd700;">انقر لمتابعة الدور المباشر</small></div>`;
+                    resDiv.innerHTML += `<div class="result-item" onclick="location.href='?id=${key}'">⭐ <b>${data[key].name}</b></div>`;
                 }
             }
-            if(resDiv.innerHTML === "") resDiv.innerHTML = "❌ لم يتم العثور على نتائج";
         };
 
         function startTracking(targetId) {
             onValue(ref(db, 'users/' + targetId), (snap) => {
                 const info = snap.val();
                 if(!info) return;
-                
                 const current = info.currentNum || 0;
                 document.getElementById('liveNumber').innerText = current;
                 document.getElementById('clinicName').innerText = info.name;
@@ -114,25 +108,34 @@
                 
                 const st = info.status || "";
                 document.getElementById('statusTag').innerText = st;
-                
-                // تحديث الألوان بذكاء
                 const root = document.documentElement;
                 if(st.includes("مفتوح")) root.style.setProperty('--glow', '#2ecc71');
                 else if(st.includes("قريباً") || st.includes("طريق")) root.style.setProperty('--glow', '#f1c40f');
                 else root.style.setProperty('--glow', '#e74c3c');
 
-                // نظام النداء الصوتي (مترو دبي)
+                // تشغيل التنبيه الشامل
                 const target = document.getElementById('userTarget').value;
                 if(isAlarmReady && target == current && target != "") {
-                    triggerVoice();
+                    triggerMegaAlarm();
                     isAlarmReady = false;
                     document.getElementById('bellIcon').classList.remove('bell-active');
-                    alert("🔔 صوفيگرام: حان دورك الآن!");
                 }
             });
         }
 
-        function triggerVoice() {
+        async function triggerMegaAlarm() {
+            // 1. الاهتزاز (للأندرويد)
+            if ("vibrate" in navigator) { navigator.vibrate([500, 200, 500, 200, 800]); }
+
+            // 2. إشعار منبثق
+            if (Notification.permission === "granted") {
+                new Notification("صوفيگرام | حان دورك الآن!", {
+                    body: "يرجى التوجه فوراً، لقد وصل الرقم إلى دورك المخصص.",
+                    icon: "logo.png"
+                });
+            }
+
+            // 3. النداء الصوتي (مترو دبي)
             const ar = new SpeechSynthesisUtterance("أهلاً بكم في منصة صوفي غرام العالمية. لقد حان دوركم الآن، يرجى التوجه فوراً. شكراً لكم.");
             ar.lang = 'ar-SA'; ar.rate = 0.8;
             const en = new SpeechSynthesisUtterance("Welcome to Sofygram International. It is your turn now, please proceed. Thank you.");
@@ -142,9 +145,23 @@
         }
 
         window.toggleSmartAlarm = () => {
-            if(!document.getElementById('userTarget').value) return alert("يرجى كتابة رقمك أولاً 🔔");
+            if(!document.getElementById('userTarget').value) return alert("اكتب رقمك أولاً 🔔");
+            
+            // طلب إذن الإشعارات
+            if ("Notification" in window) {
+                Notification.requestPermission();
+            }
+
+            // تفعيل محرك الصوت (إلزامي للموبايل)
+            const silent = new SpeechSynthesisUtterance("");
+            window.speechSynthesis.speak(silent);
+
             isAlarmReady = !isAlarmReady;
             document.getElementById('bellIcon').classList.toggle('bell-active');
+            
+            if(isAlarmReady) {
+                alert("تم تفعيل المنبه الشامل (صوت + اهتزاز + إشعار) ✅\nيرجى إبقاء الصفحة مفتوحة.");
+            }
         };
     </script>
 </body>
