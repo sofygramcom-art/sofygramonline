@@ -3,35 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صوفيگرام | المشاهد</title>
+    <title>صوفيگرام | منصة المشاهد</title>
     <style>
         body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 15px; }
-        .header-logo img { width: 220px; margin-top: 15px; }
-        .activity-name { color: #2ecc71; font-size: 28px; font-weight: bold; margin: 10px 0; }
-        .status-tag { display: inline-block; border: 1px solid #2ecc71; color: #2ecc71; padding: 6px 18px; border-radius: 50px; font-size: 14px; }
-        .number-card { background: #121212; border: 1px solid #333; border-radius: 25px; padding: 35px; max-width: 320px; margin: 20px auto; }
-        .big-number { font-size: 110px; font-weight: bold; color: #fff; margin: 5px 0; }
-        .note-display { color: #ffd700; background: rgba(255, 215, 0, 0.1); padding: 10px; border-radius: 10px; margin: 10px auto; max-width: 300px; font-size: 14px; }
-        
-        .search-section { margin-top: 40px; padding: 20px; background: #0a1122; border-radius: 20px; border: 1px solid #1e293b; }
-        input[type="text"] { width: 90%; padding: 15px; border-radius: 12px; border: 1px solid #333; background: #000; color: #fff; text-align: center; }
+        .header-logo img { width: 180px; margin-top: 10px; }
+        .clinic-box { background: #121212; border: 1px solid #333; border-radius: 20px; padding: 25px; margin: 20px auto; max-width: 350px; display: none; }
+        .big-num { font-size: 90px; font-weight: bold; color: #fff; margin: 10px 0; }
+        .status-tag { display: inline-block; padding: 5px 15px; border-radius: 50px; font-size: 13px; border: 1px solid #2ecc71; color: #2ecc71; }
+        .search-container { margin-top: 30px; padding: 20px; background: #0a1122; border-radius: 15px; border: 1px solid #1e293b; }
+        input { width: 90%; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #000; color: #fff; text-align: center; }
+        .search-result { margin-top: 15px; background: #1a2233; padding: 15px; border-radius: 10px; border-left: 4px solid #ffd700; display: none; text-align: right; }
     </style>
 </head>
 <body>
     <div class="header-logo"><img src="logo.png"></div>
-    <div class="activity-name" id="display-name">جاري التحميل...</div>
-    <div class="status-tag" id="display-status">--</div>
 
-    <div class="number-card">
-        <p style="color: #888; font-size: 14px;">الرقم الحالي الآن | Current No.</p>
-        <div class="big-number" id="display-num">0</div>
+    <div id="mainClinic" class="clinic-box">
+        <h2 id="name-display" style="color:#2ecc71;">--</h2>
+        <div id="status-display" class="status-tag">--</div>
+        <div class="big-num" id="num-display">0</div>
+        <p id="note-display" style="color:#ffd700; font-size:14px;"></p>
     </div>
 
-    <div id="display-note" class="note-display" style="display:none;"></div>
-
-    <div class="search-section">
-        <h3 style="color: #2ecc71; font-size: 16px;">🔍 ابحث عن عيادة أو نشاط آخر:</h3>
-        <input type="text" id="searchInput" placeholder="اكتب اسم العيادة هنا...">
+    <div class="search-container">
+        <h3>🔍 ابحث عن عيادة أو نشاط:</h3>
+        <input type="text" id="searchInput" placeholder="اكتب الاسم هنا (مثلاً: غازي)...">
+        
+        <div id="searchResult" class="search-result">
+            <h4 id="res-name" style="margin:0; color:#ffd700;"></h4>
+            <p style="margin:5px 0;">الرقم الحالي: <b id="res-num" style="font-size:20px;"></b></p>
+            <p style="margin:5px 0;">الحالة: <span id="res-status"></span></p>
+            <p style="margin:5px 0; font-size:12px; color:#888;">ملاحظة: <span id="res-note"></span></p>
+            <button id="goToClinic" style="width:100%; background:#2ecc71; border:none; padding:8px; border-radius:5px; color:white; margin-top:10px;">دخول لصفحة العيادة</button>
+        </div>
     </div>
 
     <script type="module">
@@ -47,23 +51,51 @@
             messagingSenderId: "207475452149",
             appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        onValue(ref(db, 'live_data'), (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                document.getElementById('display-num').innerText = data.currentNum ?? 0;
-                document.getElementById('display-name').innerText = data.name || "صوفيگرام";
-                document.getElementById('display-status').innerText = data.status || "مفتوح";
-                if(data.note) {
-                    document.getElementById('display-note').innerText = data.note;
-                    document.getElementById('display-note').style.display = 'block';
-                } else {
-                    document.getElementById('display-note').style.display = 'none';
+        // 1. جلب بيانات الدكتور من الرابط (id=...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const clinicId = urlParams.get('id');
+
+        if (clinicId) {
+            document.getElementById('mainClinic').style.display = 'block';
+            onValue(ref(db, 'users/' + clinicId), (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    document.getElementById('name-display').innerText = data.name;
+                    document.getElementById('num-display').innerText = data.currentNum || 0;
+                    document.getElementById('status-display').innerText = data.status || "مفتوح";
+                    document.getElementById('note-display').innerText = data.note || "";
                 }
-            }
+            });
+        }
+
+        // 2. ميزة البحث الشامل في كل الدكاترة
+        const searchInput = document.getElementById('searchInput');
+        onValue(ref(db, 'users'), (snapshot) => {
+            const allUsers = snapshot.val();
+            searchInput.addEventListener('input', (e) => {
+                const val = e.target.value.trim();
+                let foundId = null;
+
+                if (val.length > 1) {
+                    for (let id in allUsers) {
+                        if (allUsers[id].name.includes(val)) {
+                            foundId = id;
+                            const d = allUsers[id];
+                            document.getElementById('searchResult').style.display = 'block';
+                            document.getElementById('res-name').innerText = d.name;
+                            document.getElementById('res-num').innerText = d.currentNum || 0;
+                            document.getElementById('res-status').innerText = d.status || "مفتوح";
+                            document.getElementById('res-note').innerText = d.note || "لا توجد ملاحظات";
+                            document.getElementById('goToClinic').onclick = () => { window.location.href = 'view.html?id=' + id; };
+                            return;
+                        }
+                    }
+                }
+                document.getElementById('searchResult').style.display = 'none';
+            });
         });
     </script>
 </body>
