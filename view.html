@@ -8,18 +8,18 @@
         :root { --glow: #e74c3c; } 
         body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; transition: 0.5s; overflow-x: hidden; }
         
-        /* أيقونة الكرة الأرضية - تصميم مضيء */
-        .lang-icon { position: absolute; top: 20px; left: 20px; cursor: pointer; font-size: 35px; filter: drop-shadow(0 0 10px #3498db); transition: 0.3s; z-index: 10; }
+        /* أيقونة الكرة الأرضية */
+        .lang-icon { position: absolute; top: 20px; left: 20px; cursor: pointer; font-size: 35px; filter: drop-shadow(0 0 10px #3498db); z-index: 10; }
         
-        /* قائمة اللغات - تظهر في المنتصف كـ نافذة احترافية */
+        /* قائمة اللغات المنبثقة */
         .lang-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
         .lang-modal { background: #121212; border: 2px solid #ffd700; border-radius: 30px; padding: 25px; width: 280px; box-shadow: 0 0 30px #ffd700; }
-        .lang-item { padding: 15px; cursor: pointer; border-bottom: 1px solid #222; font-size: 18px; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .lang-item { padding: 15px; cursor: pointer; border-bottom: 1px solid #222; font-size: 18px; transition: 0.2; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .lang-item:hover { background: rgba(255,215,0,0.1); color: #ffd700; border-radius: 10px; }
 
         .logo img { width: 150px; margin-top: 15px; filter: drop-shadow(0 0 10px rgba(255,215,0,0.3)); }
 
-        /* الهالة الحمراء النبضية */
+        /* الهالة النبضية */
         .number-box { 
             background: #121212; border: 2px solid var(--glow); border-radius: 40px; padding: 30px; 
             max-width: 320px; margin: 20px auto; box-shadow: 0 0 30px var(--glow); animation: pulse 2s infinite; 
@@ -32,9 +32,10 @@
         .card-ui { background: rgba(255,255,255,0.03); padding: 30px; border-radius: 35px; border: 1px solid #1e293b; max-width: 350px; margin: 20px auto; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
         input { padding: 15px; border-radius: 15px; border: 2px solid #ffd700; background: #000; color: #fff; text-align: center; width: 85%; font-size: 18px; outline: none; margin-bottom: 15px; }
         .btn-gold { background:#ffd700; color:#000; border:none; padding:18px; border-radius:18px; font-weight:bold; width:95%; cursor:pointer; font-size: 18px; transition: 0.3s; }
-        .btn-gold:hover { transform: scale(1.05); background: #ffea00; }
         .bell-btn { font-size: 65px; background: none; border: none; cursor: pointer; filter: grayscale(1); transition: 0.4s; }
         .note-box { background: rgba(255, 215, 0, 0.1); border: 1px dashed #ffd700; padding: 15px; border-radius: 18px; margin-top: 15px; color: #ffd700; font-weight: bold; font-size: 16px; }
+        .res-item { padding:15px; border-bottom:1px solid #333; cursor:pointer; color:#fff; transition: 0.2s; }
+        .res-item:hover { background: rgba(255,255,255,0.05); color:#ffd700; }
     </style>
 </head>
 <body>
@@ -42,13 +43,10 @@
 
     <div class="lang-overlay" id="lOverlay" onclick="closeLang()">
         <div class="lang-modal" onclick="event.stopPropagation()">
-            <h3 style="color:#ffd700; margin-bottom:15px;">Choose Language</h3>
             <div class="lang-item" onclick="setLang('ar')">🇮🇶 العربية</div>
             <div class="lang-item" onclick="setLang('en')">🇺🇸 English</div>
             <div class="lang-item" onclick="setLang('fa')">🇮🇷 فارسی</div>
             <div class="lang-item" onclick="setLang('tr')">🇹🇷 Türkçe</div>
-            <div class="lang-item" onclick="setLang('de')">🇩🇪 Deutsch</div>
-            <div class="lang-item" onclick="setLang('sv')">🇸🇪 Svenska</div>
         </div>
     </div>
 
@@ -71,12 +69,12 @@
             <div id="liveNote" class="note-box"></div>
         </div>
         <div class="card-ui">
-            <p id="t-alarm" style="margin:0; color:#ffd700; font-weight:bold; font-size:18px;">🔔 منبه ساعة الصفر الذكي</p>
+            <p id="t-alarm" style="margin:0; color:#ffd700; font-weight:bold;">🔔 منبه ساعة الصفر الذكي</p>
             <input type="number" id="userTarget" placeholder="0" style="width: 80px; margin-top:10px;">
             <br>
             <button id="bellIcon" class="bell-btn" onclick="toggleAlarm()">🔔</button>
         </div>
-        <button id="t-back" onclick="location.href='view.html'" style="background:none; color:#888; border:none; text-decoration:underline; cursor:pointer; margin-top:10px;">العودة</button>
+        <button id="t-back" onclick="location.href='view.html'" style="background:none; color:#888; border:none; text-decoration:underline; cursor:pointer;">العودة</button>
     </div>
 
     <script type="module">
@@ -95,9 +93,7 @@
 
         const dict = {
             ar: { stitle: "🔎 دليل صوفيگرام العالمي", sdesc: "ابحث عن (طبيب، حلاق، مطعم، أو أي نشاط تجاري) لمتابعة دورك لايف.", sbtn: "بحث الآن", cur: "الرقم الحالي الآن", alarm: "🔔 منبه ساعة الصفر الذكي", back: "العودة ↩️", ph: "اكتب الاسم هنا..." },
-            en: { stitle: "🔎 Sofygram Akıllı Rehber", sdesc: "Search for (Clinic, Barber, Restaurant) to track your turn live.", sbtn: "Şimdi Ara", cur: "Current Number Now", alarm: "🔔 Zero Hour Alarm", back: "Back ↩️", ph: "İsmi buraya yazın..." },
-            fa: { stitle: "🔎 راهنمای جهانی صوفی‌گرام", sdesc: "جستجو برای (پزشک، آرایشگاه، رستوران) برای پیگیری نوبت.", sbtn: "جستجو", cur: "شماره فعلی", alarm: "🔔 هشدار ساعت صفر", back: "بازگشت", ph: "نام را اینجا بنویسید..." },
-            tr: { stitle: "🔎 Sofygram Akıllı Rehber", sdesc: "Sıranızı canlı takip etmek için (Klinik, Berber, Restoran) arayın.", sbtn: "Şimdi Ara", cur: "Şu Anki Numara", alarm: "🔔 Sıfır Saat Alarmı", back: "Geri Dön", ph: "İsmi buraya yazın..." }
+            en: { stitle: "🔎 Sofygram Smart Guide", sdesc: "Search for (Clinic, Barber, Restaurant) to track your turn live.", sbtn: "Search Now", cur: "Current Number", alarm: "🔔 Smart Alarm", back: "Back", ph: "Type name..." }
         };
 
         let curLang = 'ar';
@@ -119,13 +115,35 @@
             document.body.dir = (l === 'ar' || l === 'fa') ? 'rtl' : 'ltr';
         };
 
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const w = new SpeechSynthesisUtterance("Welcome to Sofygram.");
+                w.lang = 'en-US'; w.rate = 0.8; window.speechSynthesis.speak(w);
+            }, 1000);
+        });
+
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        if(id) { 
+            document.getElementById('searchPage').style.display = 'none';
+            document.getElementById('livePage').style.display = 'block';
+            startTracking(id); 
+        }
+
         window.performSearch = async () => {
             const val = document.getElementById('searchInput').value.toLowerCase();
             const snap = await get(ref(db, 'users'));
             const data = snap.val();
             const resDiv = document.getElementById('searchResults'); resDiv.innerHTML = "";
-            for(let key in data) if(data[key].name.toLowerCase().includes(val)) 
-                resDiv.innerHTML += `<div style="padding:15px; border-bottom:1px solid #333; cursor:pointer;" onclick="location.href='?id=${key}'">⭐ ${data[key].name}</div>`;
+            for(let key in data) {
+                if(data[key].name.toLowerCase().includes(val)) {
+                    // تم إصلاح رابط التحويل هنا ✅
+                    resDiv.innerHTML += `
+                        <div class="res-item" onclick="window.location.href='?id=${key}'">
+                            ⭐ ${data[key].name}
+                        </div>`;
+                }
+            }
         };
 
         function startTracking(targetId) {
@@ -136,6 +154,7 @@
                 document.getElementById('clinicName').innerText = info.name;
                 const noteBox = document.getElementById('liveNote');
                 if(info.note) { noteBox.innerText = info.note; noteBox.style.display = "block"; } else { noteBox.style.display = "none"; }
+                
                 const st = info.status || "";
                 document.getElementById('statusTag').innerText = st;
                 const root = document.documentElement;
@@ -147,13 +166,13 @@
                     window.speechSynthesis.speak(new SpeechSynthesisUtterance("حان دورك الآن"));
                     isAlarmReady = false;
                     document.getElementById('bellIcon').style.filter = "grayscale(1)";
-                    alert("Sofygram!");
+                    alert("Sofygram Alert!");
                 }
             });
         }
 
         window.toggleAlarm = () => {
-            if(!document.getElementById('userTarget').value) return alert("يرجى إدخال رقمك أولاً 🔔");
+            if(!document.getElementById('userTarget').value) return alert("يرجى إدخال رقمك 🔔");
             isAlarmReady = !isAlarmReady;
             document.getElementById('bellIcon').style.filter = isAlarmReady ? "grayscale(0) drop-shadow(0 0 15px #ffd700)" : "grayscale(1)";
             window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
