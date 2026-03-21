@@ -14,28 +14,40 @@
         /* قائمة اللغات المنبثقة */
         .lang-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
         .lang-modal { background: #121212; border: 2px solid #ffd700; border-radius: 30px; padding: 25px; width: 280px; box-shadow: 0 0 30px #ffd700; }
-        .lang-item { padding: 15px; cursor: pointer; border-bottom: 1px solid #222; font-size: 18px; transition: 0.2; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .lang-item { padding: 15px; cursor: pointer; border-bottom: 1px solid #222; font-size: 18px; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .lang-item:hover { background: rgba(255,215,0,0.1); color: #ffd700; border-radius: 10px; }
 
-        .logo img { width: 150px; margin-top: 15px; filter: drop-shadow(0 0 10px rgba(255,215,0,0.3)); }
+        /* الشعار المتوهج */
+        .logo img { width: 160px; margin-top: 15px; filter: drop-shadow(0 0 15px rgba(255,215,0,0.4)); animation: logoPulse 3s infinite; }
+        @keyframes logoPulse { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 12px rgba(255,215,0,0.3)); } 50% { transform: scale(1.03); filter: drop-shadow(0 0 25px rgba(255,215,0,0.6)); } }
 
         /* الهالة النبضية */
         .number-box { 
-            background: #121212; border: 2px solid var(--glow); border-radius: 40px; padding: 30px; 
+            background: #121212; border: 3px solid var(--glow); border-radius: 45px; padding: 35px; 
             max-width: 320px; margin: 20px auto; box-shadow: 0 0 30px var(--glow); animation: pulse 2s infinite; 
         }
-        @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--glow); } 50% { transform: scale(1.02); box-shadow: 0 0 50px var(--glow); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--glow); } 50% { transform: scale(1.02); box-shadow: 0 0 60px var(--glow); } }
         
-        .big-num { font-size: 115px; font-weight: bold; margin: 5px 0; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.2); }
-        .status-tag { display: inline-block; padding: 10px 30px; border-radius: 50px; font-size: 16px; font-weight: bold; border: 2px solid var(--glow); color: var(--glow); margin-bottom: 10px; background: rgba(0,0,0,0.5); }
+        .big-num { font-size: 120px; font-weight: bold; margin: 5px 0; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.3); }
+        .status-tag { display: inline-block; padding: 10px 35px; border-radius: 50px; font-size: 16px; font-weight: bold; border: 2px solid var(--glow); color: var(--glow); margin-bottom: 10px; background: rgba(0,0,0,0.5); }
         
         .card-ui { background: rgba(255,255,255,0.03); padding: 30px; border-radius: 35px; border: 1px solid #1e293b; max-width: 350px; margin: 20px auto; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
-        input { padding: 15px; border-radius: 15px; border: 2px solid #ffd700; background: #000; color: #fff; text-align: center; width: 85%; font-size: 18px; outline: none; margin-bottom: 15px; }
+        input { padding: 15px; border-radius: 15px; border: 2px solid #ffd700; background: #000; color: #fff; text-align: center; width: 85%; font-size: 20px; outline: none; margin-bottom: 15px; }
+        
         .btn-gold { background:#ffd700; color:#000; border:none; padding:18px; border-radius:18px; font-weight:bold; width:95%; cursor:pointer; font-size: 18px; transition: 0.3s; }
-        .bell-btn { font-size: 65px; background: none; border: none; cursor: pointer; filter: grayscale(1); transition: 0.4s; }
+        .btn-gold:hover { transform: scale(1.05); background: #ffea00; }
+        
+        /* زر البحث عن نشاط آخر */
+        .btn-back-search { background: rgba(255,255,255,0.05); color: #888; border: 1px solid #333; padding: 15px; border-radius: 15px; width: 95%; cursor: pointer; font-size: 14px; margin-top: 20px; transition: 0.3s; }
+        .btn-back-search:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: #ffd700; }
+
+        .bell-btn { font-size: 80px; background: none; border: none; cursor: pointer; filter: grayscale(1); transition: 0.4s; }
+        .bell-active { filter: grayscale(0) drop-shadow(0 0 25px #ffd700); animation: bellRing 1s infinite; }
+        @keyframes bellRing { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(10deg); } 75% { transform: rotate(-10deg); } }
+
         .note-box { background: rgba(255, 215, 0, 0.1); border: 1px dashed #ffd700; padding: 15px; border-radius: 18px; margin-top: 15px; color: #ffd700; font-weight: bold; font-size: 16px; }
-        .res-item { padding:15px; border-bottom:1px solid #333; cursor:pointer; color:#fff; transition: 0.2s; }
-        .res-item:hover { background: rgba(255,255,255,0.05); color:#ffd700; }
+        .res-item { padding:18px; border-bottom:1px solid #222; cursor:pointer; color:#fff; font-size: 18px; }
+        .res-item:hover { background: rgba(255,215,0,0.1); color:#ffd700; }
     </style>
 </head>
 <body>
@@ -56,25 +68,28 @@
         <h2 id="t-stitle" style="color:#ffd700; margin-bottom: 5px;">🔎 دليل صوفيگرام العالمي</h2>
         <p id="t-sdesc" style="font-size: 14px; color: #bbb; margin-bottom: 25px;">ابحث عن (طبيب، حلاق، مطعم، أو أي نشاط تجاري) لمتابعة دورك لايف.</p>
         <input type="text" id="searchInput" placeholder="...">
-        <button id="t-sbtn" onclick="performSearch()" class="btn-gold">بحث الآن</button>
+        <button id="t-sbtn" onclick="performSearch()" class="btn-gold">بحث الآن | Search Now</button>
         <div id="searchResults" style="margin-top:20px; max-height: 250px; overflow-y: auto;"></div>
     </div>
 
     <div id="livePage" style="display:none;">
-        <h2 id="clinicName" style="color:#ffd700;"></h2>
+        <h2 id="clinicName" style="color:#ffd700; margin-bottom: 5px;"></h2>
         <div id="statusTag" class="status-tag">--</div>
+        
         <div class="number-box">
             <p id="t-cur" style="color:#888; font-size:14px; margin:0;">الرقم الحالي الآن</p>
             <div class="big-num" id="liveNumber">0</div>
             <div id="liveNote" class="note-box"></div>
         </div>
+
         <div class="card-ui">
-            <p id="t-alarm" style="margin:0; color:#ffd700; font-weight:bold;">🔔 منبه ساعة الصفر الذكي</p>
-            <input type="number" id="userTarget" placeholder="0" style="width: 80px; margin-top:10px;">
+            <p id="t-alarm" style="margin:0; color:#ffd700; font-weight:bold; font-size:18px;">🔔 منبه ساعة الصفر الذكي</p>
+            <input type="number" id="userTarget" placeholder="0" style="width: 100px; margin-top:15px; font-size: 25px;">
             <br>
             <button id="bellIcon" class="bell-btn" onclick="toggleAlarm()">🔔</button>
         </div>
-        <button id="t-back" onclick="location.href='view.html'" style="background:none; color:#888; border:none; text-decoration:underline; cursor:pointer;">العودة</button>
+        
+        <button class="btn-back-search" onclick="location.href='view.html'">🔍 البحث عن عيادة أو نشاط آخر</button>
     </div>
 
     <script type="module">
@@ -92,8 +107,8 @@
         const db = getDatabase(app);
 
         const dict = {
-            ar: { stitle: "🔎 دليل صوفيگرام العالمي", sdesc: "ابحث عن (طبيب، حلاق، مطعم، أو أي نشاط تجاري) لمتابعة دورك لايف.", sbtn: "بحث الآن", cur: "الرقم الحالي الآن", alarm: "🔔 منبه ساعة الصفر الذكي", back: "العودة ↩️", ph: "اكتب الاسم هنا..." },
-            en: { stitle: "🔎 Sofygram Smart Guide", sdesc: "Search for (Clinic, Barber, Restaurant) to track your turn live.", sbtn: "Search Now", cur: "Current Number", alarm: "🔔 Smart Alarm", back: "Back", ph: "Type name..." }
+            ar: { stitle: "🔎 دليل صوفيگرام العالمي", sdesc: "ابحث عن (طبيب، حلاق، مطعم، أو أي نشاط تجاري) لمتابعة دورك لايف.", sbtn: "بحث الآن", cur: "الرقم الحالي الآن", alarm: "🔔 منبه ساعة الصفر الذكي", ph: "اكتب الاسم هنا..." },
+            en: { stitle: "🔎 Sofygram Smart Guide", sdesc: "Search for (Doctor, Barber, Restaurant) to track your turn live.", sbtn: "Search Now", cur: "Current Number", alarm: "🔔 Smart Alarm", ph: "Type name..." }
         };
 
         let curLang = 'ar';
@@ -110,7 +125,6 @@
             document.getElementById('t-sbtn').innerText = d.sbtn;
             document.getElementById('t-cur').innerText = d.cur;
             document.getElementById('t-alarm').innerText = d.alarm;
-            document.getElementById('t-back').innerText = d.back;
             document.getElementById('searchInput').placeholder = d.ph;
             document.body.dir = (l === 'ar' || l === 'fa') ? 'rtl' : 'ltr';
         };
@@ -137,11 +151,7 @@
             const resDiv = document.getElementById('searchResults'); resDiv.innerHTML = "";
             for(let key in data) {
                 if(data[key].name.toLowerCase().includes(val)) {
-                    // تم إصلاح رابط التحويل هنا ✅
-                    resDiv.innerHTML += `
-                        <div class="res-item" onclick="window.location.href='?id=${key}'">
-                            ⭐ ${data[key].name}
-                        </div>`;
+                    resDiv.innerHTML += `<div class="res-item" onclick="window.location.href='?id=${key}'">⭐ ${data[key].name}</div>`;
                 }
             }
         };
@@ -163,18 +173,34 @@
                 else root.style.setProperty('--glow', '#e74c3c');
 
                 if(isAlarmReady && document.getElementById('userTarget').value == current && current != 0) {
-                    window.speechSynthesis.speak(new SpeechSynthesisUtterance("حان دورك الآن"));
+                    triggerBilingualAlarm();
                     isAlarmReady = false;
-                    document.getElementById('bellIcon').style.filter = "grayscale(1)";
-                    alert("Sofygram Alert!");
+                    document.getElementById('bellIcon').classList.remove('bell-active');
                 }
             });
+        }
+
+        async function triggerBilingualAlarm() {
+            if ("vibrate" in navigator) { navigator.vibrate([500, 200, 500, 200, 500]); }
+            
+            // نداء مترو دبي المزدوج الفخم
+            const msgAr = new SpeechSynthesisUtterance("أهلاً بكم في منصة صوفي غرام العالمية. حان دوركم الآن، يرجى التوجه حالاً. شكراً لكم.");
+            msgAr.lang = 'ar-SA'; msgAr.rate = 0.85;
+            
+            const msgEn = new SpeechSynthesisUtterance("Welcome to Sofygram International. It is your turn now, please proceed immediately. Thank you.");
+            msgEn.lang = 'en-US'; msgEn.rate = 0.85;
+            
+            window.speechSynthesis.speak(msgAr);
+            // الانتظار قليلاً قبل النداء الإنجليزي لضمان عدم التداخل
+            setTimeout(() => { window.speechSynthesis.speak(msgEn); }, 6000);
+
+            alert("🔔 Sofygram Alert: حان دورك الآن!");
         }
 
         window.toggleAlarm = () => {
             if(!document.getElementById('userTarget').value) return alert("يرجى إدخال رقمك 🔔");
             isAlarmReady = !isAlarmReady;
-            document.getElementById('bellIcon').style.filter = isAlarmReady ? "grayscale(0) drop-shadow(0 0 15px #ffd700)" : "grayscale(1)";
+            document.getElementById('bellIcon').classList.toggle('bell-active');
             window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
         };
     </script>
