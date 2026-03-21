@@ -3,31 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صوفيگرام | تسجيل حساب جديد</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <title>انضم إلى صوفيگرام | التسجيل والاشتراك 👑</title>
     <style>
-        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
-        .reg-card { background: #121212; padding: 30px; border-radius: 20px; max-width: 400px; margin: auto; border: 1px solid #2ecc71; }
-        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #333; background: #000; color: #fff; text-align: center; }
-        button { width: 100%; padding: 15px; background: #2ecc71; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; }
-        #qrcode { margin-top: 20px; background: white; padding: 10px; display: inline-block; border-radius: 10px; display: none; }
-        .success-msg { color: #2ecc71; display: none; margin-top: 15px; }
+        :root { --glow: #ffd700; }
+        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 15px; }
+        
+        .reg-card { background: #121212; padding: 25px; border-radius: 35px; max-width: 450px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 25px rgba(255, 215, 0, 0.1); }
+        
+        h2 { color: var(--glow); margin-bottom: 25px; }
+        .step-label { display: block; text-align: right; margin: 15px 25px 5px 0; font-size: 14px; color: #888; }
+        
+        input { width: 85%; padding: 15px; margin-bottom: 15px; border-radius: 15px; border: 1px solid #333; background: #000; color: #fff; text-align: center; font-size: 16px; outline: none; }
+        input:focus { border-color: var(--glow); }
+
+        /* منطقة الدفع */
+        .pay-box { background: rgba(255, 255, 255, 0.03); border: 1px dashed #444; border-radius: 20px; padding: 20px; margin: 20px 0; }
+        .pay-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; background: #000; padding: 12px; border-radius: 12px; border: 1px solid #222; }
+        .pay-item img { height: 30px; }
+        .pay-num { font-family: monospace; font-size: 16px; color: var(--glow); letter-spacing: 1px; }
+
+        .btn-whatsapp { 
+            background: #25d366; color: white; border: none; padding: 18px; border-radius: 20px; 
+            font-weight: bold; width: 95%; cursor: pointer; font-size: 17px; margin-top: 10px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); transition: 0.3s;
+        }
+        .btn-whatsapp:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5); }
     </style>
 </head>
 <body>
-    <div class="reg-card">
-        <img src="logo.png" style="width: 150px; margin-bottom: 20px;">
-        <h2>تسجيل عيادة جديدة</h2>
-        <input type="text" id="username" placeholder="اسم المستخدم (بالإنجليزي - مثلاً: dr_ali)">
-        <input type="text" id="clinicName" placeholder="اسم العيادة (مثلاً: عيادة الدكتور علي)">
-        <input type="password" id="password" placeholder="كلمة المرور">
-        <button id="regBtn">إنشاء الحساب وتوليد الباركود 🚀</button>
 
-        <div id="successZone">
-            <p class="success-msg" id="msg">تم التسجيل بنجاح! احفظ الباركود:</p>
-            <div id="qrcode"></div>
-            <p style="font-size: 12px; color: #888; margin-top: 10px;">بانتظار تفعيل الإدارة للاستخدام...</p>
+    <div class="reg-card">
+        <img src="logo.png" style="width: 130px; margin-bottom: 10px;">
+        <h2>إنشاء حساب جديد 👑</h2>
+
+        <span class="step-label">1. معلومات العيادة / النشاط:</span>
+        <input type="text" id="regName" placeholder="اسم العيادة (مثال: عيادة الأمل)">
+        <input type="text" id="regUser" placeholder="اسم المستخدم (بالإنجليزي فقط)">
+        <input type="password" id="regPass" placeholder="كلمة المرور الخاصة بك">
+
+        <div class="pay-box">
+            <span style="display:block; color:var(--glow); margin-bottom:15px; font-weight:bold;">💳 خيارات الدفع (تفعيل 30 يوم)</span>
+            
+            <div class="pay-item">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Zain_Cash_Logo.png" alt="ZainCash">
+                <span class="pay-num">07800000000</span>
+            </div>
+
+            <div class="pay-item">
+                <span style="font-weight:bold; color:#fff;">MasterCard</span>
+                <span class="pay-num">0000 0000 0000 0000</span>
+            </div>
+            
+            <p style="font-size: 12px; color: #888;">بعد التحويل، يرجى تصوير وصل الحوالة وإرساله لنا عبر الواتساب لتفعيل حسابك فوراً.</p>
         </div>
+
+        <button class="btn-whatsapp" onclick="sendToWhatsapp()">
+            <span>إرسال وصل الحوالة للتفعيل</span>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:25px;">
+        </button>
+        
+        <p style="margin-top:20px; font-size:12px; color:#555;">Sofygram Global Payment System © 2026</p>
     </div>
 
     <script type="module">
@@ -39,37 +75,33 @@
             authDomain: "sofygramclinic.firebaseapp.com",
             databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
             projectId: "sofygramclinic",
-            storageBucket: "sofygramclinic.firebasestorage.app",
-            messagingSenderId: "207475452149",
             appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
         };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        document.getElementById('regBtn').onclick = function() {
-            const user = document.getElementById('username').value.trim();
-            const name = document.getElementById('clinicName').value.trim();
-            const pass = document.getElementById('password').value;
+        window.sendToWhatsapp = () => {
+            const name = document.getElementById('regName').value;
+            const user = document.getElementById('regUser').value;
+            const pass = document.getElementById('regPass').value;
 
-            if(!user || !name || !pass) return alert("يرجى ملء كافة الحقول");
+            if(!name || !user || !pass) {
+                alert("يرجى ملء كافة الحقول أولاً!");
+                return;
+            }
 
+            // أولاً: حفظ البيانات في قاعدة البيانات كـ "حساب غير مفعل"
             set(ref(db, 'users/' + user), {
                 name: name,
                 password: pass,
-                status: "مغلق - بانتظار التفعيل",
+                active: false, // لا يفعل إلا بعد مراجعتك
                 currentNum: 0,
-                active: false // يحتاج تفعيل من صفحة الماستر
+                status: "بانتظار التفعيل ⏳"
             }).then(() => {
-                document.getElementById('msg').style.display = 'block';
-                const qrDiv = document.getElementById('qrcode');
-                qrDiv.style.display = 'inline-block';
-                qrDiv.innerHTML = "";
-                // توليد رابط فريد لهذا الدكتور
-                new QRCode(qrDiv, {
-                    text: `https://sofygram.com/view.html?id=${user}`,
-                    width: 200, height: 200
-                });
-                alert("تم إرسال طلبك للإدارة");
+                // ثانياً: توجيه المستخدم للواتساب مع رسالة جاهزة
+                const myNumber = "9647800000000"; // ضع رقمك هنا غداً
+                const msg = `مرحباً صوفيگرام، قمت بالتحويل لتفعيل حسابي:\n\nالاسم: ${name}\nالمستخدم: ${user}\n\n(سأرفق صورة الوصل الآن)`;
+                window.location.href = `https://wa.me/${myNumber}?text=${encodeURIComponent(msg)}`;
             });
         };
     </script>
