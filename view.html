@@ -48,6 +48,22 @@
         .note-box { background: rgba(255, 215, 0, 0.1); border: 1px dashed #ffd700; padding: 15px; border-radius: 18px; margin-top: 15px; color: #ffd700; font-weight: bold; font-size: 16px; }
         .res-item { padding:18px; border-bottom:1px solid #222; cursor:pointer; color:#fff; font-size: 18px; }
         .res-item:hover { background: rgba(255,215,0,0.1); color:#ffd700; }
+
+        /* البطاقة العائمة لآخر جلسة (الفخامة الجديدة) */
+        .session-card { 
+            display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+            background: rgba(18, 18, 18, 0.95); border: 2px solid #ffd700; border-radius: 20px; 
+            width: 330px; padding: 12px; z-index: 1000; text-align: right; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); animation: slideUp 0.5s ease-out; 
+        }
+        .session-card:hover { transform: translateX(-50%) translateY(-3px); box-shadow: 0 15px 40px rgba(0,0,0,0.9); }
+        @keyframes slideUp { from { bottom: -100px; opacity: 0; } to { bottom: 20px; opacity: 1; } }
+        .sc-title { font-size: 13px; color: #ffd700; font-weight: bold; margin: 0; }
+        .sc-name { font-size: 18px; color: #fff; font-weight: bold; margin: 3px 0; }
+        .sc-details { font-size: 12px; color: #aaa; margin: 0; display: flex; align-items: center; gap: 8px; }
+        .sc-icon { font-size: 28px; filter: grayscale(1); margin-right: 10px; color: #ffd700; }
+        .sc-num { font-size: 32px; font-weight: bold; color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+        .sc-x { position: absolute; top: -10px; right: -10px; background: #ffd700; color: #000; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
@@ -59,6 +75,21 @@
             <div class="lang-item" onclick="setLang('en')">🇺🇸 English</div>
             <div class="lang-item" onclick="setLang('fa')">🇮🇷 فارسی</div>
             <div class="lang-item" onclick="setLang('tr')">🇹🇷 Türkçe</div>
+        </div>
+    </div>
+
+    <div id="sessionCard" class="session-card" onclick="goToCurrentSession()">
+        <div class="sc-x" onclick="clearCurrentSession(event)">×</div>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center;">
+                <div class="sc-icon">📍</div>
+                <div>
+                    <p id="scTitle" class="sc-title">متابعة آخر دور نشط</p>
+                    <p id="scName" class="sc-name"></p>
+                    <p id="scDetails" class="sc-details">الرقم الحالي: <b id="scNum" class="sc-num">0</b></p>
+                </div>
+            </div>
+            <div class="sc-num" id="scTargetNum"></div>
         </div>
     </div>
 
@@ -107,8 +138,8 @@
         const db = getDatabase(app);
 
         const dict = {
-            ar: { stitle: "🔎 دليل صوفيگرام العالمي", sdesc: "ابحث عن (طبيب، حلاق، مطعم، أو أي نشاط تجاري) لمتابعة دورك لايف.", sbtn: "بحث الآن", cur: "الرقم الحالي الآن", alarm: "🔔 منبه ساعة الصفر الذكي", ph: "اكتب الاسم هنا..." },
-            en: { stitle: "🔎 Sofygram Smart Guide", sdesc: "Search for (Doctor, Barber, Restaurant) to track your turn live.", sbtn: "Search Now", cur: "Current Number", alarm: "🔔 Smart Alarm", ph: "Type name..." }
+            ar: { stitle: "🔎 دليل صوفيگرام العالمي", sdesc: "ابحث عن (طبيب، حلاق، مطعم، أو أي نشاط تجاري) لمتابعة دورك لايف.", sbtn: "بحث الآن", cur: "الرقم الحالي الآن", alarm: "🔔 منبه ساعة الصفر الذكي", ph: "اكتب الاسم هنا...", curSession: "متابعة آخر دور نشط 📍" },
+            en: { stitle: "🔎 Sofygram Smart Guide", sdesc: "Search for (Doctor, Barber, Restaurant) to track your turn live.", sbtn: "Search Now", cur: "Current Number", alarm: "🔔 Smart Alarm", ph: "Type name...", curSession: "Track Active Role 📍" }
         };
 
         let curLang = 'ar';
@@ -126,6 +157,7 @@
             document.getElementById('t-cur').innerText = d.cur;
             document.getElementById('t-alarm').innerText = d.alarm;
             document.getElementById('searchInput').placeholder = d.ph;
+            document.getElementById('scTitle').innerText = d.curSession;
             document.body.dir = (l === 'ar' || l === 'fa') ? 'rtl' : 'ltr';
         };
 
@@ -134,6 +166,9 @@
                 const w = new SpeechSynthesisUtterance("Welcome to Sofygram.");
                 w.lang = 'en-US'; w.rate = 0.8; window.speechSynthesis.speak(w);
             }, 1000);
+            
+            // تحقق من وجود جلسة نشطة عند التحميل
+            checkActiveSession();
         });
 
         const params = new URLSearchParams(window.location.search);
@@ -141,6 +176,7 @@
         if(id) { 
             document.getElementById('searchPage').style.display = 'none';
             document.getElementById('livePage').style.display = 'block';
+            document.getElementById('sessionCard').style.display = 'none'; // أخف البطاقة العائمة داخل العيادة
             startTracking(id); 
         }
 
@@ -157,6 +193,9 @@
         };
 
         function startTracking(targetId) {
+            // حفظ الجلسة النشطة في Local Storage عند بدء التتبع
+            localStorage.setItem('sofygramActiveId', targetId);
+            
             onValue(ref(db, 'users/' + targetId), (snap) => {
                 const info = snap.val(); if(!info) return;
                 const current = info.currentNum || 0;
@@ -180,20 +219,51 @@
             });
         }
 
+        // دالة التحقق من الجلسة النشطة وإظهار البطاقة
+        function checkActiveSession() {
+            const activeId = localStorage.getItem('sofygramActiveId');
+            const searchPage = document.getElementById('searchPage');
+            
+            // إذا كنا في صفحة البحث ويوجد جلسة نشطة
+            if (activeId && searchPage.style.display !== 'none') {
+                get(ref(db, 'users/' + activeId)).then((snap) => {
+                    const info = snap.val();
+                    if (info) {
+                        const sCard = document.getElementById('sessionCard');
+                        document.getElementById('scName').innerText = info.name;
+                        
+                        // استماع حي للرقم في البطاقة العائمة أيضاً!
+                        onValue(ref(db, 'users/' + activeId + '/currentNum'), (numSnap) => {
+                            document.getElementById('scNum').innerText = numSnap.val() || 0;
+                        });
+                        
+                        sCard.style.display = 'block';
+                    }
+                });
+            }
+        }
+
+        // دالة العودة للجلسة النشطة
+        window.goToCurrentSession = () => {
+            const activeId = localStorage.getItem('sofygramActiveId');
+            if (activeId) { window.location.href = `?id=${activeId}`; }
+        };
+
+        // دالة مسح الجلسة النشطة (عند الضغط على ×)
+        window.clearCurrentSession = (event) => {
+            event.stopPropagation(); // لمنع الضغط على البطاقة عند الضغط على ×
+            localStorage.removeItem('sofygramActiveId');
+            document.getElementById('sessionCard').style.display = 'none';
+        };
+
         async function triggerBilingualAlarm() {
             if ("vibrate" in navigator) { navigator.vibrate([500, 200, 500, 200, 500]); }
-            
-            // نداء مترو دبي المزدوج الفخم
             const msgAr = new SpeechSynthesisUtterance("أهلاً بكم في منصة صوفي غرام العالمية. حان دوركم الآن، يرجى التوجه حالاً. شكراً لكم.");
             msgAr.lang = 'ar-SA'; msgAr.rate = 0.85;
-            
             const msgEn = new SpeechSynthesisUtterance("Welcome to Sofygram International. It is your turn now, please proceed immediately. Thank you.");
             msgEn.lang = 'en-US'; msgEn.rate = 0.85;
-            
             window.speechSynthesis.speak(msgAr);
-            // الانتظار قليلاً قبل النداء الإنجليزي لضمان عدم التداخل
             setTimeout(() => { window.speechSynthesis.speak(msgEn); }, 6000);
-
             alert("🔔 Sofygram Alert: حان دورك الآن!");
         }
 
