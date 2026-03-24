@@ -10,7 +10,6 @@
         :root { --glow: #ffd700; }
         body { background: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
         
-        /* شريط اللغات */
         .lang-switch { position: absolute; top: 15px; left: 15px; display: flex; gap: 8px; z-index: 1000; }
         .l-btn { cursor: pointer; background: rgba(255,215,0,0.1); border: 1px solid var(--glow); color: var(--glow); padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: bold; }
         .l-btn.active { background: var(--glow); color: #000; }
@@ -33,11 +32,10 @@
         .btn { padding: 10px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; font-size: 13px; color: white; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .btn-f { background: #2ecc71; } 
         .btn-t { background: #f1c40f; color: #000; } 
-        .btn-p { background: #9b59b6; } /* الرمز */
-        .btn-h { background: #3498db; } /* الهاتف */
+        .btn-p { background: #9b59b6; } 
+        .btn-h { background: #3498db; } 
         .btn-d { background: #e74c3c; } 
         
-        /* قسم الموظفين الجديد بنفس نمط الماستر */
         .staff-area { margin-top: 30px; padding: 20px; border-top: 1px dashed #444; text-align: right; }
         .staff-box { background: #000; padding: 15px; border-radius: 20px; border: 1px solid #333; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
         
@@ -102,7 +100,6 @@
             en: { lock: "Master Lock 👑", entry: "King Login 👑", mtitle: "Subscription Manager 👑", ph: "Search user...", f30: "Activate 30 Days", f3: "Trial 3 Days", fdel: "Delete User", fpass: "🔑 Pass / Edit", fphone: "📱 Phone", sec: "Advanced Security 🛡️", exp: "Expires on:" }
         };
 
-        // جلب الرمز فوراً عند التحميل لضمان العمل
         onValue(ref(db, 'admin_settings/masterHash'), (s) => { 
             if(s.exists()) masterHash = s.val(); 
             else masterHash = "e10adc3949ba59abbe56e057f20f883e";
@@ -110,11 +107,6 @@
 
         window.masterLogin = () => {
             const p = document.getElementById('mPass').value;
-            const s = document.getElementById('mSec').value;
-            if (attempts >= 3) {
-                if (s === "السويد") unlock();
-                else alert("خطأ!"); return;
-            }
             if (CryptoJS.MD5(p).toString() === masterHash) { unlock(); } 
             else {
                 attempts++;
@@ -122,7 +114,6 @@
                 if (attempts >= 3) {
                     document.getElementById('passArea').style.display='none';
                     document.getElementById('secArea').style.display='block';
-                    document.getElementById('t-lock').innerText = dict[curLang].sec;
                 }
             }
         };
@@ -134,29 +125,22 @@
             loadStaff();
         }
 
-        // دالة تحميل المشتركين مع الترتيب (الأحدث أولاً)
         function loadUsers() {
             onValue(ref(db, 'users'), (snap) => {
                 const data = snap.val();
                 const list = document.getElementById('usersList'); list.innerHTML = "";
                 if(!data) return;
-                
                 const today = new Date();
                 let usersArr = [];
                 for(let id in data) { usersArr.push({id, ...data[id]}); }
-                
-                // الترتيب العكسي: الجديد في القمة
                 usersArr.reverse();
-
                 usersArr.forEach(u => {
                     const expiry = u.expiryDate ? new Date(u.expiryDate) : null;
                     let daysLeft = expiry ? Math.ceil((expiry - today) / (1000 * 60 * 60 * 24)) : 0;
-                    let rowClass = daysLeft > 0 ? "active-user" : "expired-user";
-                    
                     list.innerHTML += `
-                        <div class="user-row ${rowClass}" data-name="${u.name.toLowerCase()}">
+                        <div class="user-row ${daysLeft > 0 ? 'active-user' : 'expired-user'}" data-name="${u.name.toLowerCase()}">
                             <div>
-                                <b style="font-size:18px;">${u.name}</b> <span class="days-badge">${daysLeft > 0 ? daysLeft + (curLang==='ar'?' يوم':' Days') : '!!!'}</span> <br>
+                                <b style="font-size:18px;">${u.name}</b> <span class="days-badge">${daysLeft > 0 ? daysLeft + ' يوم' : '!!!'}</span> <br>
                                 <small style="color:#aaa;">${dict[curLang].exp} ${expiry ? expiry.toLocaleDateString('en-GB') : '---'}</small>
                                 <div id="info-${u.id}" style="margin-top:5px; font-weight:bold; color:var(--glow); display:none;"></div>
                             </div>
@@ -167,13 +151,11 @@
                                 <button class="btn btn-h" onclick="showPhone('${u.id}', '${u.phone || 'لا يوجد'}')">${dict[curLang].fphone}</button>
                                 <button class="btn btn-d" onclick="delUser('${u.id}')">${dict[curLang].fdel}</button>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
             });
         }
 
-        // إدارة طاقم العمل
         function loadStaff() {
             onValue(ref(db, 'staff'), (snap) => {
                 const list = document.getElementById('staffList'); list.innerHTML = "";
@@ -186,4 +168,63 @@
                                 <small style="color:#888;">الرمز: ${data[id].password}</small>
                             </div>
                             <div style="display:flex; gap:10px;">
-                                <button onclick="editStaff('${id}')" style="background:#f1c40f; color:black; border:none; padding:8px; border-radius:10px; font
+                                <button onclick="editStaff('${id}')" style="background:#f1c40f; color:black; border:none; padding:8px; border-radius:10px; font-size:11px; font-weight:bold;">تعديل</button>
+                                <button onclick="delStaff('${id}')" style="background:#e74c3c; color:white; border:none; padding:8px; border-radius:10px; font-size:11px; font-weight:bold;">حذف</button>
+                            </div>
+                        </div>`;
+                }
+            });
+        }
+
+        window.addStaff = () => {
+            const n = prompt("اسم الموظف:");
+            const p = prompt("كلمة السر:");
+            if(n && p) push(ref(db, 'staff'), { name: n, password: p });
+        };
+
+        window.editStaff = (id) => {
+            const p = prompt("الرمز الجديد:");
+            if(p) update(ref(db, `staff/${id}`), { password: p });
+        };
+
+        window.delStaff = (id) => { if(confirm("طرد الموظف؟")) remove(ref(db, `staff/${id}`)); };
+
+        window.managePass = (id, name, currentPass) => {
+            const newPass = prompt(`رمز ${name}: [ ${currentPass} ]\nتعديل إلى:`);
+            if (newPass) update(ref(db, `users/${id}`), { password: newPass });
+        };
+
+        window.showPhone = (id, phone) => {
+            const div = document.getElementById(`info-${id}`);
+            if (phone === 'لا يوجد') div.innerHTML = "🚫 لا يوجد رقم";
+            else div.innerHTML = `<a href="https://wa.me/${phone.replace(/\D/g, '')}" target="_blank" class="wa-link"><i class="fab fa-whatsapp"></i></a> <span>${phone}</span>`;
+            div.style.display = div.style.display === 'none' ? 'block' : 'none';
+        };
+
+        window.setSub = (id, days) => {
+            const exp = new Date(); exp.setDate(exp.getDate() + days);
+            update(ref(db, `users/${id}`), { active: true, expiryDate: exp.toISOString() }).then(() => alert("✅ تم التفعيل"));
+        };
+
+        window.changePass = () => {
+            const newP = prompt("رمز الإدارة الجديد:");
+            if(newP) set(ref(db, 'admin_settings/masterHash'), CryptoJS.MD5(newP).toString()).then(() => location.reload());
+        };
+
+        window.delUser = (id) => { if(confirm("حذف؟")) remove(ref(db, `users/${id}`)); };
+
+        window.setLang = (l) => {
+            curLang = l;
+            document.querySelectorAll('.l-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(l === 'ar' ? 'btnAr' : 'btnEn').classList.add('active');
+            document.body.dir = (l === 'ar') ? 'rtl' : 'ltr';
+            if (document.getElementById('masterBox').style.display === 'block') loadUsers();
+        };
+
+        window.filterUsers = () => {
+            const v = document.getElementById('mSearch').value.toLowerCase();
+            document.querySelectorAll('.user-row').forEach(r => r.style.display = r.getAttribute('data-name').includes(v) ? "flex" : "none");
+        };
+    </script>
+</body>
+</html>
