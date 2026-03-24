@@ -35,6 +35,7 @@
                 <option value="شركة برمجيات">شركة برمجيات</option>
                 <option value="شركة مقاولات">شركة مقاولات</option>
                 <option value="مكتب محاماة">مكتب محاماة</option>
+                <option value="مكتب عقارات">مكتب عقارات</option>
             </optgroup>
             <optgroup label="التجارة والجمال">
                 <option value="أسواق / سوبر ماركت">أسواق / سوبر ماركت</option>
@@ -92,63 +93,4 @@
         const db = getDatabase(app);
 
         const citiesData = {
-            "العراق": ["بغداد", "النجف", "كربلاء", "البصرة", "بابل", "أربيل", "أخرى"],
-            "السعودية": ["الرياض", "مكة", "جدة", "الدمام", "أخرى"],
-            "الإمارات": ["أبوظبي", "دبي", "الشارقة", "عجمان", "أخرى"],
-            "الكويت": ["العاصمة", "حولي", "الأحمدي", "الجهراء", "أخرى"],
-            "الأردن": ["عمان", "إربد", "الزرقاء", "أخرى"],
-            "مصر": ["القاهرة", "الإسكندرية", "الجيزة", "أخرى"]
-        };
-
-        window.handleCountryChange = () => {
-            const country = document.getElementById('country').value;
-            const select = document.getElementById('citySelect');
-            const input = document.getElementById('cityInput');
-
-            if (citiesData[country]) {
-                select.classList.remove('hidden');
-                input.classList.add('hidden');
-                select.innerHTML = citiesData[country].map(c => `<option value="${c}">${c}</option>`).join('');
-            } else {
-                select.classList.add('hidden');
-                input.classList.remove('hidden');
-            }
-        };
-
-        window.handleCityChange = () => {
-            const select = document.getElementById('citySelect');
-            const input = document.getElementById('cityInput');
-            if (select.value === "أخرى") {
-                input.classList.remove('hidden');
-            } else {
-                input.classList.add('hidden');
-            }
-        };
-
-        handleCountryChange(); // تشغيل أولي
-
-        window.register = () => {
-            const name = document.getElementById('name').value;
-            const type = document.getElementById('type').value;
-            const phone = document.getElementById('phone').value;
-            const country = document.getElementById('country').value;
-            let city = citiesData[country] ? document.getElementById('citySelect').value : document.getElementById('cityInput').value;
-            if (city === "أخرى") city = document.getElementById('cityInput').value;
-
-            const neighborhood = document.getElementById('neighborhood').value;
-            const user = document.getElementById('username').value.trim();
-            const pass = document.getElementById('pass').value;
-
-            if(!name || !user || !pass || !city || !phone) return alert("يرجى إكمال جميع الحقول!");
-
-            set(ref(db, 'users/' + user), {
-                name, type, phone, country, city, neighborhood,
-                password: pass, active: false, regDate: new Date().toISOString()
-            }).then(() => {
-                // النقل لصفحة الدفع مع تمرير البيانات في الرابط
-                window.location.href = `pay.html?user=${user}&name=${encodeURIComponent(name)}`;
-            });
-        };
-    </script>
-</body>
-</html>
+            "العراق": ["بغداد", "النجف", "كربلاء", "البصرة", "بابل", "الأنبار", "أربيل", "ذي قار", "نينوى", "ميسان", "المثنى", "القادسية", "واسط", "صلاح الدين", "ديالى", "كركوك", "دهوك", "السليمانية", "أخرى"],
