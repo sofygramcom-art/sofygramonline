@@ -21,19 +21,15 @@
         <h2 style="color:var(--glow);">انضم إلى صوفيگرام 🌐</h2>
         
         <label>اسم النشاط (العيادة/الشركة/المحل):</label>
-        <input type="text" id="name" placeholder="مثلاً: صيدلية الأمل">
+        <input type="text" id="name" placeholder="مثلاً: شركة الصقر">
         
         <label>فئة النشاط:</label>
         <select id="type">
             <option value="">-- اختر الفئة --</option>
-            <optgroup label="القطاع الطبي">
+            <optgroup label="الخدمات والطب">
                 <option value="طبيب / عيادة">طبيب / عيادة</option>
                 <option value="صيدلية">صيدلية</option>
-                <option value="مختبر طبي">مختبر طبي</option>
-            </optgroup>
-            <optgroup label="الشركات والتجار">
                 <option value="شركة برمجيات">شركة برمجيات</option>
-                <option value="أسواق / سوبر ماركت">أسواق / سوبر ماركت</option>
                 <option value="مركز تجميل">مركز تجميل</option>
             </optgroup>
             <option value="أخرى">نشاط آخر</option>
@@ -41,14 +37,24 @@
 
         <label>الدولة:</label>
         <select id="country" onchange="updateCities()">
-            <option value="العراق" selected>العراق</option>
-            <option value="السعودية">السعودية</option>
-            <option value="الإمارات">الإمارات</option>
-            <option value="الكويت">الكويت</option>
-            <option value="الأردن">الأردن</option>
-            <option value="مصر">مصر</option>
-            <option value="أخرى">دولة أخرى</option>
+            <option value="العراق" selected>العراق 🇮🇶</option>
+            <option value="السعودية">السعودية 🇸🇦</option>
+            <option value="الإمارات">الإمارات 🇦🇪</option>
+            <option value="الكويت">الكويت 🇰🇼</option>
+            <option value="قطر">قطر 🇶🇦</option>
+            <option value="البحرين">البحرين 🇧🇭</option>
+            <option value="عُمان">عُمان 🇴🇲</option>
+            <option value="الأردن">الأردن 🇯🇴</option>
+            <option value="مصر">مصر 🇪🇬</option>
+            <option value="سوريا">سوريا 🇸🇾</option>
+            <option value="لبنان">لبنان 🇱🇧</option>
+            <option value="تركيا">تركيا 🇹🇷</option>
+            <option value="إيران">إيران 🇮🇷</option>
+            <option value="أوروبا">أوروبا 🇪🇺</option>
+            <option value="أمريكا">أمريكا 🇺🇸</option>
+            <option value="دولة أخرى (كتابة يد)">دولة أخرى 🌏</option>
         </select>
+        <input type="text" id="countryInput" class="hidden" placeholder="اكتب اسم الدولة يدوياً">
 
         <label>المحافظة / الولاية:</label>
         <select id="citySelect" onchange="checkOtherCity()">
@@ -56,7 +62,7 @@
         <input type="text" id="cityInput" class="hidden" placeholder="اكتب اسم المحافظة يدوياً">
 
         <label>اسم الحي / المنطقة:</label>
-        <input type="text" id="neighborhood" placeholder="مثلاً: حي الغدير">
+        <input type="text" id="neighborhood" placeholder="مثلاً: حي الأمير">
 
         <label>رقم الموبايل (واتساب):</label>
         <input type="tel" id="phone" placeholder="07XXXXXXXXX">
@@ -84,7 +90,7 @@
 
         const allCities = {
             "العراق": ["بغداد", "النجف", "كربلاء", "البصرة", "بابل", "الأنبار", "أربيل", "ذي قار", "نينوى", "ميسان", "المثنى", "القادسية", "واسط", "صلاح الدين", "ديالى", "كركوك", "دهوك", "السليمانية", "أخرى (كتابة يد)"],
-            "السعودية": ["الرياض", "مكة المكرمة", "جدة", "الدمام", "أخرى"],
+            "السعودية": ["الرياض", "مكة المكرمة", "جدة", "الدمام", "المدينة المنورة", "أخرى"],
             "الإمارات": ["أبوظبي", "دبي", "الشارقة", "عجمان", "أخرى"],
             "الكويت": ["العاصمة", "حولي", "الأحمدي", "الجهراء", "أخرى"],
             "الأردن": ["عمان", "إربد", "الزرقاء", "أخرى"],
@@ -93,59 +99,18 @@
 
         window.updateCities = () => {
             const country = document.getElementById('country').value;
-            const select = document.getElementById('citySelect');
-            const input = document.getElementById('cityInput');
+            const cSelect = document.getElementById('citySelect');
+            const cInput = document.getElementById('cityInput');
+            const coInput = document.getElementById('countryInput');
             
-            if (allCities[country]) {
-                select.classList.remove('hidden');
-                input.classList.add('hidden');
-                let options = allCities[country].map(c => `<option value="${c}">${c}</option>`).join('');
-                select.innerHTML = options;
+            // التعامل مع الدولة الأخرى
+            if(country === "دولة أخرى (كتابة يد)") {
+                coInput.classList.remove('hidden');
+                cSelect.classList.add('hidden');
+                cInput.classList.remove('hidden');
             } else {
-                select.classList.add('hidden');
-                input.classList.remove('hidden');
-            }
-        };
-
-        window.checkOtherCity = () => {
-            const select = document.getElementById('citySelect');
-            const input = document.getElementById('cityInput');
-            if (select.value.includes("أخرى")) {
-                input.classList.remove('hidden');
-            } else {
-                input.classList.add('hidden');
-            }
-        };
-
-        // تشغيل أولي عند تحميل الصفحة
-        updateCities();
-
-        window.register = () => {
-            const name = document.getElementById('name').value;
-            const type = document.getElementById('type').value;
-            const phone = document.getElementById('phone').value;
-            const country = document.getElementById('country').value;
-            const neighborhood = document.getElementById('neighborhood').value;
-            const user = document.getElementById('username').value.trim();
-            const pass = document.getElementById('pass').value;
-
-            let city = "";
-            if (allCities[country]) {
-                city = document.getElementById('citySelect').value;
-                if (city.includes("أخرى")) city = document.getElementById('cityInput').value;
-            } else {
-                city = document.getElementById('cityInput').value;
-            }
-
-            if(!name || !user || !pass || !city || !phone) return alert("يرجى إكمال جميع الحقول!");
-
-            set(ref(db, 'users/' + user), {
-                name, type, phone, country, city, neighborhood,
-                password: pass, active: false, regDate: new Date().toISOString()
-            }).then(() => {
-                window.location.href = `pay.html?user=${user}&name=${encodeURIComponent(name)}`;
-            });
-        };
-    </script>
-</body>
-</html>
+                coInput.classList.add('hidden');
+                if (allCities[country]) {
+                    cSelect.classList.remove('hidden');
+                    cInput.classList.add('hidden');
+                    cSelect.innerHTML = allCities[country].map(c => `<option value="${c}">${c}</option>`).
