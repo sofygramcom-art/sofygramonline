@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram | صوفيگرام - بحث المحلة الذكي 🌐</title>
+    <title>Sofygram | صوفيگرام - المنصة العالمية 🌐</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --glow: #00d2ff; --bg: #050a14; --card: #121212; }
@@ -12,25 +12,24 @@
         .logo { font-weight: bold; font-size: 26px; color: var(--glow); text-decoration: none; }
         .nav-btns a { color: white; text-decoration: none; margin-left: 10px; font-size: 13px; border: 1px solid #333; padding: 7px 14px; border-radius: 8px; transition: 0.3s; }
         
-        .search-area { padding: 40px 20px; background: radial-gradient(circle at center, #1a1a2e 0%, #050a14 100%); }
-        .quick-search { max-width: 650px; margin: 0 auto 30px auto; position: relative; }
-        .quick-search input { width: 100%; padding: 18px 25px 18px 60px; border-radius: 25px; border: 2px solid #333; background: rgba(0,0,0,0.6); color: white; font-size: 18px; outline: none; text-align: right; box-sizing: border-box; }
-        .quick-search input:focus { border-color: var(--glow); box-shadow: 0 0 20px rgba(0,210,255,0.2); }
-        .quick-search i { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--glow); font-size: 22px; cursor: pointer; }
+        .search-section { padding: 40px 20px; background: radial-gradient(circle at center, #1a1a2e 0%, #050a14 100%); }
+        .main-input-box { max-width: 700px; margin: 0 auto 30px auto; position: relative; }
+        .main-input-box input { width: 100%; padding: 20px 25px 20px 65px; border-radius: 25px; border: 2px solid #333; background: rgba(0,0,0,0.7); color: white; font-size: 18px; outline: none; text-align: right; box-sizing: border-box; }
+        .main-input-box input:focus { border-color: var(--glow); box-shadow: 0 0 20px rgba(0,210,255,0.2); }
+        .main-input-box i { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); color: var(--glow); font-size: 24px; cursor: pointer; }
 
         .mic-btn { width: 90px; height: 90px; background: var(--glow); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 35px; color: #000; cursor: pointer; transition: 0.4s; border: 8px solid rgba(0, 210, 255, 0.1); }
         .mic-btn.listening { background: #ff4757; box-shadow: 0 0 40px #ff4757; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        /* البحث الرباعي المطور */
-        .manual-search { max-width: 900px; margin: 0 auto 40px auto; background: var(--card); padding: 25px; border-radius: 30px; border: 1px solid #222; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .manual-search h4 { grid-column: 1/-1; margin: 0; color: #aaa; text-align: right; font-size: 14px; margin-bottom: 10px; }
-        select, .neighborhood-input { padding: 12px; border-radius: 12px; border: 1px solid #333; background: #000; color: white; outline: none; width: 100%; box-sizing: border-box; text-align: right; }
+        /* البحث اليدوي المطور */
+        .advanced-search { max-width: 1000px; margin: 30px auto; background: var(--card); padding: 25px; border-radius: 30px; border: 1px solid #222; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+        select, .custom-input { padding: 12px; border-radius: 12px; border: 1px solid #333; background: #000; color: white; outline: none; width: 100%; box-sizing: border-box; text-align: right; font-size: 14px; }
 
-        .results-container { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; max-width: 1200px; margin: auto; }
+        .results-container { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; max-width: 1200px; margin: auto; }
         .res-card { background: var(--card); border-radius: 25px; padding: 25px; border: 1px solid #222; text-align: right; transition: 0.3s; cursor: pointer; position: relative; }
-        .res-card:hover { border-color: var(--glow); transform: translateY(-5px); }
-        .status-badge { position: absolute; top: 15px; left: 15px; font-size: 11px; padding: 4px 10px; border-radius: 8px; font-weight: bold; border: 1px solid currentColor; }
+        .res-card:hover { border-color: var(--glow); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .status-badge { position: absolute; top: 15px; left: 15px; font-size: 11px; padding: 4px 10px; border-radius: 8px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -43,29 +42,31 @@
         </div>
     </header>
 
-    <section class="search-area">
-        <h1>صوفيگرام | بحث المحلة الذكي 🗺️</h1>
-        <p style="color:#888;">ابحث عن "صيدلية حي النفط" أو "دكتور في الكوفة"</p>
+    <section class="search-section">
+        <h1>صوفيگرام | البحث الشامل 🎙️</h1>
         
-        <div class="quick-search">
-            <input type="text" id="quickInput" placeholder="اكتب اسم النشاط أو الحي..">
-            <i class="fas fa-search" onclick="performQuickSearch()"></i>
+        <div class="main-input-box">
+            <input type="text" id="nameSearch" placeholder="ابحث عن اسم النشاط مباشرة..">
+            <i class="fas fa-search" onclick="searchByName()"></i>
         </div>
 
-        <div class="mic-btn" id="micBtn" onclick="startVoiceSearch()">
+        <div class="mic-btn" id="micBtn" onclick="startVoice()">
             <i class="fas fa-microphone"></i>
         </div>
-        <div id="searchStatus" style="margin-top:10px; color:var(--glow);">اضغط للتحدث</div>
+        <div id="searchStatus" style="margin-top:10px; color:var(--glow); font-weight:bold;">اضغط للتحدث</div>
 
-        <div class="manual-search">
-            <h4>البحث المتقدم حسب المنطقة والنشاط:</h4>
-            
-            <select id="typeFilter">
+        <div class="advanced-search">
+            <select id="typeF">
                 <option value="">كل الأنشطة</option>
                 <optgroup label="طبي">
                     <option value="طبيب / عيادة">أطباء وعيادات</option>
                     <option value="صيدلية">صيدليات</option>
                     <option value="مختبر طبي">مختبرات</option>
+                </optgroup>
+                <optgroup label="تقني وشركات">
+                    <option value="شركة برمجيات">شركات برمجة</option>
+                    <option value="شركة مقاولات">مقاولات وهندسة</option>
+                    <option value="مكتب محاماة">محاماة وقانون</option>
                 </optgroup>
                 <optgroup label="تجاري">
                     <option value="مطعم / كافيه">مطاعم وكافيهات</option>
@@ -74,61 +75,13 @@
                 </optgroup>
             </select>
 
-            <select id="cityFilter">
-                <option value="">كل المحافظات</option>
-                <option value="النجف">النجف</option>
-                <option value="بغداد">بغداد</option>
-                <option value="كربلاء">كربلاء</option>
-                <option value="البصرة">البصرة</option>
-                <option value="بابل">بابل</option>
-                <option value="أربيل">أربيل</option>
-                </select>
-
-            <input type="text" id="neighborhoodFilter" class="neighborhood-input" placeholder="اكتب الحي (مثلاً: حي النفط)">
-
-            <button class="btn-filter" style="grid-column: 1/-1; background: var(--glow); color: black; padding: 12px; border-radius: 12px; border:none; font-weight:bold; cursor:pointer;" onclick="performManualSearch()">تطبيق الفلترة 🔍</button>
-        </div>
-    </section>
-
-    <div class="results-container" id="resultsBox"></div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
-            authDomain: "sofygramclinic.firebaseapp.com",
-            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
-            projectId: "sofygramclinic",
-            appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        function speak(text) {
-            const msg = new SpeechSynthesisUtterance();
-            msg.text = text; msg.lang = 'ar-SA';
-            window.speechSynthesis.speak(msg);
-        }
-
-        // --- دالة البحث الموحدة (الذكية) ---
-        function performSearch(criteria) {
-            onValue(ref(db, 'users'), (snap) => {
-                const data = snap.val();
-                const box = document.getElementById('resultsBox');
-                box.innerHTML = "";
-                let matches = [];
-
-                for (let id in data) {
-                    const u = data[id];
-                    if (!u.active) continue;
-
-                    let isMatch = false;
-
-                    if (criteria.text) {
-                        // بحث ذكي يبحث في (الاسم، الحي، النوع، المدينة)
-                        const searchTarget = `${u.name} ${u.type} ${u.city} ${u.neighborhood || ''}`.toLowerCase();
-                        isMatch = searchTarget.includes(criteria.text.toLowerCase());
-                    } else {
-                        // بحث
+            <select id="countryF" onchange="toggleCities()">
+                <option value="العراق">العراق</option>
+                <option value="السعودية">السعودية</option>
+                <option value="الإمارات">الإمارات</option>
+                <option value="الكويت">الكويت</option>
+                <option value="الأردن">الأردن</option>
+                <option value="مصر">مصر</option>
+                <option value="تركيا">تركيا</option>
+                <option value="أوروبا">أوروبا</option>
+                <option value="أمريكا">أمريكا
