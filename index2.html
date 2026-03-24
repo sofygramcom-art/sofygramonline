@@ -13,8 +13,6 @@
         .mic-btn.listening { background: #ff4757; box-shadow: 0 0 40px #ff4757; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         #searchStatus { margin-top: 15px; font-size: 1.1rem; color: var(--glow); font-weight: bold; min-height: 30px; }
-        
-        /* قسم النتائج المطور */
         .results-area { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; max-width: 1000px; margin: auto; }
         .res-card { background: #111; border-radius: 20px; padding: 20px; border: 1px solid #333; text-align: right; transition: 0.3s; position: relative; cursor: pointer; }
         .res-card:hover { border-color: var(--glow); transform: translateY(-5px); }
@@ -30,11 +28,10 @@
         <div class="mic-btn" id="micBtn" onclick="startAI()">
             <i class="fas fa-microphone"></i>
         </div>
-        <div id="searchStatus">اضغط المايك وابحث عن (صيدلية، طبيب، حي..)</div>
+        <div id="searchStatus">تحدث الآن.. أنا أسمعك</div>
     </section>
 
-    <div class="results-area" id="resultsBox">
-        </div>
+    <div class="results-area" id="resultsBox"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
@@ -50,9 +47,10 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        function speak(text) {
+        function speak(text, callback) {
             const msg = new SpeechSynthesisUtterance();
             msg.text = text; msg.lang = 'ar-SA';
+            msg.onend = () => { if(callback) callback(); };
             window.speechSynthesis.speak(msg);
         }
 
@@ -62,11 +60,11 @@
             const btn = document.getElementById('micBtn');
             const status = document.getElementById('searchStatus');
 
-            recognition.onstart = () => { btn.classList.add('listening'); status.innerText = "أسمعك.."; };
+            recognition.onstart = () => { btn.classList.add('listening'); status.innerText = "جاري الاستماع..."; };
             recognition.onresult = (event) => {
                 const query = event.results[0][0].transcript.toLowerCase();
                 btn.classList.remove('listening');
-                status.innerText = `نتائج البحث عن: ${query}`;
+                status.innerText = `حللتُ قولك: ${query}`;
                 processQuery(query);
             };
             recognition.start();
@@ -86,22 +84,33 @@
                     }
                 }
 
-                if (matches.length > 0) {
-                    speak(`وجدتُ ${matches.length} نتائج تطابق بحثك`);
+                if (matches.length === 1) {
+                    // تحويل مباشر إذا كانت النتيجة واحدة فقط
+                    const u = matches[0];
+                    const openStatus = u.hasOwnProperty('isOpen') ? u.isOpen : true;
+                    const speechTxt = `وجدتُ ${u.name}. هو ${openStatus ? 'مفتوح حالياً' : 'مغلق الآن'}. جاري تحويلك.`;
+                    
+                    speak(speechTxt, () => {
+                        window.location.href = `profile.html?id=${u.id}`;
+                    });
+                    
+                    // احتياطاً إذا لم يعمل الـ callback
+                    setTimeout(() => { window.location.href = `profile.html?id=${u.id}`; }, 4000);
+
+                } else if (matches.length > 1) {
+                    speak(`وجدتُ ${matches.length} نتائج، اختر من القائمة`);
                     matches.forEach(u => {
-                        // تصحيح منطق "مفتوح/مغلق" - إذا لم يوجد الحقل نفترضه مفتوحاً
                         const openStatus = u.hasOwnProperty('isOpen') ? u.isOpen : true; 
                         box.innerHTML += `
                             <div class="res-card" onclick="window.location.href='profile.html?id=${u.id}'">
                                 <span class="status-tag ${openStatus ? 'is-open' : 'is-closed'}">${openStatus ? 'مفتوح' : 'مغلق'}</span>
                                 <h3 style="margin:0; color:var(--glow);">${u.name}</h3>
                                 <p style="font-size:14px; margin:5px 0;">${u.type} - ${u.city}</p>
-                                <small style="color:#666;">📍 ${u.neighborhood || '---'}</small>
                             </div>
                         `;
                     });
                 } else {
-                    speak("نعتذر، لم أجد نتائج لهذا البحث");
+                    speak("نعتذر، هذا النشاط غير مسجل لدينا");
                     box.innerHTML = "<p>لا توجد نتائج مطابقة..</p>";
                 }
             }, { onlyOnce: true });
