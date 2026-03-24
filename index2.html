@@ -3,82 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram | صوفيگرام - المنصة الأقوى 🇮🇶</title>
+    <title>Sofygram | صوفيگرام العراق 🇮🇶</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --glow: #00d2ff; --bg: #050a14; --card: #121212; --fire: #ff4500; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; text-align: center; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; text-align: center; }
         
-        /* تصميم اللوغو الناري والهيدر */
+        /* هيدر اللوغو الناري */
         header { padding: 30px 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-        .logo-container { position: relative; display: inline-block; padding: 10px; }
-        .logo-img { width: 180px; position: relative; z-index: 2; filter: drop-shadow(0 0 10px white); }
-        
-        /* الإطار الناري */
-        .fire-frame { position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 20px; 
-            border: 3px solid var(--fire); box-shadow: 0 0 15px var(--fire), inset 0 0 15px var(--fire);
-            animation: fire-glow 1.5s infinite alternate; z-index: 1; }
-        @keyframes fire-glow { from { box-shadow: 0 0 10px var(--fire); transform: scale(1); } to { box-shadow: 0 0 30px #ff8c00; transform: scale(1.02); } }
+        .logo-box { position: relative; display: inline-block; padding: 12px; border-radius: 25px; }
+        .logo-img { width: 180px; position: relative; z-index: 5; filter: drop-shadow(0 0 5px white); }
+        .fire-border { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 25px; 
+            border: 3px solid var(--fire); box-shadow: 0 0 20px var(--fire), inset 0 0 15px var(--fire);
+            animation: burn 1.5s infinite alternate; z-index: 1; }
+        @keyframes burn { from { opacity: 0.6; transform: scale(1); } to { opacity: 1; transform: scale(1.03); box-shadow: 0 0 35px #ff8c00; } }
 
-        .btn-register-top { background: linear-gradient(45deg, #ff4500, #ff8c00); color: white; text-decoration: none; 
-            padding: 12px 25px; border-radius: 15px; font-weight: bold; font-size: 16px; box-shadow: 0 0 15px rgba(255, 69, 0, 0.4); }
+        .btn-reg { background: linear-gradient(45deg, #ff4500, #ff8c00); color: white; text-decoration: none; padding: 12px 30px; border-radius: 15px; font-weight: bold; transition: 0.3s; box-shadow: 0 5px 15px rgba(255, 69, 0, 0.3); }
 
-        .search-section { padding: 20px; }
-        .main-input-box { max-width: 650px; margin: 0 auto 25px auto; position: relative; }
-        .main-input-box input { width: 100%; padding: 18px 25px 18px 60px; border-radius: 25px; border: 2px solid #333; background: rgba(0,0,0,0.8); color: white; font-size: 18px; outline: none; text-align: right; box-sizing: border-box; }
-        .main-input-box i { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); color: var(--glow); font-size: 24px; cursor: pointer; }
+        /* البحث */
+        .search-container { padding: 20px; }
+        .search-box { max-width: 700px; margin: 0 auto 25px auto; position: relative; }
+        .search-box input { width: 100%; padding: 18px 25px 18px 65px; border-radius: 25px; border: 2px solid #333; background: #000; color: white; font-size: 18px; outline: none; text-align: right; }
+        .search-box i { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); color: var(--glow); font-size: 24px; cursor: pointer; }
 
-        .mic-btn { width: 85px; height: 85px; background: var(--glow); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 35px; color: #000; cursor: pointer; border: 8px solid rgba(0, 210, 255, 0.1); }
+        .mic-btn { width: 90px; height: 90px; background: var(--glow); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 40px; color: #000; cursor: pointer; border: 8px solid rgba(0,210,255,0.1); transition: 0.3s; }
         .mic-btn.listening { background: #ff4757; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        .advanced-search { max-width: 900px; margin: 30px auto; background: var(--card); padding: 25px; border-radius: 30px; border: 1px solid #222; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-        select, .custom-input { padding: 12px; border-radius: 12px; border: 1px solid #333; background: #000; color: white; outline: none; text-align: right; }
+        /* الفلاتر الرباعية */
+        .filters { max-width: 1000px; margin: 30px auto; background: var(--card); padding: 25px; border-radius: 30px; border: 1px solid #222; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        select, .input-area { padding: 14px; border-radius: 15px; border: 1px solid #333; background: #000; color: white; text-align: right; outline: none; font-size: 15px; width: 100%; box-sizing: border-box; }
 
-        .results-container { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: auto; }
-        .res-card { background: var(--card); border-radius: 25px; padding: 25px; border: 1px solid #222; text-align: right; transition: 0.3s; cursor: pointer; position: relative; }
-        .res-card:hover { border-color: var(--glow); transform: translateY(-5px); }
-        .status-badge { position: absolute; top: 15px; left: 15px; font-size: 12px; padding: 5px 12px; border-radius: 10px; font-weight: bold; border: 1px solid currentColor; }
+        /* البطاقات */
+        .results { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; max-width: 1250px; margin: auto; }
+        .card { background: var(--card); border-radius: 25px; padding: 25px; border: 1px solid #222; text-align: right; transition: 0.3s; cursor: pointer; position: relative; }
+        .card:hover { border-color: var(--glow); transform: translateY(-5px); }
+        .status { position: absolute; top: 15px; left: 15px; font-size: 12px; padding: 5px 12px; border-radius: 10px; font-weight: bold; border: 1px solid currentColor; }
+        .phone-link { color: var(--glow); text-decoration: none; font-size: 14px; display: block; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo-container">
-            <div class="fire-frame"></div>
-            <img src="logo.png.png" class="logo-img" alt="صوفيگرام">
+        <div class="logo-box">
+            <div class="fire-border"></div>
+            <img src="logo.png.png" class="logo-img">
         </div>
-        <a href="register2.html" class="btn-register-top">تسجيل نشاط جديد 🚀</a>
+        <a href="register2.html" class="btn-reg">تسجيل نشاط جديد 🚀</a>
     </header>
 
-    <section class="search-section">
-        <div class="main-input-box">
-            <input type="text" id="quickName" placeholder="ابحث باسم الطبيب أو الصيدلية..">
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" id="nameInp" placeholder="ابحث باسم النشاط أو المحل..">
             <i class="fas fa-search" onclick="searchName()"></i>
         </div>
 
         <div class="mic-btn" id="micBtn" onclick="startMic()">
             <i class="fas fa-microphone"></i>
         </div>
-        <p id="searchStatus" style="color:var(--glow); font-weight:bold; margin-top:10px;">اضغط للتحدث</p>
+        <p id="micStatus" style="color:var(--glow); font-weight:bold; margin-top:10px;">اضغط للتحدث</p>
 
-        <div class="advanced-search">
-            <select id="typeSelect">
+        <div class="filters">
+            <select id="typeInp">
                 <option value="">كل الأنشطة</option>
-                <option value="طبيب / عيادة">أطباء وعيادات</option>
-                <option value="صيدلية">صيدليات</option>
-                <option value="مختبر طبي">مختبرات</option>
+                <optgroup label="طبي">
+                    <option value="طبيب / عيادة">أطباء وعيادات</option>
+                    <option value="صيدلية">صيدليات</option>
+                    <option value="مختبر طبي">مختبرات</option>
+                </optgroup>
+                <optgroup label="تجاري">
+                    <option value="مطعم / كافيه">مطاعم وكافيهات</option>
+                    <option value="أسواق / سوبر ماركت">أسواق ومولات</option>
+                    <option value="صائغ ذهب / مجوهرات">صياغ ذهب</option>
+                    <option value="مركز تجميل / صالون">حلاقة وتجميل</option>
+                </optgroup>
+                <optgroup label="تقني وخدمي">
+                    <option value="شركة برمجيات">تقنية وبرمجة</option>
+                    <option value="شركة مقاولات">مقاولات وهندسة</option>
+                </optgroup>
             </select>
-            <select id="citySelect">
-                <option value="">كل العراق</option>
-                <option value="النجف">النجف</option><option value="بغداد">بغداد</option><option value="كربلاء">كربلاء</option>
-            </select>
-            <input type="text" id="areaInput" class="custom-input" placeholder="اكتب الحي (يدوي)">
-            <button onclick="searchManual()" style="grid-column: 1/-1; background: var(--glow); color: black; border:none; padding:12px; border-radius:12px; font-weight:bold; cursor:pointer;">تطبيق الفلترة 🔍</button>
-        </div>
-    </section>
 
-    <div class="results-container" id="resultsArea"></div>
+            <select id="cityInp">
+                <option value="">كل محافظات العراق</option>
+                <option value="بغداد">بغداد</option><option value="النجف">النجف</option><option value="كربلاء">كربلاء</option>
+                <option value="البصرة">البصرة</option><option value="بابل">بابل</option><option value="الأنبار">الأنبار</option>
+                <option value="أربيل">أربيل</option><option value="ذي قار">ذي قار</option><option value="نينوى">نينوى</option>
+                <option value="ميسان">ميسان</option><option value="المثنى">المثنى</option><option value="القادسية">القادسية</option>
+                <option value="واسط">واسط</option><option value="صلاح الدين">صلاح الدين</option><option value="ديالى">ديالى</option>
+                <option value="كركوك">كركوك</option><option value="دهوك">دهوك</option><option value="السليمانية">السليمانية</option>
+            </select>
+
+            <input type="text" id="areaInp" class="input-area" placeholder="اكتب القضاء أو الحي يدوياً">
+            <button onclick="searchFull()" style="grid-column: 1/-1; background: var(--glow); color: black; border:none; padding:14px; border-radius:15px; font-weight:bold; cursor:pointer;">تطبيق البحث 🔍</button>
+        </div>
+    </div>
+
+    <div class="results" id="resBox"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
@@ -94,48 +114,46 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        function render(list) {
-            const box = document.getElementById('resultsArea');
-            box.innerHTML = list.length ? "" : "<p style='color:#666;'>لا توجد نتائج..</p>";
+        function show(list) {
+            const box = document.getElementById('resBox');
+            box.innerHTML = list.length ? "" : "<p style='color:#666;'>لم أجد نتائج تطابق طلبك..</p>";
             list.forEach(u => {
-                // الكود يقرأ الحالة الحقيقية من الداتابيز
-                const open = (u.isOpen === true || u.isOpen === "true"); 
+                const open = (u.isOpen === true || u.isOpen === "true");
                 box.innerHTML += `
-                    <div class="res-card" onclick="window.location.href='view.html?id=${u.id}'">
-                        <span class="status-badge" style="color:${open?'#2ecc71':'#e74c3c'}">${open?'مفتوح':'مغلق'}</span>
+                    <div class="card" onclick="window.location.href='view.html?id=${u.id}'">
+                        <span class="status" style="color:${open?'#2ecc71':'#e74c3c'}">${open?'مفتوح':'مغلق'}</span>
                         <h2 style="margin:0; color:var(--glow);">${u.name}</h2>
-                        <p style="margin:5px 0; font-size:14px;">${u.type}</p>
-                        <p style="margin:0; font-size:12px; color:#888;">📍 ${u.city} - ${u.neighborhood || '---'}</p>
+                        <p style="margin:5px 0; font-size:15px; color:#ddd;">${u.type}</p>
+                        <p style="margin:0; font-size:13px; color:#888;">📍 ${u.city} - ${u.neighborhood || '---'}</p>
+                        ${u.phone ? `<span class="phone-link"><i class="fas fa-phone"></i> ${u.phone}</span>` : ''}
                     </div>`;
             });
         }
 
         window.searchName = () => {
-            const query = document.getElementById('quickName').value.toLowerCase();
+            const q = document.getElementById('nameInp').value.toLowerCase();
             onValue(ref(db, 'users'), (s) => {
-                const data = s.val(); let matches = [];
-                for(let id in data) {
-                    if(data[id].active && data[id].name.toLowerCase().includes(query)) matches.push({id, ...data[id]});
-                }
-                render(matches);
+                const d = s.val(); let m = [];
+                for(let id in d) { if(d[id].active && d[id].name.toLowerCase().includes(q)) m.push({id, ...d[id]}); }
+                show(m);
             }, {onlyOnce: true});
         };
 
-        window.searchManual = () => {
-            const type = document.getElementById('typeSelect').value;
-            const city = document.getElementById('citySelect').value;
-            const area = document.getElementById('areaInput').value.toLowerCase();
+        window.searchFull = () => {
+            const t = document.getElementById('typeInp').value;
+            const c = document.getElementById('cityInp').value;
+            const a = document.getElementById('areaInp').value.toLowerCase();
             onValue(ref(db, 'users'), (s) => {
-                const data = s.val(); let matches = [];
-                for(let id in data) {
-                    const u = data[id]; if(!u.active) continue;
-                    let m = true;
-                    if(type && u.type !== type) m = false;
-                    if(city && u.city !== city) m = false;
-                    if(area && !u.neighborhood?.toLowerCase().includes(area)) m = false;
-                    if(m) matches.push({id, ...u});
+                const d = s.val(); let m = [];
+                for(let id in d) {
+                    const u = d[id]; if(!u.active) continue;
+                    let pass = true;
+                    if(t && u.type !== t) pass = false;
+                    if(c && u.city !== c) pass = false;
+                    if(a && !u.neighborhood?.toLowerCase().includes(a)) pass = false;
+                    if(pass) m.push({id, ...u});
                 }
-                render(matches);
+                show(m);
             }, {onlyOnce: true});
         };
 
@@ -144,15 +162,15 @@
             rec.lang = 'ar-IQ';
             rec.onstart = () => document.getElementById('micBtn').classList.add('listening');
             rec.onresult = (e) => {
-                const text = e.results[0][0].transcript.toLowerCase();
+                const t = e.results[0][0].transcript.toLowerCase();
                 document.getElementById('micBtn').classList.remove('listening');
                 onValue(ref(db, 'users'), (s) => {
-                    const data = s.val(); let matches = [];
-                    for(let id in data) {
-                        const target = `${data[id].name} ${data[id].city} ${data[id].neighborhood}`.toLowerCase();
-                        if(data[id].active && target.includes(text)) matches.push({id, ...data[id]});
+                    const d = s.val(); let m = [];
+                    for(let id in d) {
+                        const target = `${d[id].name} ${d[id].city} ${d[id].neighborhood} ${d[id].type}`.toLowerCase();
+                        if(d[id].active && target.includes(t)) m.push({id, ...d[id]});
                     }
-                    render(matches);
+                    show(m);
                 }, {onlyOnce: true});
             };
             rec.start();
