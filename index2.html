@@ -1,24 +1,113 @@
-// هذا التعديل خاص بدالة render داخل index.html لضمان قراءة الحالة صح
-function render(list) {
-    const box = document.getElementById('resultsArea');
-    box.innerHTML = list.length ? "" : "<p>لا توجد نتائج..</p>";
-    list.forEach(u => {
-        // فحص ذكي جداً: يقرأ الحالة سواء كانت صح/خطأ أو كلمة "مفتوح"/"مغلق"
-        let statusText = "مغلق";
-        let statusColor = "#e74c3c"; // أحمر
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofygram | صوفيگرام - دليل العراق الذكي 🗺️</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --glow: #00d2ff; --bg: #050a14; --card: #121212; --fire: #ff4500; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; text-align: center; }
+        
+        /* الهيدر واللوغو الناري */
+        header { padding: 30px 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .logo-wrap { position: relative; display: inline-block; padding: 15px; border-radius: 20px; border: 3px solid var(--fire); box-shadow: 0 0 15px var(--fire); animation: glow 1.5s infinite alternate; }
+        @keyframes glow { from { box-shadow: 0 0 10px var(--fire); } to { box-shadow: 0 0 25px #ff8c00; } }
+        .logo-text { font-size: 35px; font-weight: bold; margin: 0; color: white; }
 
-        // إذا كان الحقل isOpen موجوداً وقيمته true (بأي شكل)
-        if (u.isOpen === true || u.isOpen === "true" || u.isOpen === "مفتوح") {
-            statusText = "مفتوح";
-            statusColor = "#2ecc71"; // أخضر
-        }
+        /* أزرار التنقل */
+        .top-nav { margin-top: 10px; }
+        .btn-reg { background: var(--fire); color: white; text-decoration: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; font-size: 14px; }
 
-        box.innerHTML += `
-            <div class="res-card" onclick="window.location.href='view.html?id=${u.id}'">
-                <span class="status-badge" style="color:${statusColor}; border-color:${statusColor}">${statusText}</span>
-                <h2 style="margin:0; color:#00d2ff;">${u.name}</h2>
-                <p style="margin:5px 0; font-size:14px;">${u.type}</p>
-                <p style="margin:0; font-size:12px; color:#888;">📍 ${u.city} - ${u.neighborhood || '---'}</p>
-            </div>`;
-    });
-}
+        /* البحث */
+        .search-container { padding: 20px; }
+        .search-input-wrap { max-width: 600px; margin: 0 auto 20px; position: relative; }
+        .search-input-wrap input { width: 100%; padding: 15px 20px 15px 50px; border-radius: 20px; border: 1px solid #333; background: #000; color: white; text-align: right; font-size: 16px; }
+        .search-input-wrap i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--glow); font-size: 20px; }
+
+        /* البطاقات */
+        .results-grid { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: auto; }
+        .res-card { background: var(--card); border-radius: 25px; padding: 20px; border: 1px solid #222; text-align: right; transition: 0.3s; }
+        .res-card:hover { border-color: var(--glow); transform: translateY(-5px); }
+        .res-title { color: var(--glow); margin: 0 0 10px; font-size: 20px; }
+        .res-info { font-size: 14px; color: #aaa; margin: 5px 0; }
+
+        /* أزرار الأكشن داخل البطاقة */
+        .card-actions { display: flex; gap: 10px; margin-top: 15px; }
+        .action-btn { flex: 1; padding: 10px; border-radius: 12px; text-decoration: none; text-align: center; font-size: 14px; font-weight: bold; transition: 0.2s; }
+        .btn-call { background: #2ecc71; color: white; } /* أخضر للاتصال */
+        .btn-map { background: #3498db; color: white; } /* أزرق للخريطة */
+        .btn-view { background: #444; color: white; } /* رمادي للملف */
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-wrap">
+            <h1 class="logo-text">صوفيگرام</h1>
+        </div>
+        <div class="top-nav">
+            <a href="register2.html" class="btn-reg">تسجيل نشاط جديد 🚀</a>
+        </div>
+    </header>
+
+    <div class="search-container">
+        <div class="search-input-wrap">
+            <input type="text" id="searchInput" placeholder="ابحث عن طبيب، صيدلية، أو منطقة.." oninput="startSearch()">
+            <i class="fas fa-search"></i>
+        </div>
+    </div>
+
+    <div class="results-grid" id="displayArea">
+        </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
+            authDomain: "sofygramclinic.firebaseapp.com",
+            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
+            projectId: "sofygramclinic",
+            appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.startSearch = () => {
+            const val = document.getElementById('searchInput').value.toLowerCase();
+            onValue(ref(db, 'users'), (snap) => {
+                const data = snap.val();
+                const area = document.getElementById('displayArea');
+                area.innerHTML = "";
+                
+                for(let id in data) {
+                    const u = data[id];
+                    if(!u.active) continue;
+
+                    const match = u.name.toLowerCase().includes(val) || u.city.toLowerCase().includes(val) || (u.neighborhood && u.neighborhood.toLowerCase().includes(val));
+                    
+                    if(match) {
+                        area.innerHTML += `
+                            <div class="res-card">
+                                <h3 class="res-title">${u.name}</h3>
+                                <p class="res-info"><b>التخصص:</b> ${u.type}</p>
+                                <p class="res-info"><b>العنوان:</b> ${u.city} - ${u.neighborhood || '---'}</p>
+                                
+                                <div class="card-actions">
+                                    <a href="tel:${u.phone}" class="action-btn btn-call"><i class="fas fa-phone"></i> اتصال</a>
+                                    <a href="${u.mapUrl || '#'}" target="_blank" class="action-btn btn-map"><i class="fas fa-map-marker-alt"></i> الموقع</a>
+                                    <a href="view.html?id=${u.id}" class="action-btn btn-view">الملف</a>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            }, {onlyOnce: true});
+        };
+        // تشغيل البحث الأولي
+        startSearch();
+    </script>
+</body>
+</html>
