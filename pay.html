@@ -1,67 +1,12 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Pay | بوابة التفعيل 💳</title>
-    <style>
-        :root { --glow: #ffd700; }
-        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 20px; }
-        .pay-card { background: #121212; padding: 30px; border-radius: 35px; max-width: 450px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 25px rgba(255, 215, 0, 0.1); }
-        .method { background: #000; padding: 20px; border-radius: 20px; margin: 15px 0; border: 1px solid #222; cursor: pointer; transition: 0.3s; }
-        .method:hover { border-color: var(--glow); transform: scale(1.02); }
-        .num { font-family: monospace; font-size: 22px; color: var(--glow); display: block; margin-top: 10px; }
-        .btn-wa { background: #25d366; color: white; padding: 18px; width: 100%; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 18px; margin-top: 20px; }
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #2ecc71; padding: 10px 20px; border-radius: 10px; display: none; z-index: 100; }
-    </style>
-</head>
-<body>
+<div class="method" onclick="copy('5213720965090876')">
+    <span class="badge">دفع إلكتروني 🌏</span>
+    <span>ماستر كارد (MasterCard)</span>
+    <span class="num">5213720965090876</span>
+    <small style="color:#555;">أسرع طريقة للدفع من خارج وداخل العراق</small>
+</div>
 
-    <div class="pay-card">
-        <h2 style="color:var(--glow);">خطوة التفعيل الأخيرة 👑</h2>
-        <p id="welcomeMsg">مرحباً بك في صوفيگرام</p>
-        <p style="font-size: 14px; color: #888;">يرجى تحويل مبلغ الاشتراك (15,000 د.ع) من داخل العراق او 15 دولار امريكي من خارج العراق عبر أحد الطرق التالية:</p>
-
-        <div class="method" onclick="copy('07807466488')">
-            <span>زين كاش (Zain Cash)</span>
-            <span class="num">07807466488</span>
-            <small style="color:#555;">اضغط لنسخ الرقم</small>
-        </div>
-
-        <div class="method" onclick="copy('5213720965090876')">
-            <span>ماستر كارد (MasterCard)</span>
-            <span class="num">5213720965090876</span>
-            <small style="color:#555;">اضغط لنسخ الرقم</small>
-        </div>
-
-        <button onclick="sendWA()" class="btn-wa">تم التحويل، إرسال الوصل للواتساب ✅</button>
-    </div>
-
-    <div id="toast" class="toast">تم نسخ الرقم ✅</div>
-
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const user = urlParams.get('user');
-        const name = urlParams.get('name');
-        
-        if(name) {
-            document.getElementById('welcomeMsg').innerText = `مرحباً بك: ${decodeURIComponent(name)}`;
-        }
-
-        function copy(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                const t = document.getElementById('toast');
-                t.style.display = 'block';
-                setTimeout(() => t.style.display = 'none', 2000);
-            });
-        }
-
-        function sendWA() {
-            // الرقم الجديد الذي زودتني به
-            const myNumber = "9647823842929"; 
-            const msg = `مرحباً صوفيگرام، أتممت عملية التحويل للاشتراك الجديد:%0Aالاسم: ${name}%0Aاليوزر: ${user}%0A(سأرسل صورة الوصل الآن)`;
-            window.location.href = `https://wa.me/${myNumber}?text=${msg}`;
-        }
-    </script>
-</body>
-</html>
+<div class="method" onclick="sendWA('طلب معلومات الويسترن')">
+    <span class="badge">تحويل كاش 🌏</span>
+    <span>ويسترن يونيون (Western Union)</span>
+    <span class="num" style="font-size: 14px;">اضغط لطلب الاسم الثلاثي للتحويل</span>
+</div>
