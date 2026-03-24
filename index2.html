@@ -3,36 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صوفيگرام AI | المساعد الذكي 🎙️</title>
+    <title>Sofygram | صوفيگرام - المنصة الذكية 🌐</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --glow: #00d2ff; --bg: #050a14; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; padding: 0; }
-        .hero { padding: 40px 20px; background: radial-gradient(circle, #1a1a2e, #050a14); border-bottom: 1px solid #222; }
-        .mic-btn { width: 110px; height: 110px; background: var(--glow); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 45px; color: #000; cursor: pointer; transition: 0.4s; border: 10px solid rgba(0, 210, 255, 0.1); }
+        :root { --glow: #00d2ff; --bg: #050a14; --card: #121212; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; text-align: center; }
+        
+        /* الهيدر */
+        header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; background: #0a0f1d; }
+        .logo { font-weight: bold; font-size: 24px; color: var(--glow); text-decoration: none; }
+        .nav-btns a { color: white; text-decoration: none; margin-left: 15px; font-size: 14px; border: 1px solid #333; padding: 8px 15px; border-radius: 10px; transition: 0.3s; }
+        .nav-btns a:hover { border-color: var(--glow); background: rgba(0,210,255,0.1); }
+
+        /* قسم البحث الصوتي */
+        .search-hero { padding: 60px 20px; background: radial-gradient(circle at center, #1a1a2e 0%, #050a14 100%); }
+        .mic-btn { width: 110px; height: 110px; background: var(--glow); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 45px; color: #000; cursor: pointer; transition: 0.4s; border: 8px solid rgba(0, 210, 255, 0.1); margin: 20px 0; }
         .mic-btn.listening { background: #ff4757; box-shadow: 0 0 40px #ff4757; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        #searchStatus { margin-top: 15px; font-size: 1.2rem; color: var(--glow); font-weight: bold; min-height: 40px; }
-        .results-area { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; max-width: 1000px; margin: auto; }
-        .res-card { background: #111; border-radius: 25px; padding: 25px; border: 1px solid #333; text-align: right; transition: 0.3s; position: relative; cursor: pointer; }
-        .res-card:hover { border-color: var(--glow); transform: translateY(-5px); box-shadow: 0 5px 20px rgba(0,210,255,0.2); }
-        .status-tag { position: absolute; top: 15px; left: 15px; font-size: 12px; padding: 5px 10px; border-radius: 10px; font-weight: bold; }
-        .is-open { background: #2ecc71; color: #fff; }
-        .is-closed { background: #e74c3c; color: #fff; }
+        #searchStatus { font-size: 1.2rem; color: var(--glow); font-weight: bold; min-height: 40px; }
+
+        /* البطاقات والنتائج */
+        .results-container { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; max-width: 1100px; margin: auto; }
+        .res-card { background: var(--card); border-radius: 25px; padding: 20px; border: 1px solid #333; text-align: right; transition: 0.3s; cursor: pointer; }
+        .res-card:hover { border-color: var(--glow); transform: translateY(-5px); }
+        
+        /* قسم انضم إلينا */
+        .join-us { padding: 40px; background: #0a0f1d; margin-top: 50px; border-top: 1px solid #222; }
+        .btn-main { background: var(--glow); color: black; padding: 15px 40px; border-radius: 15px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <section class="hero">
-        <h1 style="margin:0;">SOFYGRAM AI 🎙️</h1>
-        <p style="color: #888;">ابحث بصوتك عن الأطباء، الصيدليات، والخدمات</p>
-        <div class="mic-btn" id="micBtn" onclick="startAI()">
+    <header>
+        <a href="index.html" class="logo">SOFYGRAM</a>
+        <div class="nav-btns">
+            <a href="login.html">دخول المشتركين</a>
+            <a href="register2.html" style="border-color: var(--glow);">تسجيل نشاط جديد</a>
+        </div>
+    </header>
+
+    <section class="search-hero">
+        <h1>مساعدك الذكي في العراق 🎙️</h1>
+        <p style="color: #888;">ابحث عن طبيب، صيدلية، أو أي خدمة في منطقتك بصوتك</p>
+        
+        <div class="mic-btn" id="micBtn" onclick="startVoiceSearch()">
             <i class="fas fa-microphone"></i>
         </div>
-        <div id="searchStatus">اضغط وابحث (مثلاً: صيدلية بالنجف)</div>
+        <div id="searchStatus">اضغط وابحث (مثلاً: صيدلية الكوخ)</div>
     </section>
 
-    <div class="results-area" id="resultsBox"></div>
+    <div class="results-container" id="resultsBox"></div>
+
+    <section class="join-us">
+        <h3>هل أنت صاحب عيادة أو نشاط تجاري؟</h3>
+        <p style="color: #888;">انضم لآلاف الأنشطة في صوفيگرام واجعل الزبائن يصلون إليك بالصوت والذكاء الاصطناعي</p>
+        <a href="register2.html" class="btn-main">سجل نشاطك الآن 🚀</a>
+    </section>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
@@ -55,7 +81,7 @@
             window.speechSynthesis.speak(msg);
         }
 
-        window.startAI = () => {
+        window.startVoiceSearch = () => {
             const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.lang = 'ar-IQ';
             const btn = document.getElementById('micBtn');
@@ -65,7 +91,7 @@
             recognition.onresult = (event) => {
                 const query = event.results[0][0].transcript.toLowerCase();
                 btn.classList.remove('listening');
-                status.innerText = `نتائج: ${query}`;
+                status.innerText = `نتائج البحث عن: ${query}`;
                 processQuery(query);
             };
             recognition.start();
@@ -80,6 +106,7 @@
 
                 for (let id in data) {
                     const u = data[id];
+                    // البحث في الاسم والنوع والمدينة والحي
                     if (u.active && (query.includes(u.city) || query.includes(u.type) || query.includes(u.name.toLowerCase()) || (u.neighborhood && query.includes(u.neighborhood)))) {
                         matches.push({ id, ...u });
                     }
@@ -88,34 +115,27 @@
                 if (matches.length === 1) {
                     const u = matches[0];
                     const openStatus = u.hasOwnProperty('isOpen') ? u.isOpen : true;
-                    const city = u.city || "العراق";
-                    const area = u.neighborhood || "";
+                    // تم حل مشكلة الرابط هنا باستخدام id (اليوزر نيم)
+                    const profileLink = `view.html?id=${matches[0].id}`; 
+                    const speechTxt = `وجدتُ ${u.name} في ${u.city}. هو ${openStatus ? 'مفتوح حالياً' : 'مغلق الآن'}. جاري التحويل.`;
                     
-                    // نطق التفاصيل الكاملة
-                    const speechTxt = `وجدتُ ${u.name} في محافظة ${city} ${area ? 'منطقة ' + area : ''}. جاري تحويلك الآن.`;
-                    
-                    speak(speechTxt, () => {
-                        window.location.href = `view.html?id=${u.id}`; // تم التغيير لـ view.html
-                    });
-                    
-                    setTimeout(() => { window.location.href = `view.html?id=${u.id}`; }, 5000);
+                    speak(speechTxt, () => { window.location.href = profileLink; });
+                    setTimeout(() => { window.location.href = profileLink; }, 5000);
 
                 } else if (matches.length > 1) {
-                    speak(`وجدتُ ${matches.length} نتائج في ${matches[0].city}، تفضل باختيار الأنسب.`);
+                    speak(`وجدتُ ${matches.length} نتائج، تفضل باختيار الأنسب.`);
                     matches.forEach(u => {
-                        const openStatus = u.hasOwnProperty('isOpen') ? u.isOpen : true; 
                         box.innerHTML += `
                             <div class="res-card" onclick="window.location.href='view.html?id=${u.id}'">
-                                <span class="status-tag ${openStatus ? 'is-open' : 'is-closed'}">${openStatus ? 'مفتوح' : 'مغلق'}</span>
                                 <h3 style="margin:0; color:var(--glow);">${u.name}</h3>
-                                <p style="font-size:14px; margin:5px 0;">📍 ${u.city} - ${u.neighborhood || '---'}</p>
-                                <small style="color:#888;">التخصص: ${u.type}</small>
+                                <p style="font-size:14px; margin:5px 0;">📍 ${u.city} - ${u.neighborhood || ''}</p>
+                                <small style="color:#666;">التخصص: ${u.type}</small>
                             </div>
                         `;
                     });
                 } else {
-                    speak("نعتذر، لم أجد أي نتائج تطابق هذا الوصف في نظامنا.");
-                    box.innerHTML = "<p style='color:#666;'>لم يتم العثور على نتائج.. حاول ذكر المدينة أو الاختصاص بوضوح.</p>";
+                    speak("نعتذر، لم أجد نتائج تطابق بحثك.");
+                    box.innerHTML = "<p style='color:#666;'>لا توجد نتائج، جرب ذكر المحافظة أو الاختصاص بوضوح.</p>";
                 }
             }, { onlyOnce: true });
         }
