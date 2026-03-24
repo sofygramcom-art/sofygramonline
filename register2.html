@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram | تسجيل النشاط التجاري 🚀</title>
+    <title>Sofygram | التسجيل العالمي 🌐</title>
     <style>
         :root { --glow: #00d2ff; }
         body { background: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
@@ -12,85 +12,72 @@
         input:focus, select:focus { border-color: var(--glow); }
         .btn-reg { background: linear-gradient(45deg, #00d2ff, #3a7bd5); color: white; padding: 16px; width: 95%; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 18px; margin-top: 15px; }
         label { display: block; text-align: right; margin-right: 25px; font-size: 13px; color: #888; margin-top: 5px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <div class="reg-card">
-        <h2 style="color:var(--glow);">انضم إلى صوفيگرام 🌐</h2>
+        <h2 style="color:var(--glow);">انضم إلى صوفيگرام العالمي 🌐</h2>
         
-        <label>اسم النشاط التجاري / العيادة:</label>
-        <input type="text" id="name" placeholder="مثلاً: شركة الصقر للبرمجيات">
+        <label>اسم النشاط التجاري:</label>
+        <input type="text" id="name" placeholder="اسم الشركة / العيادة / المحل">
         
-        <label>فئة النشاط (مثل نظام فيسبوك):</label>
+        <label>فئة النشاط:</label>
         <select id="type">
             <option value="">-- اختر الفئة --</option>
+            <optgroup label="الخدمات والشركات">
+                <option value="شركة برمجيات">شركة برمجيات</option>
+                <option value="شركة مقاولات">شركة مقاولات</option>
+                <option value="مكتب محاماة">مكتب محاماة</option>
+                <option value="مكتب عقارات">مكتب عقارات</option>
+            </optgroup>
             <optgroup label="القطاع الطبي">
                 <option value="طبيب / عيادة">طبيب / عيادة</option>
                 <option value="صيدلية">صيدلية</option>
-                <option value="مختبر طبي">مختبر طبي</option>
-                <option value="مستشفى / مركز صحي">مستشفى / مركز صحي</option>
+                <option value="مختبر">مختبر</option>
             </optgroup>
-            <optgroup label="التجارة والأسواق">
+            <optgroup label="التجارة والجمال">
                 <option value="أسواق / سوبر ماركت">أسواق / سوبر ماركت</option>
-                <option value="محل ملابس / أحذية">محل ملابس / أحذية</option>
-                <option value="معرض سيارات">معرض سيارات</option>
-                <option value="محل موبايلات وإلكترونيات">محل موبايلات وإلكترونيات</option>
-            </optgroup>
-            <optgroup label="الشركات والخدمات">
-                <option value="شركة برمجيات وتقنية">شركة برمجيات وتقنية</option>
-                <option value="شركة مقاولات وهندسة">شركة مقاولات وهندسة</option>
-                <option value="شركة سياحة وسفر">شركة سياحة وسفر</option>
-                <option value="مكتب محاماة / قانون">مكتب محاماة / قانون</option>
-                <option value="مكتب عقارات">مكتب عقارات</option>
-            </optgroup>
-            <optgroup label="الجمال والمطاعم">
-                <option value="مركز تجميل / صالون">مركز تجميل / صالون</option>
                 <option value="مطعم / كافيه">مطعم / كافيه</option>
-                <option value="قاعة رياضة / جيم">قاعة رياضة / جيم</option>
+                <option value="مركز تجميل">مركز تجميل</option>
             </optgroup>
-            <option value="أخرى">نشاط آخر غير مدرج</option>
+            <option value="أخرى">نشاط آخر</option>
         </select>
 
-        <label>رقم الهاتف المرتبط بالخدمة:</label>
+        <label>الدولة:</label>
+        <select id="country" onchange="handleCountryChange()">
+            <option value="العراق" selected>العراق</option>
+            <option value="السعودية">السعودية</option>
+            <option value="الإمارات">الإمارات</option>
+            <option value="الكويت">الكويت</option>
+            <option value="قطر">قطر</option>
+            <option value="البحرين">البحرين</option>
+            <option value="عُمان">عُمان</option>
+            <option value="الأردن">الأردن</option>
+            <option value="مصر">مصر</option>
+            <option value="تركيا">تركيا</option>
+            <option value="إيران">إيران</option>
+            <option value="أوروبا">أوروبا</option>
+            <option value="أمريكا">أمريكا</option>
+        </select>
+
+        <label>المحافظة / الولاية:</label>
+        <select id="citySelect">
+            </select>
+        <input type="text" id="cityInput" class="hidden" placeholder="اكتب اسم المحافظة/الولاية">
+
+        <label>الحي / المنطقة:</label>
+        <input type="text" id="neighborhood" placeholder="اسم الحي أو المنطقة">
+
+        <label>رقم الهاتف (واتساب):</label>
         <input type="tel" id="phone" placeholder="07XXXXXXXXX">
 
-        <label>الموقع الجغرافي:</label>
-        <select id="country">
-            <option value="العراق">العراق</option>
-            <option value="الإمارات">الإمارات</option>
-            <option value="الأردن">الأردن</option>
-            <option value="أخرى">دولة أخرى</option>
-        </select>
-
-        <select id="city">
-            <option value="بغداد">بغداد</option>
-            <option value="النجف">النجف</option>
-            <option value="كربلاء">كربلاء</option>
-            <option value="البصرة">البصرة</option>
-            <option value="بابل">بابل</option>
-            <option value="أربيل">أربيل</option>
-            <option value="الأنبار">الأنبار</option>
-            <option value="ذي قار">ذي قار</option>
-            <option value="نينوى">نينوى</option>
-            <option value="ميسان">ميسان</option>
-            <option value="المثنى">المثنى</option>
-            <option value="القادسية">القادسية</option>
-            <option value="واسط">واسط</option>
-            <option value="صلاح الدين">صلاح الدين</option>
-            <option value="ديالى">ديالى</option>
-            <option value="كركوك">كركوك</option>
-            <option value="دهوك">دهوك</option>
-            <option value="السليمانية">السليمانية</option>
-        </select>
-
-        <input type="text" id="neighborhood" placeholder="اسم الحي / المنطقة">
-
-        <label>بيانات الدخول للنظام:</label>
+        <label>بيانات الدخول:</label>
         <input type="text" id="username" placeholder="اسم المستخدم (إنجليزي)">
         <input type="password" id="pass" placeholder="كلمة المرور">
 
-        <button onclick="register()" class="btn-reg">تفعيل الحساب والبدء 🚀</button>
+        <button onclick="register()" class="btn-reg">تفعيل الحساب 🚀</button>
     </div>
 
     <script type="module">
@@ -107,23 +94,53 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        const data = {
+            "العراق": ["بغداد", "النجف", "كربلاء", "البصرة", "بابل", "أربيل", "الأنبار", "ذي قار", "نينوى", "ميسان", "المثنى", "القادسية", "واسط", "صلاح الدين", "ديالى", "كركوك", "دهوك", "السليمانية"],
+            "السعودية": ["الرياض", "مكة المكرمة", "المدينة المنورة", "جدة", "الدمام", "أبها", "تبوك"],
+            "الإمارات": ["أبوظبي", "دبي", "الشارقة", "عجمان", "رأس الخيمة", "الفجيرة", "أم القيوين"],
+            "الأردن": ["عمان", "إربد", "الزرقاء", "العقبة", "المفرق"],
+            "مصر": ["القاهرة", "الإسكندرية", "الجيزة", "المنصورة", "شرم الشيخ"],
+            "الكويت": ["العاصمة", "حولي", "الأحمدي", "الجهراء"],
+            "قطر": ["الدوحة", "الريان", "الوكرة"],
+            "البحرين": ["المنامة", "المحرق"],
+            "عُمان": ["مسقط", "صلالة", "صحار"]
+        };
+
+        window.handleCountryChange = () => {
+            const country = document.getElementById('country').value;
+            const select = document.getElementById('citySelect');
+            const input = document.getElementById('cityInput');
+
+            if (data[country]) {
+                select.classList.remove('hidden');
+                input.classList.add('hidden');
+                select.innerHTML = data[country].map(c => `<option value="${c}">${c}</option>`).join('');
+            } else {
+                select.classList.add('hidden');
+                input.classList.remove('hidden');
+            }
+        };
+
+        // تشغيل الدالة لأول مرة (للعراق)
+        handleCountryChange();
+
         window.register = () => {
+            const country = document.getElementById('country').value;
+            const city = data[country] ? document.getElementById('citySelect').value : document.getElementById('cityInput').value;
             const name = document.getElementById('name').value;
             const type = document.getElementById('type').value;
             const phone = document.getElementById('phone').value;
-            const country = document.getElementById('country').value;
-            const city = document.getElementById('city').value;
             const neighborhood = document.getElementById('neighborhood').value;
             const user = document.getElementById('username').value.trim();
             const pass = document.getElementById('pass').value;
 
-            if(!name || !type || !user || !pass || !phone || !city) return alert("أكمل جميع الحقول!");
+            if(!name || !user || !pass || !city) return alert("يرجى إكمال البيانات!");
 
             set(ref(db, 'users/' + user), {
                 name, type, phone, country, city, neighborhood,
                 password: pass, active: false, regDate: new Date().toISOString()
             }).then(() => {
-                const msg = `مشترك جديد في صوفيگرام!%0Aالنشاط: ${name}%0Aالفئة: ${type}%0Aالعنوان: ${city} - ${neighborhood}%0Aالهاتف: ${phone}%0Aاليوزر: ${user}`;
+                const msg = `مشترك جديد!%0Aالدولة: ${country}%0Aالمحافظة: ${city}%0Aالنشاط: ${name}%0Aالفئة: ${type}`;
                 window.location.href = `https://wa.me/9647816616428?text=${msg}`;
             });
         };
