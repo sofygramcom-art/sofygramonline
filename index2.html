@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram AI | صوفيگرام الذكي 🎙️</title>
+    <title>صوفيگرام AI | المساعد الذكي 🎙️</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --glow: #00d2ff; --bg: #050a14; }
-        body { background: var(--bg); color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 0; }
-        .hero { padding: 40px 20px; background: radial-gradient(circle, #1a1a2e, #050a14); }
-        .mic-btn { width: 100px; height: 100px; background: var(--glow); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 40px; color: #000; cursor: pointer; transition: 0.4s; border: 8px solid rgba(0, 210, 255, 0.1); }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; padding: 0; }
+        .hero { padding: 40px 20px; background: radial-gradient(circle, #1a1a2e, #050a14); border-bottom: 1px solid #222; }
+        .mic-btn { width: 110px; height: 110px; background: var(--glow); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 45px; color: #000; cursor: pointer; transition: 0.4s; border: 10px solid rgba(0, 210, 255, 0.1); }
         .mic-btn.listening { background: #ff4757; box-shadow: 0 0 40px #ff4757; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        #searchStatus { margin-top: 15px; font-size: 1.1rem; color: var(--glow); font-weight: bold; min-height: 30px; }
-        .results-area { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; max-width: 1000px; margin: auto; }
-        .res-card { background: #111; border-radius: 20px; padding: 20px; border: 1px solid #333; text-align: right; transition: 0.3s; position: relative; cursor: pointer; }
-        .res-card:hover { border-color: var(--glow); transform: translateY(-5px); }
-        .status-tag { position: absolute; top: 15px; left: 15px; font-size: 11px; padding: 4px 8px; border-radius: 8px; font-weight: bold; }
+        #searchStatus { margin-top: 15px; font-size: 1.2rem; color: var(--glow); font-weight: bold; min-height: 40px; }
+        .results-area { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; max-width: 1000px; margin: auto; }
+        .res-card { background: #111; border-radius: 25px; padding: 25px; border: 1px solid #333; text-align: right; transition: 0.3s; position: relative; cursor: pointer; }
+        .res-card:hover { border-color: var(--glow); transform: translateY(-5px); box-shadow: 0 5px 20px rgba(0,210,255,0.2); }
+        .status-tag { position: absolute; top: 15px; left: 15px; font-size: 12px; padding: 5px 10px; border-radius: 10px; font-weight: bold; }
         .is-open { background: #2ecc71; color: #fff; }
         .is-closed { background: #e74c3c; color: #fff; }
     </style>
@@ -24,11 +24,12 @@
 <body>
 
     <section class="hero">
-        <h1>SOFYGRAM AI 🎙️</h1>
+        <h1 style="margin:0;">SOFYGRAM AI 🎙️</h1>
+        <p style="color: #888;">ابحث بصوتك عن الأطباء، الصيدليات، والخدمات</p>
         <div class="mic-btn" id="micBtn" onclick="startAI()">
             <i class="fas fa-microphone"></i>
         </div>
-        <div id="searchStatus">تحدث الآن.. أنا أسمعك</div>
+        <div id="searchStatus">اضغط وابحث (مثلاً: صيدلية بالنجف)</div>
     </section>
 
     <div class="results-area" id="resultsBox"></div>
@@ -49,7 +50,7 @@
 
         function speak(text, callback) {
             const msg = new SpeechSynthesisUtterance();
-            msg.text = text; msg.lang = 'ar-SA';
+            msg.text = text; msg.lang = 'ar-SA'; msg.rate = 0.9;
             msg.onend = () => { if(callback) callback(); };
             window.speechSynthesis.speak(msg);
         }
@@ -60,11 +61,11 @@
             const btn = document.getElementById('micBtn');
             const status = document.getElementById('searchStatus');
 
-            recognition.onstart = () => { btn.classList.add('listening'); status.innerText = "جاري الاستماع..."; };
+            recognition.onstart = () => { btn.classList.add('listening'); status.innerText = "أسمعك.. تكلم"; };
             recognition.onresult = (event) => {
                 const query = event.results[0][0].transcript.toLowerCase();
                 btn.classList.remove('listening');
-                status.innerText = `حللتُ قولك: ${query}`;
+                status.innerText = `نتائج: ${query}`;
                 processQuery(query);
             };
             recognition.start();
@@ -85,33 +86,36 @@
                 }
 
                 if (matches.length === 1) {
-                    // تحويل مباشر إذا كانت النتيجة واحدة فقط
                     const u = matches[0];
                     const openStatus = u.hasOwnProperty('isOpen') ? u.isOpen : true;
-                    const speechTxt = `وجدتُ ${u.name}. هو ${openStatus ? 'مفتوح حالياً' : 'مغلق الآن'}. جاري تحويلك.`;
+                    const city = u.city || "العراق";
+                    const area = u.neighborhood || "";
+                    
+                    // نطق التفاصيل الكاملة
+                    const speechTxt = `وجدتُ ${u.name} في محافظة ${city} ${area ? 'منطقة ' + area : ''}. جاري تحويلك الآن.`;
                     
                     speak(speechTxt, () => {
-                        window.location.href = `profile.html?id=${u.id}`;
+                        window.location.href = `view.html?id=${u.id}`; // تم التغيير لـ view.html
                     });
                     
-                    // احتياطاً إذا لم يعمل الـ callback
-                    setTimeout(() => { window.location.href = `profile.html?id=${u.id}`; }, 4000);
+                    setTimeout(() => { window.location.href = `view.html?id=${u.id}`; }, 5000);
 
                 } else if (matches.length > 1) {
-                    speak(`وجدتُ ${matches.length} نتائج، اختر من القائمة`);
+                    speak(`وجدتُ ${matches.length} نتائج في ${matches[0].city}، تفضل باختيار الأنسب.`);
                     matches.forEach(u => {
                         const openStatus = u.hasOwnProperty('isOpen') ? u.isOpen : true; 
                         box.innerHTML += `
-                            <div class="res-card" onclick="window.location.href='profile.html?id=${u.id}'">
+                            <div class="res-card" onclick="window.location.href='view.html?id=${u.id}'">
                                 <span class="status-tag ${openStatus ? 'is-open' : 'is-closed'}">${openStatus ? 'مفتوح' : 'مغلق'}</span>
                                 <h3 style="margin:0; color:var(--glow);">${u.name}</h3>
-                                <p style="font-size:14px; margin:5px 0;">${u.type} - ${u.city}</p>
+                                <p style="font-size:14px; margin:5px 0;">📍 ${u.city} - ${u.neighborhood || '---'}</p>
+                                <small style="color:#888;">التخصص: ${u.type}</small>
                             </div>
                         `;
                     });
                 } else {
-                    speak("نعتذر، هذا النشاط غير مسجل لدينا");
-                    box.innerHTML = "<p>لا توجد نتائج مطابقة..</p>";
+                    speak("نعتذر، لم أجد أي نتائج تطابق هذا الوصف في نظامنا.");
+                    box.innerHTML = "<p style='color:#666;'>لم يتم العثور على نتائج.. حاول ذكر المدينة أو الاختصاص بوضوح.</p>";
                 }
             }, { onlyOnce: true });
         }
