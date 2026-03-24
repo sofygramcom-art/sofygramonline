@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofygram Staff | لوحة المساعد 👤</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --glow: #3498db; } /* لون أزرق للموظف لتمييزها عن لوحة الملك الذهبية */
+        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
+        .staff-card { background: #121212; padding: 25px; border-radius: 30px; max-width: 600px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 15px rgba(52, 152, 219, 0.2); }
+        input { padding: 14px; border-radius: 15px; border: 1px solid var(--glow); background: #000; color: #fff; text-align: center; margin: 10px; width: 85%; font-size: 16px; outline: none; }
+        .btn-staff { background: var(--glow); color: white; padding: 15px; width: 90%; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 18px; }
+        .user-row { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 15px; border-radius: 20px; margin-bottom: 12px; border-right: 5px solid #888; text-align: right; }
+        .active-user { border-right-color: #2ecc71; }
+        .expired-user { border-right-color: #e74c3c; }
+        .btn-group { display: flex; flex-direction: column; gap: 5px; }
+        .btn { padding: 8px 15px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; color: white; }
+        .btn-f { background: #2ecc71; } .btn-t { background: #f1c40f; color: #000; } .btn-h { background: #3498db; }
+    </style>
+</head>
+<body>
+
+    <div id="authBox" class="staff-card">
+        <h2>تسجيل دخول الموظف 👤</h2>
+        <input type="text" id="sUser" placeholder="اسم الموظف">
+        <input type="password" id="sPass" placeholder="كلمة المرور">
+        <button onclick="staffLogin()" class="btn-staff">دخول اللوحة</button>
+    </div>
+
+    <div id="staffBox" class="staff-card" style="display:none;">
+        <h2 style="color:var(--glow);">لوحة التفعيل السريع ⚡</h2>
+        <input type="text" id="mSearch" placeholder="ابحث عن طبيب..." onkeyup="filterUsers()">
+        <div id="usersList">جاري تحميل المشتركين...</div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, onValue, get, update } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
+            authDomain: "sofygramclinic.firebaseapp.com",
+            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
+            projectId: "sofygramclinic",
+            appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.staffLogin = async () => {
+            const user = document.getElementById('sUser').value;
+            const pass = document.getElementById('sPass').value;
+            
+            // التحقق من قائمة الموظفين في Firebase
+            const staffRef = ref(db, 'staff');
+            const snap = await get(staffRef);
+            let found = false;
+
+            if (snap.exists()) {
+                const staffData = snap.val();
+                for (let id in staffData) {
+                    if (staffData[id].name === user && staffData[id].password === pass) {
+                        found = true; break;
+                    }
+                }
+            }
+
+            if (found) {
+                document.getElementById('authBox').style.display = 'none';
+                document.getElementById('staffBox').style.display = 'block';
+                loadUsers();
+            } else {
+                alert("اسم الموظف أو الرمز غير صحيح!");
+            }
+        };
+
+        function loadUsers() {
+            onValue(ref(db, 'users'), (snap) => {
+                const data = snap.val();
+                const list = document.getElementById('usersList'); list.innerHTML = "";
+                const today = new Date();
+                let usersArr = [];
+                for(let id in data) { usersArr.push({id, ...data[id]}); }
+                usersArr.reverse(); // الجدد في البداية
+
+                usersArr.forEach(u => {
+                    const expiry = u.expiryDate ? new Date(u.expiryDate) : null;
+                    let daysLeft = expiry ? Math.ceil((expiry - today) / (1000 * 60 * 60 * 24)) : 0;
+                    list.innerHTML += `
+                        <div class="user-row ${daysLeft > 0 ? 'active-user' : 'expired-user'}" data-name="${u.name.toLowerCase()}">
+                            <div style="text-align:right;">
+                                <b>${u.name}</b> <br>
+                                <small style="color:#aaa;">ينتهي: ${expiry ? expiry.toLocaleDateString('en-GB') : 'غير مفعل'}</small>
+                                <div id="info-${u.id}" style="display:none; color:var(--glow); font-weight:bold; margin-top:5px;"></div>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-f" onclick="setSub('${u.id}', 30)">تفعيل شهر</button>
+                                <button class="btn btn-t" onclick="setSub('${u.id}', 3)">تجربة 3 أيام</button>
+                                <button class="btn btn-h" onclick="showPhone('${u.id}', '${u.phone || 'لا يوجد'}')">اتصال</button>
+                            </div>
+                        </div>`;
+                });
+            });
+        }
+
+        window.setSub = (id, days) => {
+            const exp = new Date(); exp.setDate(exp.getDate() + days);
+            update(ref(db, `users/${id}`), { active: true, expiryDate: exp.toISOString() }).then(() => alert("تم التفعيل ✅"));
+        };
+
+        window.showPhone = (id, phone) => {
+            const div = document.getElementById(`info-${id}`);
+            if (phone === 'لا يوجد') div.innerHTML = "🚫 لا يوجد رقم";
+            else div.innerHTML = `<a href="tel:${phone}" style="color:#3498db; text-decoration:none;"><i class="fas fa-phone"></i> ${phone}</a>`;
+            div.style.display = div.style.display === 'none' ? 'block' : 'none';
+        };
+
+        window.filterUsers = () => {
+            const v = document.getElementById('mSearch').value.toLowerCase();
+            document.querySelectorAll('.user-row').forEach(r => r.style.display = r.getAttribute('data-name').includes(v) ? "flex" : "none");
+        };
+    </script>
+</body>
+</html>
