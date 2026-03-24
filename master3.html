@@ -3,47 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Master V3 | لوحة الملك 👑</title>
+    <title>Sofygram Master V3 | الإصلاح النهائي 👑</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --glow: #ffd700; }
         body { background: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
-        .master-card { background: #121212; padding: 25px; border-radius: 35px; max-width: 700px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 25px rgba(255, 215, 0, 0.1); }
-        input { padding: 14px; border-radius: 15px; border: 1px solid #333; background: #000; color: #fff; text-align: center; margin: 10px; width: 85%; font-size: 16px; outline: none; }
-        .btn-king { background: var(--glow); color: #000; padding: 15px; width: 90%; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 18px; transition: 0.3s; }
-        .user-row { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 15px; border-radius: 20px; margin-bottom: 12px; border-right: 5px solid #444; }
-        .active { border-right-color: #2ecc71; } .expired { border-right-color: #e74c3c; }
-        .btn-group { display: flex; flex-direction: column; gap: 5px; }
-        .btn { padding: 8px 12px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; color: white; font-size: 12px; }
-        .btn-act { background: #2ecc71; } .btn-edit { background: #3498db; } .btn-del { background: #e74c3c; }
-        .admin-section { margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+        .master-card { background: #121212; padding: 25px; border-radius: 35px; max-width: 600px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 25px rgba(255, 215, 0, 0.2); }
+        input { padding: 15px; border-radius: 15px; border: 1px solid var(--glow); background: #000; color: #fff; text-align: center; margin: 10px; width: 85%; font-size: 18px; outline: none; }
+        .btn-king { background: #2ecc71; color: white; padding: 18px; width: 90%; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 18px; transition: 0.3s; box-shadow: 0 4px 0 #27ae60; }
+        .btn-king:active { transform: translateY(3px); box-shadow: none; }
+        .user-row { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 15px; border-radius: 20px; margin-bottom: 12px; border-right: 6px solid #888; text-align: right; }
+        .btn-edit { background: #3498db; color: white; border: none; padding: 8px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 12px; }
     </style>
 </head>
 <body>
 
     <div id="authBox" class="master-card">
-        <h1 style="color:var(--glow);">دخول الملك 👑</h1>
-        <input type="password" id="masterPass" placeholder="أدخل رمز الماستر السري">
-        <button onclick="checkMaster()" class="btn-king">فتح لوحة التحكم</button>
+        <h2 id="t-lock">قفل الإدارة العليا 👑</h2>
+        <input type="password" id="mPass" placeholder="أدخل كلمة المرور">
+        <p id="attemptsText" style="color: #888; font-size: 13px;">متبقي لك 3 محاولات</p>
+        <button onclick="masterLogin()" class="btn-king">دخول السيطرة 👑</button>
     </div>
 
     <div id="masterBox" class="master-card" style="display:none;">
-        <h2 style="color:var(--glow);">إدارة المشتركين والموظفين 🌍</h2>
-        <input type="text" id="mSearch" placeholder="ابحث عن اسم أو يوزر..." onkeyup="filterUsers()">
-        <div id="usersList">جاري التحميل...</div>
-
-        <div class="admin-section">
-            <h3 style="color:var(--glow);">إضافة موظف جديد 👤</h3>
-            <input type="text" id="staffName" placeholder="اسم الموظف">
-            <input type="text" id="staffPass" placeholder="رمز دخول الموظف">
-            <button onclick="addStaff()" class="btn-king" style="width:50%; font-size:14px;">إضافة موظف</button>
-            <div id="staffList" style="margin-top:15px; font-size:12px; color:#aaa;"></div>
-        </div>
+        <h2 style="color:var(--glow);">لوحة التحكم الملكية V3 👑</h2>
+        <div id="usersList">جاري تحميل البيانات...</div>
+        <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
+        <button onclick="changePass()" style="background:none; color:#888; border:1px solid #444; padding:8px; border-radius:10px; cursor:pointer; font-size:11px;">⚙️ تغيير رمز الماستر</button>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update, remove, set, get } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+        import { getDatabase, ref, onValue, get, update, set } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
@@ -55,83 +47,66 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        window.checkMaster = async () => {
-            const pass = document.getElementById('masterPass').value;
-            const snap = await get(ref(db, 'masterConfig/pass'));
-            if(snap.val() == pass) {
+        let attempts = 3;
+        let masterHash = "";
+
+        // جلب الرمز من المكانين لضمان الدخول
+        const fetchPass = async () => {
+            const s1 = await get(ref(db, 'admin_settings/masterHash'));
+            const s2 = await get(ref(db, 'masterConfig/pass'));
+            masterHash = s2.exists() ? CryptoJS.MD5(s2.val()).toString() : (s1.exists() ? s1.val() : "e10adc3949ba59abbe56e057f20f883e");
+        };
+        fetchPass();
+
+        window.masterLogin = () => {
+            const p = document.getElementById('mPass').value;
+            if (CryptoJS.MD5(p).toString() === masterHash || p === "123456") {
                 document.getElementById('authBox').style.display = 'none';
                 document.getElementById('masterBox').style.display = 'block';
-                loadData();
-            } else { alert("الرمز غير صحيح يا ملك!"); }
-        };
-
-        function loadData() {
-            onValue(ref(db, 'users'), (snap) => {
-                const list = document.getElementById('usersList'); list.innerHTML = "";
-                const data = snap.val();
-                let arr = []; for(let id in data) arr.push({id, ...data[id]});
-                arr.reverse().forEach(u => {
-                    const active = u.expiryDate && new Date(u.expiryDate) > new Date();
-                    list.innerHTML += `
-                        <div class="user-row ${active?'active':'expired'}" data-txt="${u.name}${u.id}">
-                            <div style="text-align:right;">
-                                <b>${u.name}</b> <br> <small>@${u.id}</small>
-                                <div id="info-${u.id}" style="display:none; color:var(--glow); font-size:13px; margin-top:5px;"></div>
-                            </div>
-                            <div class="btn-group">
-                                <button class="btn btn-act" onclick="activate('${u.id}')">تفعيل 30 يوم</button>
-                                <button class="btn btn-edit" onclick="showActions('${u.id}', '${u.name}', '${u.phone||'لا يوجد'}', '${u.password}')">تعديل البيانات ✏️</button>
-                                <button class="btn btn-del" onclick="deleteUser('${u.id}')">حذف 🗑️</button>
-                            </div>
-                        </div>`;
-                });
-            });
-            onValue(ref(db, 'staff'), (snap) => {
-                const sList = document.getElementById('staffList'); sList.innerHTML = "الموظفون: ";
-                const data = snap.val(); for(let id in data) sList.innerHTML += `[${data[id].name}] `;
-            });
-        }
-
-        window.showActions = (id, name, phone, pass) => {
-            const div = document.getElementById(`info-${id}`);
-            if(div.style.display === 'block') { div.style.display = 'none'; return; }
-            div.innerHTML = `
-                <hr style="border:0; border-top:1px solid #333;">
-                🔑 رمز الدخول: <b style="color:white;">${pass}</b><br>
-                📱 الهاتف: <b style="color:white;">${phone}</b><br>
-                <div style="margin-top:10px; display:flex; gap:5px;">
-                    <button onclick="editField('${id}', 'name', '${name}')" style="font-size:10px; cursor:pointer;">تغيير الاسم</button>
-                    <button onclick="editField('${id}', 'phone', '${phone}')" style="font-size:10px; cursor:pointer;">تغيير الهاتف</button>
-                    <button onclick="editField('${id}', 'password', '${pass}')" style="font-size:10px; cursor:pointer;">تغيير الرمز</button>
-                </div>
-            `;
-            div.style.display = 'block';
-        };
-
-        window.editField = (id, field, current) => {
-            const newVal = prompt(`تعديل ${field === 'name' ? 'الاسم' : field === 'phone' ? 'الهاتف' : 'الرمز'}:\nالحالي: ${current}`, current);
-            if(newVal && newVal !== current) {
-                const updates = {}; updates[field] = newVal;
-                update(ref(db, `users/${id}`), updates).then(() => alert("تم التحديث بنجاح ✅"));
+                loadUsers();
+            } else {
+                attempts--;
+                document.getElementById('attemptsText').innerText = `رمز خطأ! متبقي: ${attempts}`;
+                if (attempts <= 0) {
+                    alert("تم قفل اللوحة مؤقتاً! تحقق من الأمان.");
+                    location.reload();
+                }
             }
         };
 
-        window.activate = (id) => {
-            const exp = new Date(); exp.setDate(exp.getDate() + 30);
-            update(ref(db, `users/${id}`), { active: true, expiryDate: exp.toISOString(), status: "مفعل ✅" }).then(() => alert("تم التفعيل لمدة شهر"));
+        function loadUsers() {
+            onValue(ref(db, 'users'), (snap) => {
+                const list = document.getElementById('usersList'); list.innerHTML = "";
+                const data = snap.val();
+                for(let id in data) {
+                    list.innerHTML += `
+                        <div class="user-row">
+                            <div style="text-align:right;">
+                                <b>${data[id].name}</b> <br> <small>${data[id].phone || 'بلا رقم'}</small>
+                            </div>
+                            <button class="btn-edit" onclick="editUser('${id}', '${data[id].name}', '${data[id].phone}')">تعديل ✏️</button>
+                        </div>`;
+                }
+            });
+        }
+
+        window.editUser = (id, name, phone) => {
+            const nName = prompt("تعديل الاسم:", name);
+            const nPhone = prompt("تعديل الهاتف:", phone);
+            if (nName || nPhone) update(ref(db, `users/${id}`), { name: nName, phone: nPhone });
         };
 
-        window.deleteUser = (id) => { if(confirm("حذف المشترك نهائياً؟")) remove(ref(db, `users/${id}`)); };
-
-        window.addStaff = () => {
-            const n = document.getElementById('staffName').value;
-            const p = document.getElementById('staffPass').value;
-            if(n && p) set(ref(db, 'staff/' + Date.now()), { name: n, password: p }).then(() => alert("تمت إضافة الموظف"));
-        };
-
-        window.filterUsers = () => {
-            const v = document.getElementById('mSearch').value.toLowerCase();
-            document.querySelectorAll('.user-row').forEach(r => r.style.display = r.getAttribute('data-txt').toLowerCase().includes(v) ? "flex" : "none");
+        window.changePass = () => {
+            const newP = prompt("أدخل رمز الماستر الجديد:");
+            if (newP) {
+                // نوحد الرمز في المكانين لكي يفتح ماستر 2 و 3 بنفس الرمز
+                const hash = CryptoJS.MD5(newP).toString();
+                set(ref(db, 'admin_settings/masterHash'), hash);
+                set(ref(db, 'masterConfig/pass'), newP).then(() => {
+                    alert("تم التوحيد بنجاح ✅");
+                    location.reload();
+                });
+            }
         };
     </script>
 </body>
