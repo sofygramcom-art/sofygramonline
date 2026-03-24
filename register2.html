@@ -3,77 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram | تسجيل حساب جديد 🏥</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Sofygram | تسجيل النشاط التجاري 🚀</title>
     <style>
         :root { --glow: #00d2ff; }
         body { background: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
-        .reg-card { background: #121212; padding: 25px; border-radius: 35px; max-width: 500px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 20px rgba(0, 210, 255, 0.1); }
-        input, select { padding: 14px; border-radius: 15px; border: 1px solid #333; background: #000; color: #fff; text-align: center; margin: 8px; width: 90%; font-size: 16px; outline: none; transition: 0.3s; }
-        input:focus, select:focus { border-color: var(--glow); box-shadow: 0 0 10px rgba(0, 210, 255, 0.3); }
+        .reg-card { background: #121212; padding: 25px; border-radius: 35px; max-width: 500px; margin: 10px auto; border: 1px solid var(--glow); box-shadow: 0 0 20px rgba(0, 210, 255, 0.1); }
+        input, select { padding: 14px; border-radius: 15px; border: 1px solid #333; background: #000; color: #fff; text-align: center; margin: 8px; width: 92%; font-size: 16px; outline: none; transition: 0.3s; }
+        input:focus, select:focus { border-color: var(--glow); }
         .btn-reg { background: linear-gradient(45deg, #00d2ff, #3a7bd5); color: white; padding: 16px; width: 95%; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 18px; margin-top: 15px; }
-        .payment-box { background: #1a1a1a; padding: 15px; border-radius: 20px; margin-top: 20px; border: 1px dashed #444; font-size: 14px; }
+        label { display: block; text-align: right; margin-right: 25px; font-size: 13px; color: #888; margin-top: 5px; }
     </style>
 </head>
 <body>
 
     <div class="reg-card">
-        <h2 style="color:var(--glow);">إنشاء حساب طبي 🏥</h2>
+        <h2 style="color:var(--glow);">انضم إلى صوفيگرام 🌐</h2>
         
-        <input type="text" id="name" placeholder="اسم العيادة / الصيدلية / المختبر">
+        <label>اسم النشاط التجاري / العيادة:</label>
+        <input type="text" id="name" placeholder="مثلاً: شركة الصقر للبرمجيات">
         
+        <label>فئة النشاط (مثل نظام فيسبوك):</label>
         <select id="type">
-            <option value="">نوع النشاط</option>
-            <option value="طبيب">طبيب</option>
-            <option value="صيدلية">صيدلية</option>
-            <option value="مختبر">مختبر</option>
-            <option value="مركز تجميل">مركز تجميل</option>
-            <option value="آخر">أخرى</option>
+            <option value="">-- اختر الفئة --</option>
+            <optgroup label="القطاع الطبي">
+                <option value="طبيب / عيادة">طبيب / عيادة</option>
+                <option value="صيدلية">صيدلية</option>
+                <option value="مختبر طبي">مختبر طبي</option>
+                <option value="مستشفى / مركز صحي">مستشفى / مركز صحي</option>
+            </optgroup>
+            <optgroup label="التجارة والأسواق">
+                <option value="أسواق / سوبر ماركت">أسواق / سوبر ماركت</option>
+                <option value="محل ملابس / أحذية">محل ملابس / أحذية</option>
+                <option value="معرض سيارات">معرض سيارات</option>
+                <option value="محل موبايلات وإلكترونيات">محل موبايلات وإلكترونيات</option>
+            </optgroup>
+            <optgroup label="الشركات والخدمات">
+                <option value="شركة برمجيات وتقنية">شركة برمجيات وتقنية</option>
+                <option value="شركة مقاولات وهندسة">شركة مقاولات وهندسة</option>
+                <option value="شركة سياحة وسفر">شركة سياحة وسفر</option>
+                <option value="مكتب محاماة / قانون">مكتب محاماة / قانون</option>
+                <option value="مكتب عقارات">مكتب عقارات</option>
+            </optgroup>
+            <optgroup label="الجمال والمطاعم">
+                <option value="مركز تجميل / صالون">مركز تجميل / صالون</option>
+                <option value="مطعم / كافيه">مطعم / كافيه</option>
+                <option value="قاعة رياضة / جيم">قاعة رياضة / جيم</option>
+            </optgroup>
+            <option value="أخرى">نشاط آخر غير مدرج</option>
         </select>
 
-        <input type="text" id="phone" placeholder="رقم الموبايل (واتساب)">
+        <label>رقم الهاتف المرتبط بالخدمة:</label>
+        <input type="tel" id="phone" placeholder="07XXXXXXXXX">
 
-        <select id="country" onchange="updateCities()">
-            <option value="العراق" selected>العراق</option>
+        <label>الموقع الجغرافي:</label>
+        <select id="country">
+            <option value="العراق">العراق</option>
             <option value="الإمارات">الإمارات</option>
-            <option value="السعودية">السعودية</option>
             <option value="الأردن">الأردن</option>
-            <option value="مصر">مصر</option>
+            <option value="أخرى">دولة أخرى</option>
         </select>
 
         <select id="city">
-            <option value="">اختر المحافظة</option>
             <option value="بغداد">بغداد</option>
             <option value="النجف">النجف</option>
             <option value="كربلاء">كربلاء</option>
             <option value="البصرة">البصرة</option>
-            <option value="أربيل">أربيل</option>
             <option value="بابل">بابل</option>
+            <option value="أربيل">أربيل</option>
             <option value="الأنبار">الأنبار</option>
-            <option value="صلاح الدين">صلاح الدين</option>
             <option value="ذي قار">ذي قار</option>
             <option value="نينوى">نينوى</option>
             <option value="ميسان">ميسان</option>
-            <option value="كركوك">كركوك</option>
-            <option value="ديالى">ديالى</option>
             <option value="المثنى">المثنى</option>
             <option value="القادسية">القادسية</option>
             <option value="واسط">واسط</option>
+            <option value="صلاح الدين">صلاح الدين</option>
+            <option value="ديالى">ديالى</option>
+            <option value="كركوك">كركوك</option>
             <option value="دهوك">دهوك</option>
             <option value="السليمانية">السليمانية</option>
         </select>
 
-        <input type="text" id="neighborhood" placeholder="الحي (مثلاً: حي الأمير / شارع 40)">
+        <input type="text" id="neighborhood" placeholder="اسم الحي / المنطقة">
 
-        <input type="text" id="username" placeholder="يوزر نيم (بالإنجليزي)">
-        <input type="password" id="pass" placeholder="باسوورد الدخول">
+        <label>بيانات الدخول للنظام:</label>
+        <input type="text" id="username" placeholder="اسم المستخدم (إنجليزي)">
+        <input type="password" id="pass" placeholder="كلمة المرور">
 
-        <div class="payment-box">
-            <p>للتفعيل، أرسل <b>15 ألف دينار</b> (رصيد آسيا أو زين كاش):</p>
-            <p style="color:#ffcc00;">07722334455 <br> 07811223344</p>
-        </div>
-
-        <button onclick="register()" class="btn-reg">إنشاء الحساب وتفعيل 🚀</button>
+        <button onclick="register()" class="btn-reg">تفعيل الحساب والبدء 🚀</button>
     </div>
 
     <script type="module">
@@ -100,35 +117,15 @@
             const user = document.getElementById('username').value.trim();
             const pass = document.getElementById('pass').value;
 
-            if(!name || !user || !pass || !phone || !city) {
-                alert("يرجى ملء جميع الحقول المطلوبة!");
-                return;
-            }
+            if(!name || !type || !user || !pass || !phone || !city) return alert("أكمل جميع الحقول!");
 
-            // حفظ البيانات في فايربيس
             set(ref(db, 'users/' + user), {
-                name: name,
-                type: type,
-                phone: phone,
-                country: country,
-                city: city,
-                neighborhood: neighborhood,
-                password: pass,
-                active: false,
-                status: "قيد الانتظار ⏳"
+                name, type, phone, country, city, neighborhood,
+                password: pass, active: false, regDate: new Date().toISOString()
             }).then(() => {
-                // إرسال البيانات لك على الواتساب
-                const msg = `طلب اشتراك جديد صوفيگرام:%0Aالاسم: ${name}%0Aالنوع: ${type}%0Aالدولة: ${country}%0Aالمحافظة: ${city}%0Aالحي: ${neighborhood}%0Aالهاتف: ${phone}%0Aاليوزر: ${user}%0Aالرمز: ${pass}`;
+                const msg = `مشترك جديد في صوفيگرام!%0Aالنشاط: ${name}%0Aالفئة: ${type}%0Aالعنوان: ${city} - ${neighborhood}%0Aالهاتف: ${phone}%0Aاليوزر: ${user}`;
                 window.location.href = `https://wa.me/9647816616428?text=${msg}`;
             });
-        };
-
-        window.updateCities = () => {
-            const country = document.getElementById('country').value;
-            const citySelect = document.getElementById('city');
-            if(country !== "العراق") {
-                citySelect.innerHTML = '<option value="أخرى">أخرى / كتابة يدوية</option>';
-            }
         };
     </script>
 </body>
