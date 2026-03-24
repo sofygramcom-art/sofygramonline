@@ -1,118 +1,105 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="main-html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram | صوفيگرام - البحث الذكي 🎙️</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Sofygram Online | Global Queue System</title>
     <style>
-        :root { --glow: #00d2ff; --bg: #050a14; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; overflow-x: hidden; }
+        :root { --main-color: #2ecc71; --bg-color: #000; }
+        body { background: var(--bg-color); color: #fff; font-family: 'Segoe UI', sans-serif; text-align: center; transition: 0.3s; margin: 0; }
+        .lang-btn { position: absolute; top: 20px; left: 20px; background: #222; border: 1px solid var(--main-color); color: var(--main-color); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         
-        /* تصميم المايك */
-        .search-section { padding: 50px 20px; background: radial-gradient(circle at center, #1a1a2e 0%, #050a14 100%); min-height: 40vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .mic-btn { width: 100px; height: 100px; background: var(--glow); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; color: #000; cursor: pointer; transition: 0.3s; border: 10px solid rgba(0, 210, 255, 0.2); position: relative; }
-        .mic-btn.listening { box-shadow: 0 0 40px var(--glow); animation: pulse 1.5s infinite; background: #ff4757; }
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        h1 { color: var(--main-color); font-size: 3.5rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        p { color: #888; font-size: 1.2rem; max-width: 700px; line-height: 1.6; }
         
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        .search-box { background: #111; padding: 30px; border-radius: 25px; border: 1px solid #333; width: 90%; max-width: 450px; margin-top: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input { width: 85%; padding: 15px; border-radius: 12px; border: 1px solid var(--main-color); background: #000; color: #fff; text-align: center; font-size: 1.2rem; margin-bottom: 20px; }
         
-        #searchStatus { margin-top: 20px; font-size: 18px; color: var(--glow); min-height: 30px; }
-        .results-container { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: auto; }
+        .btn-view { background: var(--main-color); color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 93%; font-size: 1.2rem; transition: 0.3s; }
+        .btn-view:hover { transform: scale(1.05); background: #27ae60; }
         
-        /* بطاقة الطبيب/النشاط */
-        .card { background: #121212; border-radius: 25px; padding: 20px; border: 1px solid #333; text-align: right; position: relative; transition: 0.3s; }
-        .card:hover { border-color: var(--glow); transform: translateY(-5px); }
-        .status-badge { position: absolute; top: 15px; left: 15px; padding: 5px 12px; border-radius: 10px; font-size: 12px; font-weight: bold; }
-        .open { background: #2ecc71; color: #fff; }
-        .closed { background: #e74c3c; color: #fff; }
-        .btn-call { background: var(--glow); color: #000; padding: 10px; border-radius: 12px; display: block; text-decoration: none; text-align: center; margin-top: 15px; font-weight: bold; }
+        .links { margin-top: 30px; }
+        .btn-reg { color: #f39c12; text-decoration: none; font-weight: bold; margin: 0 15px; border-bottom: 1px solid transparent; }
+        .btn-reg:hover { border-bottom: 1px solid #f39c12; }
+        
+        .footer { position: absolute; bottom: 20px; color: #444; font-size: 0.8rem; width: 100%; }
+        
+        /* التنسيق للغة الإنجليزية */
+        [lang="en"] { direction: ltr; text-align: center; }
     </style>
 </head>
-<body>
+<body id="body-content">
 
-    <section class="search-section">
-        <h1 style="font-size: 2.5rem; margin-bottom: 10px;">صوفيگرام 🌐</h1>
-        <p style="color: #888;">اضغط المايك وابحث بصوتك عن أي عيادة أو نشاط</p>
+    <button class="lang-btn" onclick="toggleLang()" id="lang-btn">English</button>
+
+    <div class="hero">
+        <h1 id="title">صوفيگرام أونلاين</h1>
+        <p id="desc">النظام العالمي الأول لإدارة طوابير الانتظار والمناداة الذكية.</p>
+
+        <div class="search-box">
+            <h3 id="search-head">🔍 ابحث عن دورك الآن</h3>
+            <input type="text" id="search-id" placeholder="ادخل المعرف (Clinic ID)">
+            <button class="btn-view" id="view-btn" onclick="goToView()">مشاهدة الانتظار</button>
+        </div>
+
+        <div class="links">
+            <a href="register.html" class="btn-reg" id="reg-link">سجل عملك معنا (اشتراك عالمي)</a>
+        </div>
         
-        <div class="mic-btn" id="micBtn" onclick="startSearch()">
-            <i class="fas fa-microphone"></i>
+        <div class="footer">
+            &copy; 2026 Sofygram Online Global System. All Rights Reserved.
         </div>
-        <div id="searchStatus">اضغط للتحدث...</div>
-    </section>
+    </div>
 
-    <div class="results-container" id="results">
-        </div>
+    <script>
+        let currentLang = 'ar';
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
-            authDomain: "sofygramclinic.firebaseapp.com",
-            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
-            projectId: "sofygramclinic",
-            appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        // وظيفة التعرف على الصوت
-        window.startSearch = () => {
-            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = 'ar-IQ'; // لهجة عراقية
-            
-            const btn = document.getElementById('micBtn');
-            const status = document.getElementById('searchStatus');
-            
-            recognition.onstart = () => {
-                btn.classList.add('listening');
-                status.innerText = "جاري الاستماع إليك...";
-            };
-            
-            recognition.onresult = (event) => {
-                const text = event.results[0][0].transcript;
-                status.innerText = `قلتَ: "${text}"`;
-                btn.classList.remove('listening');
-                searchInFirebase(text.toLowerCase());
-            };
-
-            recognition.onerror = () => {
-                btn.classList.remove('listening');
-                status.innerText = "عذراً، لم أسمعك جيداً.";
-            };
-
-            recognition.start();
+        const content = {
+            ar: {
+                title: "صوفيگرام أونلاين",
+                desc: "النظام العالمي الأول لإدارة طوابير الانتظار والمناداة الذكية.",
+                searchHead: "🔍 ابحث عن دورك الآن",
+                placeholder: "ادخل المعرف (ID)",
+                viewBtn: "مشاهدة الانتظار",
+                regLink: "سجل عملك معنا (اشتراك عالمي)",
+                btnText: "English"
+            },
+            en: {
+                title: "SOFYGRAM ONLINE",
+                desc: "The premier global system for intelligent queue management and calling.",
+                searchHead: "🔍 Search Your Turn",
+                placeholder: "Enter ID (e.g. alaa_clinic)",
+                viewBtn: "View Live Status",
+                regLink: "Register Your Business (Global Access)",
+                btnText: "العربية"
+            }
         };
 
-        function searchInFirebase(query) {
-            onValue(ref(db, 'users'), (snapshot) => {
-                const data = snapshot.val();
-                const container = document.getElementById('results');
-                container.innerHTML = "";
-                
-                for (let id in data) {
-                    const u = data[id];
-                    // البحث الرباعي (الاسم، النوع، المدينة، الحي)
-                    const match = u.name.includes(query) || u.type.includes(query) || u.city.includes(query) || (u.neighborhood && u.neighborhood.includes(query));
-                    
-                    if (match && u.active) {
-                        // حالة العمل (مفتوح افتراضياً الآن)
-                        container.innerHTML += `
-                            <div class="card">
-                                <span class="status-badge open">مفتوح الآن</span>
-                                <h3 style="margin:0; color:var(--glow);">${u.name}</h3>
-                                <small>${u.type}</small><br>
-                                <p style="font-size:14px; color:#ccc;">📍 ${u.city} - ${u.neighborhood || '---'}</p>
-                                <a href="tel:${u.phone}" class="btn-call"><i class="fas fa-phone"></i> اتصال مباشر</a>
-                            </div>
-                        `;
-                    }
-                }
-                if(container.innerHTML === "") {
-                    container.innerHTML = "<p>لم أجد نتائج تطابق بحثك، جرب ذكر المحافظة أو الاختصاص.</p>";
-                }
-            }, { onlyOnce: true });
+        function toggleLang() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            const html = document.getElementById('main-html');
+            const data = content[currentLang];
+
+            html.setAttribute('lang', currentLang);
+            html.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+
+            document.getElementById('title').innerText = data.title;
+            document.getElementById('desc').innerText = data.desc;
+            document.getElementById('search-head').innerText = data.searchHead;
+            document.getElementById('search-id').setAttribute('placeholder', data.placeholder);
+            document.getElementById('view-btn').innerText = data.viewBtn;
+            document.getElementById('reg-link').innerText = data.regLink;
+            document.getElementById('lang-btn').innerText = data.btnText;
+        }
+
+        function goToView() {
+            const id = document.getElementById('search-id').value.trim().toLowerCase();
+            if(id) {
+                window.location.href = "view.html?id=" + id;
+            } else {
+                alert(currentLang === 'ar' ? "يرجى كتابة المعرف!" : "Please enter an ID!");
+            }
         }
     </script>
 </body>
