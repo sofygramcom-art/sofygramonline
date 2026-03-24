@@ -12,7 +12,7 @@
         .method:hover { border-color: var(--glow); transform: scale(1.02); }
         .num { font-family: monospace; font-size: 22px; color: var(--glow); display: block; margin-top: 10px; }
         .btn-wa { background: #25d366; color: white; padding: 18px; width: 100%; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 18px; margin-top: 20px; }
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #2ecc71; padding: 10px 20px; border-radius: 10px; display: none; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #2ecc71; padding: 10px 20px; border-radius: 10px; display: none; z-index: 100; }
     </style>
 </head>
 <body>
@@ -22,16 +22,16 @@
         <p id="welcomeMsg">مرحباً بك في صوفيگرام</p>
         <p style="font-size: 14px; color: #888;">يرجى تحويل مبلغ الاشتراك (15,000 د.ع) عبر أحد الطرق التالية:</p>
 
-        <div class="method" onclick="copy('07823842929')">
+        <div class="method" onclick="copy('07807466488')">
             <span>زين كاش (Zain Cash)</span>
             <span class="num">07807466488</span>
-            <small style="color:#555;">اضغط للنسخ</small>
+            <small style="color:#555;">اضغط لنسخ الرقم</small>
         </div>
 
         <div class="method" onclick="copy('5213720965090876')">
             <span>ماستر كارد (MasterCard)</span>
             <span class="num">5213720965090876</span>
-            <small style="color:#555;">اضغط للنسخ</small>
+            <small style="color:#555;">اضغط لنسخ الرقم</small>
         </div>
 
         <button onclick="sendWA()" class="btn-wa">تم التحويل، إرسال الوصل للواتساب ✅</button>
@@ -40,22 +40,27 @@
     <div id="toast" class="toast">تم نسخ الرقم ✅</div>
 
     <script>
-        // جلب اسم المستخدم من الرابط
         const urlParams = new URLSearchParams(window.location.search);
         const user = urlParams.get('user');
         const name = urlParams.get('name');
-        if(name) document.getElementById('welcomeMsg').innerText = `مرحباً د. ${name}`;
+        
+        if(name) {
+            document.getElementById('welcomeMsg').innerText = `مرحباً بك: ${decodeURIComponent(name)}`;
+        }
 
         function copy(text) {
-            navigator.clipboard.writeText(text);
-            const t = document.getElementById('toast');
-            t.style.display = 'block';
-            setTimeout(() => t.style.display = 'none', 2000);
+            navigator.clipboard.writeText(text).then(() => {
+                const t = document.getElementById('toast');
+                t.style.display = 'block';
+                setTimeout(() => t.style.display = 'none', 2000);
+            });
         }
 
         function sendWA() {
+            // الرقم الجديد الذي زودتني به
+            const myNumber = "9647823842929"; 
             const msg = `مرحباً صوفيگرام، أتممت عملية التحويل للاشتراك الجديد:%0Aالاسم: ${name}%0Aاليوزر: ${user}%0A(سأرسل صورة الوصل الآن)`;
-            window.location.href = `https://wa.me/9647816616428?text=${msg}`;
+            window.location.href = `https://wa.me/${myNumber}?text=${msg}`;
         }
     </script>
 </body>
