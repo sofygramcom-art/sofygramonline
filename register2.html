@@ -5,112 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sofygram | التسجيل العالمي 🌐</title>
     <style>
-        :root { --glow: #00d2ff; }
-        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
-        .reg-card { background: #121212; padding: 25px; border-radius: 35px; max-width: 500px; margin: 10px auto; border: 1px solid var(--glow); box-shadow: 0 0 20px rgba(0, 210, 255, 0.1); }
-        input, select { padding: 14px; border-radius: 15px; border: 1px solid #333; background: #000; color: #fff; text-align: center; margin: 8px; width: 92%; font-size: 16px; outline: none; transition: 0.3s; box-sizing: border-box; }
-        input:focus, select:focus { border-color: var(--glow); }
-        .btn-reg { background: linear-gradient(45deg, #00d2ff, #3a7bd5); color: white; padding: 16px; width: 95%; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 18px; margin-top: 15px; }
-        label { display: block; text-align: right; margin-right: 25px; font-size: 13px; color: #888; margin-top: 5px; }
-        .hidden { display: none !important; }
-    </style>
-</head>
-<body>
-
-    <div class="reg-card">
-        <h2 style="color:var(--glow);">انضم إلى صوفيگرام 🌐</h2>
-        
-        <label>اسم النشاط (العيادة/الشركة/المحل):</label>
-        <input type="text" id="name" placeholder="مثلاً: شركة الصقر">
-        
-        <label>فئة النشاط:</label>
-        <select id="type">
-            <option value="">-- اختر الفئة --</option>
-            <optgroup label="الخدمات والطب">
-                <option value="طبيب / عيادة">طبيب / عيادة</option>
-                <option value="صيدلية">صيدلية</option>
-                <option value="شركة برمجيات">شركة برمجيات</option>
-                <option value="مركز تجميل">مركز تجميل</option>
-            </optgroup>
-            <option value="أخرى">نشاط آخر</option>
-        </select>
-
-        <label>الدولة:</label>
-        <select id="country" onchange="updateCities()">
-            <option value="العراق" selected>العراق 🇮🇶</option>
-            <option value="السعودية">السعودية 🇸🇦</option>
-            <option value="الإمارات">الإمارات 🇦🇪</option>
-            <option value="الكويت">الكويت 🇰🇼</option>
-            <option value="قطر">قطر 🇶🇦</option>
-            <option value="البحرين">البحرين 🇧🇭</option>
-            <option value="عُمان">عُمان 🇴🇲</option>
-            <option value="الأردن">الأردن 🇯🇴</option>
-            <option value="مصر">مصر 🇪🇬</option>
-            <option value="سوريا">سوريا 🇸🇾</option>
-            <option value="لبنان">لبنان 🇱🇧</option>
-            <option value="تركيا">تركيا 🇹🇷</option>
-            <option value="إيران">إيران 🇮🇷</option>
-            <option value="أوروبا">أوروبا 🇪🇺</option>
-            <option value="أمريكا">أمريكا 🇺🇸</option>
-            <option value="دولة أخرى (كتابة يد)">دولة أخرى 🌏</option>
-        </select>
-        <input type="text" id="countryInput" class="hidden" placeholder="اكتب اسم الدولة يدوياً">
-
-        <label>المحافظة / الولاية:</label>
-        <select id="citySelect" onchange="checkOtherCity()">
-            </select>
-        <input type="text" id="cityInput" class="hidden" placeholder="اكتب اسم المحافظة يدوياً">
-
-        <label>اسم الحي / المنطقة:</label>
-        <input type="text" id="neighborhood" placeholder="مثلاً: حي الأمير">
-
-        <label>رقم الموبايل (واتساب):</label>
-        <input type="tel" id="phone" placeholder="07XXXXXXXXX">
-
-        <label>بيانات الدخول:</label>
-        <input type="text" id="username" placeholder="اسم المستخدم (إنجليزي)">
-        <input type="password" id="pass" placeholder="كلمة المرور">
-
-        <button onclick="register()" class="btn-reg">إنشاء الحساب والانتقال للدفع 🚀</button>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
-            authDomain: "sofygramclinic.firebaseapp.com",
-            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
-            projectId: "sofygramclinic",
-            appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        const allCities = {
-            "العراق": ["بغداد", "النجف", "كربلاء", "البصرة", "بابل", "الأنبار", "أربيل", "ذي قار", "نينوى", "ميسان", "المثنى", "القادسية", "واسط", "صلاح الدين", "ديالى", "كركوك", "دهوك", "السليمانية", "أخرى (كتابة يد)"],
-            "السعودية": ["الرياض", "مكة المكرمة", "جدة", "الدمام", "المدينة المنورة", "أخرى"],
-            "الإمارات": ["أبوظبي", "دبي", "الشارقة", "عجمان", "أخرى"],
-            "الكويت": ["العاصمة", "حولي", "الأحمدي", "الجهراء", "أخرى"],
-            "الأردن": ["عمان", "إربد", "الزرقاء", "أخرى"],
-            "مصر": ["القاهرة", "الإسكندرية", "الجيزة", "أخرى"]
-        };
-
-        window.updateCities = () => {
-            const country = document.getElementById('country').value;
-            const cSelect = document.getElementById('citySelect');
-            const cInput = document.getElementById('cityInput');
-            const coInput = document.getElementById('countryInput');
-            
-            // التعامل مع الدولة الأخرى
-            if(country === "دولة أخرى (كتابة يد)") {
-                coInput.classList.remove('hidden');
-                cSelect.classList.add('hidden');
-                cInput.classList.remove('hidden');
-            } else {
-                coInput.classList.add('hidden');
-                if (allCities[country]) {
-                    cSelect.classList.remove('hidden');
-                    cInput.classList.add('hidden');
-                    cSelect.innerHTML = allCities[country].map(c => `<option value="${c}">${c}</option>`).
+        :root { --glow: #00d2ff; --bg: #050a14; --card: #121212; --text: white; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin: 0; padding: 10px; box-sizing: border-box; }
+        .reg-card { background: var(--card); padding: 30px; border-radius: 35px; max-width: 550px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 25px rgba(0, 210, 255, 0.15); }
+        h2 { color: var(--glow); margin-bottom: 25px; font-weight: bold; }
+        label { display: block; text-align: right; margin: 10px 25px 5px 0; font-size: 14px; color: #aaa; }
+        input, select { padding: 15px; border-radius: 18px; border: 1px solid #333; background: #000; color: #fff; text-align: center; margin-bottom: 15px; width: 90%; font-size: 16px; outline: none; transition: 0.3s; box-sizing: border-box; }
+        input:focus, select:focus { border-color: var(--glow); box-shadow: 0 0 10px rgba(0, 210, 255, 0.3); }
+        .btn-reg { background: linear-gradient(45deg, #00d2ff, #3a7bd5); color: white; padding: 18px; width: 95%; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 19px; margin-top: 20px; transition: 0.3s; }
+        .btn-reg:hover { box-shadow: 0 0 20px rgba(0, 210, 255, 0.5); transform:
