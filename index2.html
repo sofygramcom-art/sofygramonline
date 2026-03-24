@@ -3,49 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram | صوفيگرام العراق 🇮🇶</title>
+    <title>Sofygram | صوفيگرام - المنصة الأقوى 🇮🇶</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --glow: #00d2ff; --bg: #050a14; --card: #121212; }
+        :root { --glow: #00d2ff; --bg: #050a14; --card: #121212; --fire: #ff4500; }
         body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; text-align: center; }
         
-        /* هيدر بسيط */
-        header { padding: 20px; border-bottom: 1px solid #222; background: #0a0f1d; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-weight: bold; font-size: 26px; color: var(--glow); text-decoration: none; margin: auto; }
-
-        .search-section { padding: 40px 20px; background: radial-gradient(circle at center, #1a1a2e 0%, #050a14 100%); }
+        /* تصميم اللوغو الناري والهيدر */
+        header { padding: 30px 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .logo-container { position: relative; display: inline-block; padding: 10px; }
+        .logo-img { width: 180px; position: relative; z-index: 2; filter: drop-shadow(0 0 10px white); }
         
-        /* 1. خانة البحث عن الاسم */
+        /* الإطار الناري */
+        .fire-frame { position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 20px; 
+            border: 3px solid var(--fire); box-shadow: 0 0 15px var(--fire), inset 0 0 15px var(--fire);
+            animation: fire-glow 1.5s infinite alternate; z-index: 1; }
+        @keyframes fire-glow { from { box-shadow: 0 0 10px var(--fire); transform: scale(1); } to { box-shadow: 0 0 30px #ff8c00; transform: scale(1.02); } }
+
+        .btn-register-top { background: linear-gradient(45deg, #ff4500, #ff8c00); color: white; text-decoration: none; 
+            padding: 12px 25px; border-radius: 15px; font-weight: bold; font-size: 16px; box-shadow: 0 0 15px rgba(255, 69, 0, 0.4); }
+
+        .search-section { padding: 20px; }
         .main-input-box { max-width: 650px; margin: 0 auto 25px auto; position: relative; }
-        .main-input-box input { width: 100%; padding: 18px 25px 18px 60px; border-radius: 25px; border: 2px solid #333; background: rgba(0,0,0,0.7); color: white; font-size: 18px; outline: none; text-align: right; box-sizing: border-box; }
-        .main-input-box input:focus { border-color: var(--glow); box-shadow: 0 0 20px rgba(0,210,255,0.2); }
+        .main-input-box input { width: 100%; padding: 18px 25px 18px 60px; border-radius: 25px; border: 2px solid #333; background: rgba(0,0,0,0.8); color: white; font-size: 18px; outline: none; text-align: right; box-sizing: border-box; }
         .main-input-box i { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); color: var(--glow); font-size: 24px; cursor: pointer; }
 
-        /* 2. المايك */
-        .mic-btn { width: 85px; height: 85px; background: var(--glow); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 35px; color: #000; cursor: pointer; transition: 0.4s; border: 8px solid rgba(0, 210, 255, 0.1); }
-        .mic-btn.listening { background: #ff4757; box-shadow: 0 0 40px #ff4757; animation: pulse 1s infinite; }
+        .mic-btn { width: 85px; height: 85px; background: var(--glow); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 35px; color: #000; cursor: pointer; border: 8px solid rgba(0, 210, 255, 0.1); }
+        .mic-btn.listening { background: #ff4757; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        /* 3. البحث اليدوي (الفلاتر) */
         .advanced-search { max-width: 900px; margin: 30px auto; background: var(--card); padding: 25px; border-radius: 30px; border: 1px solid #222; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-        select, .custom-input { padding: 12px; border-radius: 12px; border: 1px solid #333; background: #000; color: white; outline: none; width: 100%; box-sizing: border-box; text-align: right; font-size: 15px; }
+        select, .custom-input { padding: 12px; border-radius: 12px; border: 1px solid #333; background: #000; color: white; outline: none; text-align: right; }
 
-        /* النتائج */
         .results-container { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: auto; }
         .res-card { background: var(--card); border-radius: 25px; padding: 25px; border: 1px solid #222; text-align: right; transition: 0.3s; cursor: pointer; position: relative; }
-        .res-card:hover { border-color: var(--glow); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .status-badge { position: absolute; top: 15px; left: 15px; font-size: 11px; padding: 4px 10px; border-radius: 8px; font-weight: bold; }
+        .res-card:hover { border-color: var(--glow); transform: translateY(-5px); }
+        .status-badge { position: absolute; top: 15px; left: 15px; font-size: 12px; padding: 5px 12px; border-radius: 10px; font-weight: bold; border: 1px solid currentColor; }
     </style>
 </head>
 <body>
 
     <header>
-        <a href="index.html" class="logo">SOFYGRAM</a>
+        <div class="logo-container">
+            <div class="fire-frame"></div>
+            <img src="logo.png.png" class="logo-img" alt="صوفيگرام">
+        </div>
+        <a href="register2.html" class="btn-register-top">تسجيل نشاط جديد 🚀</a>
     </header>
 
     <section class="search-section">
-        <h1>ابحث عن أي خدمة في العراق 🇮🇶</h1>
-        
         <div class="main-input-box">
             <input type="text" id="quickName" placeholder="ابحث باسم الطبيب أو الصيدلية..">
             <i class="fas fa-search" onclick="searchName()"></i>
@@ -59,35 +65,15 @@
         <div class="advanced-search">
             <select id="typeSelect">
                 <option value="">كل الأنشطة</option>
-                <optgroup label="القطاع الطبي">
-                    <option value="طبيب / عيادة">أطباء وعيادات</option>
-                    <option value="صيدلية">صيدليات</option>
-                    <option value="مختبر طبي">مختبرات</option>
-                </optgroup>
-                <optgroup label="تجاري وخدمي">
-                    <option value="مطعم / كافيه">مطاعم وكافيهات</option>
-                    <option value="أسواق / سوبر ماركت">أسواق وسوبر ماركت</option>
-                    <option value="مركز تجميل / صالون">تجميل وحلاقة</option>
-                    <option value="شركة برمجيات">شركات تقنية</option>
-                    <option value="شركة مقاولات">مقاولات وهندسة</option>
-                </optgroup>
+                <option value="طبيب / عيادة">أطباء وعيادات</option>
+                <option value="صيدلية">صيدليات</option>
+                <option value="مختبر طبي">مختبرات</option>
             </select>
-
             <select id="citySelect">
-                <option value="">كل محافظات العراق</option>
-                <option value="بغداد">بغداد</option><option value="النجف">النجف</option>
-                <option value="كربلاء">كربلاء</option><option value="البصرة">البصرة</option>
-                <option value="بابل">بابل</option><option value="الأنبار">الأنبار</option>
-                <option value="أربيل">أربيل</option><option value="ذي قار">ذي قار</option>
-                <option value="نينوى">نينوى</option><option value="ميسان">ميسان</option>
-                <option value="المثنى">المثنى</option><option value="القادسية">القادسية</option>
-                <option value="واسط">واسط</option><option value="صلاح الدين">صلاح الدين</option>
-                <option value="ديالى">ديالى</option><option value="كركوك">كركوك</option>
-                <option value="دهوك">دهوك</option><option value="السليمانية">السليمانية</option>
+                <option value="">كل العراق</option>
+                <option value="النجف">النجف</option><option value="بغداد">بغداد</option><option value="كربلاء">كربلاء</option>
             </select>
-
-            <input type="text" id="areaInput" class="custom-input" placeholder="اكتب المدينة أو القضاء (يدوي)">
-
+            <input type="text" id="areaInput" class="custom-input" placeholder="اكتب الحي (يدوي)">
             <button onclick="searchManual()" style="grid-column: 1/-1; background: var(--glow); color: black; border:none; padding:12px; border-radius:12px; font-weight:bold; cursor:pointer;">تطبيق الفلترة 🔍</button>
         </div>
     </section>
@@ -110,15 +96,16 @@
 
         function render(list) {
             const box = document.getElementById('resultsArea');
-            box.innerHTML = list.length ? "" : "<p style='grid-column:1/-1; color:#666;'>لا توجد نتائج تطابق بحثك..</p>";
+            box.innerHTML = list.length ? "" : "<p style='color:#666;'>لا توجد نتائج..</p>";
             list.forEach(u => {
-                const open = u.hasOwnProperty('isOpen') ? u.isOpen : true;
+                // الكود يقرأ الحالة الحقيقية من الداتابيز
+                const open = (u.isOpen === true || u.isOpen === "true"); 
                 box.innerHTML += `
                     <div class="res-card" onclick="window.location.href='view.html?id=${u.id}'">
                         <span class="status-badge" style="color:${open?'#2ecc71':'#e74c3c'}">${open?'مفتوح':'مغلق'}</span>
                         <h2 style="margin:0; color:var(--glow);">${u.name}</h2>
                         <p style="margin:5px 0; font-size:14px;">${u.type}</p>
-                        <p style="margin:0; font-size:12px; color:#888;">📍 العراق - ${u.city} (${u.neighborhood || '---'})</p>
+                        <p style="margin:0; font-size:12px; color:#888;">📍 ${u.city} - ${u.neighborhood || '---'}</p>
                     </div>`;
             });
         }
@@ -126,8 +113,7 @@
         window.searchName = () => {
             const query = document.getElementById('quickName').value.toLowerCase();
             onValue(ref(db, 'users'), (s) => {
-                const data = s.val();
-                let matches = [];
+                const data = s.val(); let matches = [];
                 for(let id in data) {
                     if(data[id].active && data[id].name.toLowerCase().includes(query)) matches.push({id, ...data[id]});
                 }
@@ -140,11 +126,9 @@
             const city = document.getElementById('citySelect').value;
             const area = document.getElementById('areaInput').value.toLowerCase();
             onValue(ref(db, 'users'), (s) => {
-                const data = s.val();
-                let matches = [];
+                const data = s.val(); let matches = [];
                 for(let id in data) {
-                    const u = data[id];
-                    if(!u.active) continue;
+                    const u = data[id]; if(!u.active) continue;
                     let m = true;
                     if(type && u.type !== type) m = false;
                     if(city && u.city !== city) m = false;
@@ -162,12 +146,10 @@
             rec.onresult = (e) => {
                 const text = e.results[0][0].transcript.toLowerCase();
                 document.getElementById('micBtn').classList.remove('listening');
-                document.getElementById('searchStatus').innerText = "تبحث عن: " + text;
                 onValue(ref(db, 'users'), (s) => {
-                    const data = s.val();
-                    let matches = [];
+                    const data = s.val(); let matches = [];
                     for(let id in data) {
-                        const target = `${data[id].name} ${data[id].type} ${data[id].city} ${data[id].neighborhood}`.toLowerCase();
+                        const target = `${data[id].name} ${data[id].city} ${data[id].neighborhood}`.toLowerCase();
                         if(data[id].active && target.includes(text)) matches.push({id, ...data[id]});
                     }
                     render(matches);
