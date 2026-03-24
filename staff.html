@@ -14,7 +14,7 @@
         .user-row { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 18px; border-radius: 20px; margin-bottom: 12px; border-right: 6px solid #888; text-align: right; }
         .active-user { border-right-color: #2ecc71; }
         .expired-user { border-right-color: #e74c3c; opacity: 0.8; }
-        .btn-group { display: flex; flex-direction: column; gap: 6px; min-width: 120px; }
+        .btn-group { display: flex; flex-direction: column; gap: 6px; min-width: 125px; }
         .btn { padding: 10px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; color: white; font-size: 13px; }
         .btn-f { background: #2ecc71; } .btn-t { background: #f1c40f; color: #000; } .btn-h { background: #3498db; }
         .days-badge { background: #ffd700; color: #000; padding: 4px 10px; border-radius: 10px; font-weight: bold; font-size: 14px; margin-right: 5px; }
@@ -83,6 +83,7 @@
                             </div>
                             <div class="btn-group">
                                 <button class="btn btn-f" onclick="setSub('${u.id}', 30)">تفعيل شهر</button>
+                                <button class="btn btn-t" onclick="setSub('${u.id}', 3)">تجربة 3 أيام</button>
                                 <button class="btn btn-h" onclick="showPhone('${u.id}', '${u.phone || 'لا يوجد'}')">اتصال</button>
                             </div>
                         </div>`;
