@@ -3,49 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Smart Search | صوفيگرام 🎙️</title>
+    <title>Sofygram AI | صوفيگرام الذكي 🎙️</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --glow: #00d2ff; --bg: #050a14; }
         body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; padding: 0; }
-        
-        /* الهيدر والترحيب */
-        .hero { padding: 60px 20px; background: linear-gradient(to bottom, #1a1a2e, #050a14); border-bottom: 1px solid #222; }
-        .mic-container { margin: 30px auto; position: relative; width: 120px; height: 120px; }
-        
-        /* زر المايك النابض */
-        .mic-btn { width: 100px; height: 100px; background: var(--glow); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 45px; color: #000; cursor: pointer; transition: 0.4s; border: 8px solid rgba(0, 210, 255, 0.1); position: relative; z-index: 2; }
+        .hero { padding: 50px 20px; background: radial-gradient(circle, #1a1a2e, #050a14); }
+        .mic-btn { width: 120px; height: 120px; background: var(--glow); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 50px; color: #000; cursor: pointer; transition: 0.4s; border: 10px solid rgba(0, 210, 255, 0.1); }
         .mic-btn.listening { background: #ff4757; box-shadow: 0 0 50px #ff4757; animation: pulse 1s infinite; }
-        
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        
-        #searchStatus { margin-top: 20px; font-size: 1.2rem; color: var(--glow); height: 30px; font-weight: bold; }
-        .results-area { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; max-width: 1200px; margin: auto; }
-
-        /* تصميم كرت الطبيب/المحل */
-        .res-card { background: #111; border-radius: 30px; padding: 25px; border: 1px solid #333; text-align: right; transition: 0.3s; position: relative; overflow: hidden; }
-        .res-card:hover { border-color: var(--glow); transform: translateY(-8px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .status-dot { width: 12px; height: 12px; background: #2ecc71; border-radius: 50%; display: inline-block; margin-left: 8px; box-shadow: 0 0 10px #2ecc71; }
-        .info-row { color: #aaa; font-size: 14px; margin: 5px 0; }
-        .call-action { background: var(--glow); color: black; text-decoration: none; display: block; padding: 15px; border-radius: 18px; margin-top: 20px; font-weight: bold; font-size: 18px; }
+        #searchStatus { margin-top: 20px; font-size: 1.3rem; color: var(--glow); font-weight: bold; min-height: 40px; }
+        .results-area { padding: 20px; max-width: 800px; margin: auto; }
+        .res-card { background: #111; border-radius: 25px; padding: 25px; border: 2px solid var(--glow); text-align: right; margin-bottom: 15px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <section class="hero">
-        <h1 style="letter-spacing: 2px;">SOFYGRAM 🌐</h1>
-        <p style="color: #888;">مساعدك الذكي للبحث الصوتي عن الخدمات</p>
-        
-        <div class="mic-container">
-            <div class="mic-btn" id="micBtn" onclick="activateVoice()">
-                <i class="fas fa-microphone"></i>
-            </div>
+        <h1>SOFYGRAM AI 🌐</h1>
+        <p>تحدث معي.. أنا أبحث وأجيبك بصوتي</p>
+        <div class="mic-btn" id="micBtn" onclick="startAI()">
+            <i class="fas fa-microphone"></i>
         </div>
-        <div id="searchStatus">اضغط على المايك وابدأ الكلام</div>
+        <div id="searchStatus">اضغط للتحدث...</div>
     </section>
 
-    <div class="results-area" id="resultsBox">
-        </div>
+    <div class="results-area" id="resultsBox"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
@@ -61,70 +44,81 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        window.activateVoice = () => {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return alert("متصفحك لا يدعم البحث الصوتي، يرجى استخدام Chrome");
+        // وظيفة النطق الآلي
+        function speak(text) {
+            const msg = new SpeechSynthesisUtterance();
+            msg.text = text;
+            msg.language = 'ar-SA';
+            msg.rate = 0.9; 
+            window.speechSynthesis.speak(msg);
+        }
 
-            const recognition = new SpeechRecognition();
+        window.startAI = () => {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.lang = 'ar-IQ';
             const btn = document.getElementById('micBtn');
             const status = document.getElementById('searchStatus');
 
-            recognition.onstart = () => {
-                btn.classList.add('listening');
-                status.innerText = "أنا أسمعك الآن... تكلم";
-            };
-
+            recognition.onstart = () => { btn.classList.add('listening'); status.innerText = "أسمعك.. تفضل؟"; };
+            
             recognition.onresult = (event) => {
-                const text = event.results[0][0].transcript;
-                status.innerText = `بحث عن: ${text}`;
+                const query = event.results[0][0].transcript.toLowerCase();
                 btn.classList.remove('listening');
-                performSmartSearch(text.toLowerCase());
+                status.innerText = `حللتُ قولك: ${query}`;
+                processQuery(query);
             };
 
-            recognition.onerror = () => {
-                btn.classList.remove('listening');
-                status.innerText = "لم أسمعك، حاول مرة أخرى";
-            };
-
+            recognition.onerror = () => { btn.classList.remove('listening'); speak("عذراً، لم أسمعك جيداً"); };
             recognition.start();
         };
 
-        function performSmartSearch(query) {
+        function processQuery(query) {
             onValue(ref(db, 'users'), (snap) => {
                 const data = snap.val();
-                const box = document.getElementById('resultsBox');
-                box.innerHTML = "";
-                
-                let foundCount = 0;
+                let matches = [];
+
                 for (let id in data) {
                     const u = data[id];
-                    // البحث الرباعي الذكي
-                    const isMatch = u.name.toLowerCase().includes(query) || 
-                                    u.type.toLowerCase().includes(query) || 
-                                    u.city.toLowerCase().includes(query) || 
-                                    (u.neighborhood && u.neighborhood.toLowerCase().includes(query));
-
-                    if (isMatch && u.active) {
-                        foundCount++;
-                        box.innerHTML += `
-                            <div class="res-card">
-                                <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <h2 style="margin:0; color:var(--glow);">${u.name}</h2>
-                                    <div><span class="status-dot"></span> <small>مفتوح</small></div>
-                                </div>
-                                <div class="info-row"><i class="fas fa-tag"></i> ${u.type}</div>
-                                <div class="info-row"><i class="fas fa-map-marker-alt"></i> ${u.city} - ${u.neighborhood || 'العنوان غير محدد'}</div>
-                                <a href="tel:${u.phone}" class="call-action"><i class="fas fa-phone-alt"></i> اتصال هاتفي</a>
-                            </div>
-                        `;
+                    // فحص ذكي للكلمات المفتاحية
+                    if (u.active && (query.includes(u.city) || query.includes(u.type) || query.includes(u.name.toLowerCase()))) {
+                        matches.push({ id, ...u });
                     }
                 }
-                
-                if(foundCount === 0) {
-                    box.innerHTML = `<div style="grid-column: 1/-1; padding: 40px; color:#666;">لم أجد نتائج لـ "${query}".. حاول ذكر اسم المنطقة أو الاختصاص</div>`;
+
+                if (matches.length === 0) {
+                    const failMsg = "نأسف، هذا النشاط غير مسجل في منصة صوفيگرام حتى الآن";
+                    status.innerText = failMsg;
+                    speak(failMsg);
+                } 
+                else if (matches.length === 1) {
+                    const u = matches[0];
+                    const note = u.secretaryNote || "لا توجد ملاحظات إضافية";
+                    const statusMsg = u.isOpen ? "مفتوح حالياً" : "مغلق الآن";
+                    
+                    const welcome = `وجدتُ ${u.name}. هو ${statusMsg}. ملاحظة السكرتير تقول: ${note}. جاري تحويلك لصفحته الشخصية.`;
+                    speak(welcome);
+                    
+                    setTimeout(() => {
+                        window.location.href = `profile.html?id=${matches[0].id}`;
+                    }, 5000); // يحوله بعد 5 ثواني ليعطيه مجال لسماع الكلام
+                } 
+                else {
+                    const countMsg = `وجدتُ ${matches.length} نتائج. يمكنك الاختيار من القائمة`;
+                    speak(countMsg);
+                    showResults(matches);
                 }
             }, { onlyOnce: true });
+        }
+
+        function showResults(list) {
+            const box = document.getElementById('resultsBox');
+            box.innerHTML = list.map(u => `
+                <div class="res-card" onclick="window.location.href='profile.html?id=${u.id}'">
+                    <h3>${u.name}</h3>
+                    <p>${u.type} - ${u.city}</p>
+                    <small>اضغط للدخول للملف</small>
+                </div>
+            `).join('');
         }
     </script>
 </body>
