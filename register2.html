@@ -8,11 +8,11 @@
         :root { --glow: #00d2ff; }
         body { background: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
         .reg-card { background: #121212; padding: 25px; border-radius: 35px; max-width: 500px; margin: 10px auto; border: 1px solid var(--glow); box-shadow: 0 0 20px rgba(0, 210, 255, 0.1); }
-        input, select { padding: 14px; border-radius: 15px; border: 1px solid #333; background: #000; color: #fff; text-align: center; margin: 8px; width: 92%; font-size: 16px; outline: none; transition: 0.3s; }
+        input, select { padding: 14px; border-radius: 15px; border: 1px solid #333; background: #000; color: #fff; text-align: center; margin: 8px; width: 92%; font-size: 16px; outline: none; transition: 0.3s; box-sizing: border-box; }
         input:focus, select:focus { border-color: var(--glow); }
         .btn-reg { background: linear-gradient(45deg, #00d2ff, #3a7bd5); color: white; padding: 16px; width: 95%; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 18px; margin-top: 15px; }
         label { display: block; text-align: right; margin-right: 25px; font-size: 13px; color: #888; margin-top: 5px; }
-        .hidden { display: none; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -23,7 +23,7 @@
         <label>اسم النشاط (العيادة/الشركة/المحل):</label>
         <input type="text" id="name" placeholder="مثلاً: صيدلية الأمل">
         
-        <label>فئة النشاط (تصنيف شامل):</label>
+        <label>فئة النشاط:</label>
         <select id="type">
             <option value="">-- اختر الفئة --</option>
             <optgroup label="القطاع الطبي">
@@ -31,47 +31,37 @@
                 <option value="صيدلية">صيدلية</option>
                 <option value="مختبر طبي">مختبر طبي</option>
             </optgroup>
-            <optgroup label="الشركات والتقنية">
+            <optgroup label="الشركات والتجار">
                 <option value="شركة برمجيات">شركة برمجيات</option>
-                <option value="شركة مقاولات">شركة مقاولات</option>
-                <option value="مكتب محاماة">مكتب محاماة</option>
-                <option value="مكتب عقارات">مكتب عقارات</option>
-            </optgroup>
-            <optgroup label="التجارة والجمال">
                 <option value="أسواق / سوبر ماركت">أسواق / سوبر ماركت</option>
-                <option value="مطعم / كافيه">مطعم / كافيه</option>
                 <option value="مركز تجميل">مركز تجميل</option>
             </optgroup>
-            <option value="أخرى">نشاط آخر غير مدرج</option>
+            <option value="أخرى">نشاط آخر</option>
         </select>
 
         <label>الدولة:</label>
-        <select id="country" onchange="handleCountryChange()">
+        <select id="country" onchange="updateCities()">
             <option value="العراق" selected>العراق</option>
             <option value="السعودية">السعودية</option>
             <option value="الإمارات">الإمارات</option>
             <option value="الكويت">الكويت</option>
-            <option value="قطر">قطر</option>
             <option value="الأردن">الأردن</option>
             <option value="مصر">مصر</option>
-            <option value="تركيا">تركيا</option>
-            <option value="إيران">إيران</option>
-            <option value="أوروبا">أوروبا</option>
-            <option value="أمريكا">أمريكا</option>
+            <option value="أخرى">دولة أخرى</option>
         </select>
 
         <label>المحافظة / الولاية:</label>
-        <select id="citySelect" onchange="handleCityChange()">
+        <select id="citySelect" onchange="checkOtherCity()">
             </select>
-        <input type="text" id="cityInput" class="hidden" placeholder="اكتب اسم المحافظة/الولاية يدوياً">
+        <input type="text" id="cityInput" class="hidden" placeholder="اكتب اسم المحافظة يدوياً">
 
         <label>اسم الحي / المنطقة:</label>
-        <input type="text" id="neighborhood" placeholder="مثلاً: حي الأمير">
+        <input type="text" id="neighborhood" placeholder="مثلاً: حي الغدير">
 
         <label>رقم الموبايل (واتساب):</label>
         <input type="tel" id="phone" placeholder="07XXXXXXXXX">
 
-        <label>بيانات الدخول (اليوزر والباسوورد):</label>
+        <label>بيانات الدخول:</label>
         <input type="text" id="username" placeholder="اسم المستخدم (إنجليزي)">
         <input type="password" id="pass" placeholder="كلمة المرور">
 
@@ -92,5 +82,70 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const citiesData = {
-            "العراق": ["بغداد", "النجف", "كربلاء", "البصرة", "بابل", "الأنبار", "أربيل", "ذي قار", "نينوى", "ميسان", "المثنى", "القادسية", "واسط", "صلاح الدين", "ديالى", "كركوك", "دهوك", "السليمانية", "أخرى"],
+        const allCities = {
+            "العراق": ["بغداد", "النجف", "كربلاء", "البصرة", "بابل", "الأنبار", "أربيل", "ذي قار", "نينوى", "ميسان", "المثنى", "القادسية", "واسط", "صلاح الدين", "ديالى", "كركوك", "دهوك", "السليمانية", "أخرى (كتابة يد)"],
+            "السعودية": ["الرياض", "مكة المكرمة", "جدة", "الدمام", "أخرى"],
+            "الإمارات": ["أبوظبي", "دبي", "الشارقة", "عجمان", "أخرى"],
+            "الكويت": ["العاصمة", "حولي", "الأحمدي", "الجهراء", "أخرى"],
+            "الأردن": ["عمان", "إربد", "الزرقاء", "أخرى"],
+            "مصر": ["القاهرة", "الإسكندرية", "الجيزة", "أخرى"]
+        };
+
+        window.updateCities = () => {
+            const country = document.getElementById('country').value;
+            const select = document.getElementById('citySelect');
+            const input = document.getElementById('cityInput');
+            
+            if (allCities[country]) {
+                select.classList.remove('hidden');
+                input.classList.add('hidden');
+                let options = allCities[country].map(c => `<option value="${c}">${c}</option>`).join('');
+                select.innerHTML = options;
+            } else {
+                select.classList.add('hidden');
+                input.classList.remove('hidden');
+            }
+        };
+
+        window.checkOtherCity = () => {
+            const select = document.getElementById('citySelect');
+            const input = document.getElementById('cityInput');
+            if (select.value.includes("أخرى")) {
+                input.classList.remove('hidden');
+            } else {
+                input.classList.add('hidden');
+            }
+        };
+
+        // تشغيل أولي عند تحميل الصفحة
+        updateCities();
+
+        window.register = () => {
+            const name = document.getElementById('name').value;
+            const type = document.getElementById('type').value;
+            const phone = document.getElementById('phone').value;
+            const country = document.getElementById('country').value;
+            const neighborhood = document.getElementById('neighborhood').value;
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('pass').value;
+
+            let city = "";
+            if (allCities[country]) {
+                city = document.getElementById('citySelect').value;
+                if (city.includes("أخرى")) city = document.getElementById('cityInput').value;
+            } else {
+                city = document.getElementById('cityInput').value;
+            }
+
+            if(!name || !user || !pass || !city || !phone) return alert("يرجى إكمال جميع الحقول!");
+
+            set(ref(db, 'users/' + user), {
+                name, type, phone, country, city, neighborhood,
+                password: pass, active: false, regDate: new Date().toISOString()
+            }).then(() => {
+                window.location.href = `pay.html?user=${user}&name=${encodeURIComponent(name)}`;
+            });
+        };
+    </script>
+</body>
+</html>
