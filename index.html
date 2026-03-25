@@ -6,261 +6,170 @@
     <title>Sofygram Global | صوفيگرام العالمية 🌍</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --main-orange: #ff8c00; --neon-glow: #ff4500; --bg-dark: #050a14; }
-        body { background-color: var(--bg-dark); color: white; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; text-align: center; overflow-x: hidden; }
+        :root { --gold: #ffd700; --neon-orange: #ff4500; --dark-bg: #050a14; }
+        body { background-color: var(--dark-bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; text-align: center; overflow-x: hidden; }
 
-        /* الهيدر واللوغو */
-        .hero-section { background: radial-gradient(circle at center, #1a2a44 0%, var(--bg-dark) 100%); padding: 50px 20px; }
-        .logo-container img { width: 180px; filter: drop-shadow(0 0 15px rgba(255,140,0,0.5)); margin-bottom: 10px; }
-        .brand-name { font-size: 55px; font-weight: 900; color: white; margin: 0; text-shadow: 0 0 25px rgba(255, 140, 0, 0.7); letter-spacing: 2px; }
-        .brand-sub { color: var(--main-orange); font-size: 16px; letter-spacing: 4px; font-weight: bold; margin-top: -5px; }
+        /* الهيدر واللوغو الذهبي */
+        .hero-section { background: radial-gradient(circle at center, #1a2a44 0%, var(--dark-bg) 100%); padding: 40px 20px; }
+        .logo-box img { width: 200px; filter: drop-shadow(0 0 15px var(--gold)); margin-bottom: 10px; }
+        .brand-title { font-size: 60px; font-weight: 900; color: white; margin: 0; text-shadow: 0 0 30px var(--gold); letter-spacing: 3px; }
+        .brand-tagline { color: var(--gold); font-size: 18px; letter-spacing: 5px; font-weight: bold; }
 
-        /* محرك البحث الفخم (المايك والشبكة) */
-        .search-engine { 
-            background: rgba(12, 18, 29, 0.9); border-radius: 45px; padding: 40px; 
-            max-width: 850px; margin: 40px auto; border: 1px solid #1e293b;
-            box-shadow: 0 30px 70px rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+        /* محرك البحث (المايك الناري) */
+        .search-container { 
+            background: rgba(12, 18, 29, 0.95); border-radius: 45px; padding: 40px; 
+            max-width: 900px; margin: 30px auto; border: 1px solid #1e293b;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.9); backdrop-filter: blur(15px);
         }
-
-        /* المايك الناري */
-        .mic-wrapper { margin-bottom: 30px; position: relative; display: inline-block; }
-        .classic-mic {
-            width: 100px; height: 100px; border-radius: 50%;
-            background: linear-gradient(145deg, #222, #000);
-            border: 4px solid var(--main-orange); color: white;
-            font-size: 45px; cursor: pointer; transition: 0.5s;
-            box-shadow: 0 0 20px var(--neon-glow); z-index: 2; position: relative;
+        .mic-box { margin-bottom: 30px; position: relative; }
+        .mic-btn {
+            width: 110px; height: 110px; border-radius: 50%;
+            background: linear-gradient(145deg, #111, #000);
+            border: 4px solid var(--neon-orange); color: white;
+            font-size: 50px; cursor: pointer; transition: 0.4s; box-shadow: 0 0 20px var(--neon-orange);
         }
-        .classic-mic.active { 
-            animation: pulse-fire 1.3s infinite; background: var(--neon-glow);
-            box-shadow: 0 0 50px var(--neon-glow);
-        }
+        .mic-btn.active { animation: pulse-fire 1.2s infinite; background: var(--neon-orange); box-shadow: 0 0 60px var(--neon-orange); }
         @keyframes pulse-fire { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        /* شبكة الحقول (4 حقول) */
-        .grid-search { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; }
+        /* شبكة الفلترة (4 حقول) */
+        .grid-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; }
         select, input { 
-            width: 100%; padding: 18px; border-radius: 18px; background: #000; 
+            width: 100%; padding: 18px; border-radius: 20px; background: #000; 
             border: 1px solid #333; color: white; font-size: 16px; outline: none; box-sizing: border-box;
         }
-        select:focus, input:focus { border-color: var(--main-orange); box-shadow: 0 0 10px var(--main-orange); }
-
-        .btn-launch { 
+        .btn-search { 
             grid-column: span 2; background: linear-gradient(90deg, #ff8c00, #ff4500); 
-            color: white; border: none; padding: 20px; border-radius: 20px; 
-            font-size: 20px; font-weight: bold; cursor: pointer; margin-top: 20px;
-            transition: 0.3s; box-shadow: 0 10px 20px rgba(255, 69, 0, 0.4);
+            color: white; border: none; padding: 22px; border-radius: 20px; 
+            font-size: 22px; font-weight: bold; cursor: pointer; margin-top: 20px; box-shadow: 0 10px 30px rgba(255, 69, 0, 0.5);
         }
-        .btn-launch:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255, 69, 0, 0.6); }
 
-        /* شكل نتائج البحث (مطلوب بدقة) */
-        #resultsArea { margin-top: 35px; text-align: right; max-width: 800px; margin-left: auto; margin-right: auto; }
-        .result-card {
-            background: #121c2c; padding: 25px; border-radius: 20px; margin-bottom: 15px;
-            border-right: 6px solid var(--main-orange); cursor: pointer;
-            transition: 0.3s; position: relative; overflow: hidden;
+        /* الملاحظات الذهبية الأربعة */
+        .golden-notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        .note-card { background: rgba(255, 215, 0, 0.05); border: 1px solid var(--gold); padding: 20px; border-radius: 20px; font-size: 14px; color: var(--gold); font-weight: bold; }
+
+        /* نتائج البحث (الشكل المطلوب) */
+        #results { margin-top: 40px; text-align: right; max-width: 850px; margin-left: auto; margin-right: auto; }
+        .res-card {
+            background: #121c2c; padding: 25px; border-radius: 25px; margin-bottom: 15px;
+            border-right: 8px solid var(--gold); cursor: pointer; transition: 0.3s;
         }
-        .result-card:hover { background: #1a2a44; transform: translateX(-5px); }
-        .res-name { color: var(--main-orange); margin: 0 0 10px 0; font-size: 22px; font-weight: bold; }
-        .res-info { color: #ccc; margin: 5px 0; font-size: 14px; display: flex; align-items: center; gap: 8px; }
-        .res-info i { color: var(--main-orange); width: 16px; text-align: center; }
+        .res-card h3 { color: var(--gold); margin: 0 0 10px 0; font-size: 24px; }
+        .res-card p { color: #00d2ff; margin: 5px 0; font-size: 15px; display: flex; align-items: center; gap: 10px; }
 
-        /* قسم أصحاب الأعمال والتعريف */
-        .business-invite { 
-            background: linear-gradient(135deg, #121c2c 0%, #0a0f1a 100%); 
-            border: 2px solid var(--main-orange); border-radius: 35px; 
-            padding: 35px; max-width: 800px; margin: 50px auto; position: relative;
-            box-shadow: 0 0 30px rgba(255, 140, 0, 0.3);
-        }
-        .discount-tag { position: absolute; top: -15px; left: 25px; background: red; color: white; padding: 6px 18px; border-radius: 12px; font-weight: bold; animation: pulse 1s infinite; font-size: 14px; }
-        .btn-register { background: var(--main-orange); color: #000; padding: 18px 45px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 20px; font-size: 18px; transition: 0.3s; }
-        .btn-register:hover { background: white; transform: scale(1.05); }
-
-        /* التذييل Footer والسوشيال ميديا */
-        footer { background: #000; padding: 40px; margin-top: 60px; border-top: 1px solid #1e293b; }
-        .social-links { margin-bottom: 25px; }
-        .social-links a { color: #777; margin: 0 18px; font-size: 28px; text-decoration: none; transition: 0.3s; display: inline-block; }
-        .social-links a:hover { color: var(--main-orange); transform: scale(1.1); }
-        .copy-text { color: #555; font-size: 14px; line-height: 1.6; }
-
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        @media (max-width: 700px) { .grid-search { grid-template-columns: 1fr; } .btn-launch { grid-column: span 1; } .brand-name { font-size: 40px; } }
+        /* تذييل الصفحة والسوشيال */
+        footer { background: #000; padding: 50px; margin-top: 60px; border-top: 2px solid #1e293b; }
+        .social-icons a { color: #999; margin: 0 20px; font-size: 35px; transition: 0.3s; }
+        .social-icons a:hover { color: var(--gold); transform: scale(1.2); }
     </style>
 </head>
 <body>
 
 <div class="hero-section">
-    <div class="logo-container">
-        <img src="logo.png" alt="Sofygram Logo">
-    </div>
-    <div class="brand-container">
-        <h1 class="brand-name">SOFYGRAM</h1>
-        <div class="brand-sub">منصة صوفيگرام العالمية</div>
-    </div>
+    <div class="logo-box"><img src="logo.png" alt="Sofygram"></div>
+    <h1 class="brand-title">SOFYGRAM</h1>
+    <div class="brand-tagline">المنصة العالمية لإدارة الانتظار الذكي</div>
 
-    <div class="search-engine">
-        <div class="mic-wrapper">
-            <button id="micBtn" class="classic-mic" onclick="startAdvancedVoiceRec()">🎙️</button>
-            <p id="micStatus" style="color: var(--main-orange); font-weight: bold; margin-top: 15px; font-size: 14px;">اضغط للبحث الصوتي الذكي (عراقي/عربي)</p>
+    <div class="search-container">
+        <div class="mic-box">
+            <button id="micBtn" class="mic-btn" onclick="startSofyVoice()">🎙️</button>
+            <p id="micStatus" style="color: var(--gold); margin-top: 15px; font-weight: bold;">اضغط للتحدث (عراقي / عربي)</p>
         </div>
 
-        <div class="grid-search">
+        <div class="grid-filters">
             <select id="country">
                 <option value="">اختر الدولة</option>
-                <option>العراق</option><option>الإمارات</option><option>السعودية</option><option>الكويت</option>
-                <option>قطر</option><option>عُمان</option><option>البحرين</option><option>الأردن</option>
-                <option>سوريا</option><option>لبنان</option><option>فلسطين</option><option>مصر</option>
-                <option>السودان</option><option>ليبيا</option><option>تونس</option><option>الجزائر</option>
-                <option>المغرب</option><option>اليمن</option><option>تركيا</option><option>إيران</option>
-                <option>أوروبا</option><option>أمريكا</option><option>غير ذلك</option>
+                <option>العراق</option><option>الإمارات</option><option>السعودية</option><option>الكويت</option><option>قطر</option>
+                <option>الأردن</option><option>تركيا</option><option>إيران</option><option>أوروبا</option><option>أمريكا</option><option>غير ذلك</option>
             </select>
-
             <select id="city">
                 <option value="">المحافظة / المدينة</option>
-                <option>النجف الأشرف</option><option>كربلاء المقدسة</option><option>بغداد</option>
-                <option>البصرة</option><option>بابل</option><option>الأنبار</option><option>أربيل</option>
-                <option>السليمانية</option><option>دهوك</option><option>كركوك</option><option>صلاح الدين</option>
-                <option>ديالى</option><option>واسط</option><option>ذي قار</option><option>ميسان</option>
-                <option>المثنى</option><option>القادسية</option><option>نينوى</option><option>غير ذلك</option>
+                <option>النجف</option><option>كربلاء</option><option>بغداد</option><option>البصرة</option><option>بابل</option>
+                <option>أربيل</option><option>السليمانية</option><option>نينوى</option><option>ذي قار</option><option>غير ذلك</option>
             </select>
-
             <select id="category">
                 <option value="">نوع النشاط</option>
-                <optgroup label="طبي">
-                    <option>أطباء وعيادات</option><option>صيدليات</option><option>مختبرات طبية</option>
-                    <option>مستشفيات</option><option>مراكز تجميل</option><option>علاج طبيعي</option>
-                </optgroup>
-                <optgroup label="تجاري">
-                    <option>مطاعم وكافيهات</option><option>أسواق ومولات</option><option>محلات ملابس</option>
-                    <option>إلكترونيات</option><option>معارض سيارات</option><option>حلويات ومخابز</option>
-                </optgroup>
-                <optgroup label="خدمي وحرفي">
-                    <option>حلاقة رجالية</option><option>صالون نسائي</option><option>محاماة واستشارات</option>
-                    <option>مكاتب تكسي</option><option>صيانة موبايل</option><option>تأسيسات صحية</option>
-                    <option>كهربائي</option><option>نجارة</option><option>حدادة</option>
-                </optgroup>
+                <option>أطباء وعيادات</option><option>صيدليات</option><option>مطاعم</option><option>حلاقة</option>
+                <option>محاماة</option><option>تكسي</option><option>صيانة</option><option>غير ذلك</option>
             </select>
-
-            <input type="text" id="manualSearch" placeholder="اكتب اسم العيادة، الحلاق، أو النشاط...">
-
-            <button class="btn-launch" onclick="executeGlobalFilterSearch()">ابدأ رحلتك الآن 🚀</button>
+            <input type="text" id="manualSearch" placeholder="ابحث باسم النشاط...">
+            <button class="btn-search" onclick="runSofySearch()">انطلاق 🚀</button>
         </div>
-
-        <div id="resultsArea"></div>
+        <div id="results"></div>
     </div>
 
-    <div class="business-invite">
-        <div class="discount-tag">تخفيض 50% لفترة محدودة</div>
-        <h2 style="color:var(--main-orange); margin-top: 0;">هل أنت صاحب نشاط تجاري أو طبي؟</h2>
-        <p style="color: #ccc; line-height: 1.7;">انضم الآن إلى المنصة العالمية الأسرع نمواً لتنظيم الحجوزات وتقليل الازدحام في منشأتك، وامنح عملاءك تجربة انتظار مريحة وعصرية.</p>
-        <a href="register2.html" class="btn-register">سجل نشاطك الآن - Register Now</a>
+    <div class="golden-notes">
+        <div class="note-card">🌟 تنظيم الطوابير عالمياً في العراق والخليج</div>
+        <div class="note-card">🕒 وداعاً للانتظار المزعج في العيادات والمحلات</div>
+        <div class="note-card">🛰️ متابعة فورية لدورك من أي مكان في العالم</div>
+        <div class="note-card">💎 تجربة مستخدم فاخرة وسهلة الاستخدام</div>
+    </div>
+
+    <div style="background: rgba(255,215,0,0.1); border: 2px solid var(--gold); border-radius: 30px; padding: 30px; max-width: 800px; margin: auto;">
+        <h2 style="color:var(--gold)">هل أنت صاحب نشاط؟ سجل الآن!</h2>
+        <p>خصم 50% لمشتركي الانطلاقة الأولى.</p>
+        <button onclick="location.href='register2.html'" style="background:var(--gold); border:none; padding:15px 40px; border-radius:50px; font-weight:bold; cursor:pointer;">سجل نشاطك الآن</button>
     </div>
 </div>
 
 <footer>
-    <div class="social-links">
-        <a href="https://www.facebook.com/sofygram" target="_blank"><i class="fab fa-facebook"></i></a>
-        <a href="https://www.instagram.com/sofygram" target="_blank"><i class="fab fa-instagram"></i></a>
+    <div class="social-icons">
+        <a href="https://facebook.com/sofygram" target="_blank"><i class="fab fa-facebook"></i></a>
+        <a href="https://instagram.com/sofygram.iq" target="_blank"><i class="fab fa-instagram"></i></a>
         <a href="https://t.me/sofygram" target="_blank"><i class="fab fa-telegram"></i></a>
     </div>
-    <p class="copy-text">
-        جميع الحقوق محفوظة لصالح منصة صوفيگرام العالمية © 2026<br>
-        All Rights Reserved to <span style="color:var(--main-orange)">sofygram.com</span>
-    </p>
+    <p style="color:#555">جميع الحقوق محفوظة لصالح منصة صوفيگرام العالمية © 2026</p>
 </footer>
 
 <script type="module">
-    // استيراد مكتبات الفايربيس (تأكد أن إعداداتك صحيحة في ملفاتك الأصلية)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
     import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
-    // إعدادات الفايربيس مالتك (تأكد منها 100%)
-    const firebaseConfig = {
-        apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
-        authDomain: "sofygramclinic.firebaseapp.com",
-        databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
-        projectId: "sofygramclinic",
-        appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const firebaseConfig = { apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", authDomain: "sofygramclinic.firebaseapp.com", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com", projectId: "sofygramclinic", appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc" };
+    const app = initializeApp(firebaseConfig); const db = getDatabase(app);
 
-    // دالة البحث الصوتي المتقدمة (تنظيف النص + هيئة فخمة)
-    window.startAdvancedVoiceRec = () => {
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'ar-SA'; // يدعم اللهجات العربية
-        recognition.start();
+    window.startSofyVoice = () => {
+        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        rec.lang = 'ar-SA'; rec.start();
         const btn = document.getElementById('micBtn');
-        const status = document.getElementById('micStatus');
-        
         btn.classList.add('active');
-        status.innerText = "جاري الاستماع لصوتك... (حجي عراقي/عربي)";
-
-        recognition.onresult = (event) => {
-            let transcript = event.results[0][0].transcript;
-            // تنظيف النص من النقاط وعلامات الاستفهام ليكون البحث صافي
-            transcript = transcript.replace(/[.؟?]/g, ""); 
-            document.getElementById('manualSearch').value = transcript;
+        
+        rec.onresult = (e) => {
+            let t = e.results[0][0].transcript.replace(/[.؟?]/g, "");
+            document.getElementById('manualSearch').value = t;
             btn.classList.remove('active');
-            status.innerText = "تم التقاط: " + transcript;
-            executeGlobalFilterSearch(); // تشغيل البحث فوراً
-        };
-
-        recognition.onerror = () => {
-            btn.classList.remove('active');
-            status.innerText = "حدث خطأ.. أعد المحاولة مرة أخرى";
+            runSofySearch(); // بحث أوتوماتيكي
         };
     };
 
-    // دالة البحث والفلترة المتقدمة (تظهر الاسم والعنوان والهاتف بدون مفتوح ومغلق)
-    window.executeGlobalFilterSearch = async () => {
-        const query = document.getElementById('manualSearch').value.toLowerCase();
-        const countryQ = document.getElementById('country').value;
-        const cityQ = document.getElementById('city').value;
-        const categoryQ = document.getElementById('category').value;
-        const resDiv = document.getElementById('resultsArea');
-        
-        resDiv.innerHTML = "<p style='text-align:center; color:#aaa;'>جاري استدعاء البيانات من السيرفر العالمي...</p>";
-        
-        try {
-            const snapshot = await get(ref(db, 'users'));
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                resDiv.innerHTML = ""; // تصفير المنطقة
+    window.runSofySearch = async () => {
+        const q = document.getElementById('manualSearch').value.toLowerCase();
+        const resDiv = document.getElementById('results');
+        resDiv.innerHTML = "جاري الاتصال بالسيرفر العالمي...";
+        const snap = await get(ref(db, 'users'));
+        const data = snap.val(); resDiv.innerHTML = "";
 
-                let foundCount = 0;
-                for(let id in data) {
-                    const u = data[id];
-                    // معادلة الفلترة الذكية (تقارن الحقول الأربعة)
-                    const matchName = !query || (u.name && u.name.toLowerCase().includes(query));
-                    const matchCountry = !countryQ || (u.country && u.country === countryQ);
-                    const matchCity = !cityQ || (u.city && u.city === cityQ);
-                    const matchCategory = !categoryQ || (u.category && u.category === categoryQ);
-
-                    if(matchName && matchCountry && matchCity && matchCategory) {
-                        foundCount++;
-                        // 6. شكل نتيجة البحث المطلوبة (اسم، عنوان، هاتف) - بدون مفتوح ومغلق
-                        resDiv.innerHTML += `
-                            <div class="result-card" onclick="location.href='view.html?id=${id}'">
-                                <h3 class="res-name">${u.name}</h3>
-                                <p class="res-info"><i class="fas fa-map-marker-alt"></i> ${u.city || 'المدينة غير محددة'} - ${u.address || 'العنوان التفصيلي غير متوفر'}</p>
-                                <p class="res-info"><i class="fas fa-phone"></i> ${u.phone || 'رقم الهاتف غير متوفر'}</p>
-                            </div>
-                        `;
-                    }
-                }
-                if(foundCount === 0) {
-                    resDiv.innerHTML = "<p style='text-align:center; color:#ff4500; font-weight:bold;'>لم يتم العثور على نتائج تطابق خيارات البحث في هذه المنطقة.</p>";
-                }
-            } else {
-                resDiv.innerHTML = "<p style='text-align:center; color:#aaa;'>قاعدة البيانات فارغة حالياً.</p>";
+        for(let id in data) {
+            const u = data[id];
+            if(!q || (u.name && u.name.toLowerCase().includes(q))) {
+                resDiv.innerHTML += `
+                    <div class="res-card" onclick="location.href='view.html?id=${id}'">
+                        <h3>${u.name}</h3>
+                        <p><i class="fas fa-map-marker-alt"></i> ${u.city || 'النجف'} - ${u.address || 'العنوان غير محدد'}</p>
+                        <p><i class="fas fa-phone"></i> ${u.phone || '0780000000'}</p>
+                    </div>`;
             }
-        } catch (error) {
-            console.error(error);
-            resDiv.innerHTML = "<p style='text-align:center; color:red;'>حدث خطأ في الاتصال بالسيرفر، يرجى المحاولة لاحقاً.</p>";
         }
     };
-</script>
 
+    // نظام التنبيه الصوتي (أصوات المترو)
+    window.triggerMetroAlarm = () => {
+        const synth = window.speechSynthesis;
+        const msgAr = new SpeechSynthesisUtterance("أهلاً بكم في منصة صوفي غرام العالمية. حان موعدكم الآن، يرجى التوجه حالاً. شكراً لكم.");
+        msgAr.lang = 'ar-SA'; msgAr.rate = 0.9;
+        const msgEn = new SpeechSynthesisUtterance("Welcome to Sofygram Global. It is your turn now, please proceed immediately. Thank you.");
+        msgEn.lang = 'en-US'; msgEn.rate = 1.0;
+        synth.speak(msgAr); synth.speak(msgEn);
+    };
+</script>
 </body>
 </html>
