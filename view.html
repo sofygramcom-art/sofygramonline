@@ -1,213 +1,177 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Multi-Track | صوفيگرام الذكي 🌍</title>
-    <style>
-        :root { --glow: #e74c3c; } 
-        body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; transition: 0.5s; overflow-x: hidden; padding-bottom: 140px; }
-        
-        .lang-icon { position: absolute; top: 20px; left: 20px; cursor: pointer; font-size: 30px; z-index: 10; filter: drop-shadow(0 0 10px #3498db); }
-        .logo img { width: 150px; margin-top: 15px; filter: drop-shadow(0 0 10px rgba(255,215,0,0.3)); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofygram Live | صوفيگرام المباشر 🌍</title>
+    <style>
+        :root { --glow: #ffd700; } 
+        body { background-color: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; transition: 0.5s; overflow-x: hidden; padding-bottom: 140px; }
+        .logo img { width: 150px; margin-top: 15px; filter: drop-shadow(0 0 10px rgba(255,215,0,0.3)); }
 
-        /* حاوية البطاقات المتعددة (شريط المهام السفلي) */
-        #multiSessionContainer { 
-            position: fixed; bottom: 15px; left: 0; width: 100%; 
-            display: flex; flex-wrap: nowrap; overflow-x: auto; 
-            padding: 10px 20px; gap: 15px; z-index: 3000; justify-content: flex-start;
-            scrollbar-width: none; 
-        }
-        #multiSessionContainer::-webkit-scrollbar { display: none; }
+        /* شريط البطاقات السفلي */
+        #multiSessionContainer { position: fixed; bottom: 15px; left: 0; width: 100%; display: flex; flex-wrap: nowrap; overflow-x: auto; padding: 10px 20px; gap: 15px; z-index: 3000; justify-content: flex-start; scrollbar-width: none; }
+        #multiSessionContainer::-webkit-scrollbar { display: none; }
+        .mini-card { min-width: 140px; background: rgba(18, 18, 18, 0.95); border: 2px solid #ffd700; border-radius: 20px; padding: 12px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); cursor: pointer; transition: 0.3s; text-align: center; }
+        .mc-name { font-size: 13px; font-weight: bold; margin: 0; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mc-num { font-size: 35px; font-weight: bold; margin: 5px 0; }
+        .mc-close { position: absolute; top: -10px; right: -10px; background: #fff; color: #000; border-radius: 50%; width: 24px; height: 24px; font-size: 14px; display: flex; align-items: center; justify-content: center; z-index: 10; }
 
-        .mini-card { 
-            min-width: 140px; background: rgba(18, 18, 18, 0.95); 
-            border: 2px solid #ffd700; border-radius: 20px; padding: 12px; 
-            position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
-            cursor: pointer; transition: 0.3s; animation: slideUp 0.5s ease-out;
-            text-align: center;
-        }
-        /* تلوين البطاقات حسب الترتيب */
-        .mini-card:nth-child(1) { border-color: #ffd700; color: #ffd700; } /* ذهبي */
-        .mini-card:nth-child(2) { border-color: #3498db; color: #3498db; } /* أزرق */
-        .mini-card:nth-child(3) { border-color: #2ecc71; color: #2ecc71; } /* أخضر */
-        .mini-card:nth-child(4) { border-color: #9b59b6; color: #9b59b6; } /* بنفسجي */
+        /* واجهة العرض */
+        .number-box { background: #121212; border: 3px solid var(--glow); border-radius: 45px; padding: 35px; max-width: 320px; margin: 20px auto; box-shadow: 0 0 30px var(--glow); }
+        .big-num { font-size: 115px; font-weight: bold; margin: 5px 0; color: #fff; }
+        .card-ui { background: rgba(255,255,255,0.03); padding: 30px; border-radius: 35px; border: 1px solid #1e293b; max-width: 350px; margin: 20px auto; }
+        
+        input { padding: 15px; border-radius: 15px; border: 2px solid #ffd700; background: #000; color: #fff; text-align: center; width: 85%; font-size: 18px; outline: none; margin-bottom: 10px; }
+        .btn-gold { background:#ffd700; color:#000; border:none; padding:18px; border-radius:18px; font-weight:bold; width:95%; cursor:pointer; font-size: 18px; }
+        
+        .bell-btn { font-size: 70px; background: none; border: none; filter: grayscale(1); cursor: pointer; }
+        .bell-active { filter: grayscale(0) drop-shadow(0 0 20px #ffd700); animation: ring 1s infinite; }
+        
+        /* واجهة البحث الصوتي المنبثقة */
+        #voiceSearchOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,10,20,0.95); z-index:4000; padding-top:50px; }
+        .search-res-item { background:#121212; border-right:5px solid #ffd700; padding:15px; margin:10px auto; border-radius:15px; width:80%; text-align:right; cursor:pointer; }
 
-        .mc-name { font-size: 13px; font-weight: bold; margin: 0; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .mc-num { font-size: 35px; font-weight: bold; margin: 5px 0; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
-        .mc-close { position: absolute; top: -10px; right: -10px; background: #fff; color: #000; border-radius: 50%; width: 24px; height: 24px; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-
-        /* واجهة العرض الأساسية */
-        .number-box { background: #121212; border: 3px solid var(--glow); border-radius: 45px; padding: 35px; max-width: 320px; margin: 20px auto; box-shadow: 0 0 30px var(--glow); animation: pulse 2s infinite; }
-        .big-num { font-size: 115px; font-weight: bold; margin: 5px 0; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.3); }
-        .card-ui { background: rgba(255,255,255,0.03); padding: 30px; border-radius: 35px; border: 1px solid #1e293b; max-width: 350px; margin: 20px auto; }
-        input { padding: 15px; border-radius: 15px; border: 2px solid #ffd700; background: #000; color: #fff; text-align: center; width: 85%; font-size: 20px; outline: none; margin-bottom: 15px; }
-        .btn-gold { background:#ffd700; color:#000; border:none; padding:18px; border-radius:18px; font-weight:bold; width:95%; cursor:pointer; font-size: 18px; }
-        
-        .bell-btn { font-size: 75px; background: none; border: none; filter: grayscale(1); transition: 0.4s; cursor: pointer; }
-        .bell-active { filter: grayscale(0) drop-shadow(0 0 20px #ffd700); animation: ring 1s infinite; }
-        
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes pulse { 0%, 100% { box-shadow: 0 0 20px var(--glow); } 50% { box-shadow: 0 0 55px var(--glow); } }
-        @keyframes ring { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(10deg); } 75% { transform: rotate(-10deg); } }
-
-        .res-item { padding:18px; border-bottom:1px solid #222; cursor:pointer; color:#fff; text-align: right; font-size: 18px; }
-        .res-item:hover { background: rgba(255,215,0,0.1); color:#ffd700; }
-    </style>
+        @keyframes ring { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(10deg); } 75% { transform: rotate(-10deg); } }
+    </style>
 </head>
 <body>
 
-    <div class="lang-icon" onclick="alert('اللغة العربية هي الأساس حالياً لدعم التعدد الذكي')">🌐</div>
+    <div id="multiSessionContainer"></div>
+    <div class="logo"><img src="logo.png"></div>
 
-    <div id="multiSessionContainer"></div>
+    <div id="liveContent">
+        <h2 id="clinicName" style="color:#ffd700;">جاري التحميل...</h2>
+        <div id="statusTag" style="display:inline-block; padding:8px 30px; border-radius:50px; font-size:15px; border:2px solid var(--glow); color:var(--glow); margin-bottom:10px;">--</div>
+        
+        <div class="number-box">
+            <p style="color:#888; font-size:14px; margin:0;">الرقم الحالي الآن</p>
+            <div class="big-num" id="liveNumber">0</div>
+            <div id="liveNote" style="background:rgba(255,215,0,0.1); border:1px dashed #ffd700; padding:12px; border-radius:15px; margin-top:10px; color:#ffd700; font-weight:bold; display:none;"></div>
+        </div>
 
-    <div class="logo"><img src="logo.png"></div>
+        <div class="card-ui">
+            <p style="color:#ffd700; font-weight:bold;">🔔 منبه ساعة الصفر الذكي</p>
+            <input type="number" id="userTarget" placeholder="0" style="width: 80px;">
+            <br>
+            <button id="bellIcon" class="bell-btn" onclick="toggleAlarm()">🔔</button>
+        </div>
+        
+        <button class="btn-gold" style="background:rgba(255,255,255,0.05); color:#888; border:1px solid #333;" onclick="openVoiceSearch()">🔍 البحث عن نشاط آخر</button>
+    </div>
 
-    <div id="searchPage" class="card-ui">
-        <h2 style="color:#ffd700; margin-bottom: 5px;">🔎 دليل صوفيگرام الذكي</h2>
-        <p style="font-size: 13px; color: #bbb; margin-bottom: 25px;">تابع حتى 4 عيادات أو أنشطة في آن واحد 🚀</p>
-        <input type="text" id="searchInput" placeholder="ابحث عن طبيب، حلاق، مطعم...">
-        <button onclick="performSearch()" class="btn-gold">بحث الآن | Search Now</button>
-        <div id="searchResults" style="margin-top:20px; max-height: 250px; overflow-y: auto;"></div>
-    </div>
+    <div id="voiceSearchOverlay">
+        <h2 style="color:#ffd700;">🔎 بحث صوفيگرام الذكي</h2>
+        <div style="display:flex; justify-content:center; align-items:center; gap:10px;">
+            <input type="text" id="vSearchInput" placeholder="اكتب أو ابحث بالصوت...">
+            <button onclick="startMic()" style="background:none; border:none; font-size:35px; cursor:pointer;">🎙️</button>
+        </div>
+        <button onclick="runSearch()" class="btn-gold" style="width:80%; margin-top:10px;">بحث يدوي</button>
+        <button onclick="closeVoiceSearch()" style="background:none; color:red; border:none; margin-top:20px; cursor:pointer;">إغلاق البحث ×</button>
+        <div id="vResults" style="margin-top:20px; max-height:300px; overflow-y:auto;"></div>
+    </div>
 
-    <div id="livePage" style="display:none;">
-        <h2 id="clinicName" style="color:#ffd700; margin-bottom:5px;"></h2>
-        <div id="statusTag" style="display:inline-block; padding:8px 30px; border-radius:50px; font-size:15px; border:2px solid var(--glow); color:var(--glow); margin-bottom:10px; background:rgba(0,0,0,0.5);">--</div>
-        
-        <div class="number-box">
-            <p style="color:#888; font-size:14px; margin:0;">الرقم الحالي الآن</p>
-            <div class="big-num" id="liveNumber">0</div>
-            <div id="liveNote" style="background:rgba(255,215,0,0.1); border:1px dashed #ffd700; padding:12px; border-radius:15px; margin-top:10px; color:#ffd700; font-weight:bold; font-size:15px;"></div>
-        </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
-        <div class="card-ui">
-            <p style="margin:0; color:#ffd700; font-weight:bold; font-size:18px;">🔔 منبه ساعة الصفر الذكي</p>
-            <input type="number" id="userTarget" placeholder="0" style="width: 90px; margin-top:15px; font-size: 24px;">
-            <br>
-            <button id="bellIcon" class="bell-btn" onclick="toggleAlarm()">🔔</button>
-        </div>
-        
-        <button class="btn-gold" style="background:rgba(255,255,255,0.05); color:#888; border:1px solid #333;" onclick="location.href='view.html'">🔍 البحث عن نشاط آخر</button>
-    </div>
+        const firebaseConfig = { apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", authDomain: "sofygramclinic.firebaseapp.com", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com", projectId: "sofygramclinic", appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc" };
+        const app = initializeApp(firebaseConfig); const db = getDatabase(app);
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+        const id = new URLSearchParams(window.location.search).get('id');
+        let activeSessions = JSON.parse(localStorage.getItem('sofygramSessions')) || [];
+        let isAlarmReady = false;
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
-            authDomain: "sofygramclinic.firebaseapp.com",
-            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
-            projectId: "sofygramclinic",
-            appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        if(id) { startTracking(id); addToSessions(id); }
+        window.addEventListener('load', renderMultiCards);
 
-        let activeSessions = JSON.parse(localStorage.getItem('sofygramSessions')) || [];
-        let isAlarmReady = false;
+        // وظائف البحث الصوتي
+        window.openVoiceSearch = () => { document.getElementById('voiceSearchOverlay').style.display = 'block'; };
+        window.closeVoiceSearch = () => { document.getElementById('voiceSearchOverlay').style.display = 'none'; };
 
-        window.addEventListener('load', () => { renderMultiCards(); });
+        window.startMic = () => {
+            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            rec.lang = 'ar-SA'; rec.start();
+            rec.onresult = (e) => {
+                document.getElementById('vSearchInput').value = e.results[0][0].transcript;
+                runSearch();
+            };
+        };
 
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get('id');
-        if(id) { 
-            document.getElementById('searchPage').style.display = 'none';
-            document.getElementById('livePage').style.display = 'block';
-            addToSessions(id);
-            startTracking(id); 
-        }
+        window.runSearch = async () => {
+            const q = document.getElementById('vSearchInput').value.toLowerCase();
+            const snap = await get(ref(db, 'users'));
+            const data = snap.val();
+            const resArea = document.getElementById('vResults'); resArea.innerHTML = "";
 
-        window.performSearch = async () => {
-            const val = document.getElementById('searchInput').value.toLowerCase();
-            const snap = await get(ref(db, 'users'));
-            const data = snap.val();
-            const resDiv = document.getElementById('searchResults'); resDiv.innerHTML = "";
-            for(let key in data) if(data[key].name.toLowerCase().includes(val)) 
-                resDiv.innerHTML += `<div class="res-item" onclick="window.location.href='?id=${key}'">⭐ ${data[key].name}</div>`;
-        };
+            for(let key in data) {
+                if(data[key].name && data[key].name.toLowerCase().includes(q)) {
+                    resArea.innerHTML += `
+                        <div class="search-res-item" onclick="location.href='view.html?id=${key}'">
+                            <h3 style="color:#ffd700;margin:0;">${data[key].name}</h3>
+                            <p style="font-size:12px;color:#aaa;margin:5px 0;">📍 ${data[key].address || 'العنوان غير متوفر'}</p>
+                        </div>`;
+                }
+            }
+        };
 
-        function addToSessions(newId) {
-            if (!activeSessions.includes(newId)) {
-                if (activeSessions.length >= 4) activeSessions.shift(); // الحفاظ على أحدث 4 فقط
-                activeSessions.push(newId);
-                localStorage.setItem('sofygramSessions', JSON.stringify(activeSessions));
-            }
-        }
+        function startTracking(tid) {
+            onValue(ref(db, 'users/' + tid), (snap) => {
+                const info = snap.val(); if(!info) return;
+                document.getElementById('liveNumber').innerText = info.currentNum || 0;
+                document.getElementById('clinicName').innerText = info.name;
+                document.getElementById('statusTag').innerText = info.status || "--";
+                const nb = document.getElementById('liveNote');
+                if(info.note) { nb.innerText = info.note; nb.style.display="block"; } else { nb.style.display="none"; }
+                
+                if(isAlarmReady && document.getElementById('userTarget').value == info.currentNum) {
+                    const msg = new SpeechSynthesisUtterance("حان دوركم الآن في صوفي غرام");
+                    msg.lang = 'ar-SA'; window.speechSynthesis.speak(msg);
+                    alert("🔔 حان دورك!"); isAlarmReady = false;
+                    document.getElementById('bellIcon').classList.remove('bell-active');
+                }
+            });
+        }
 
-        function renderMultiCards() {
-            const container = document.getElementById('multiSessionContainer');
-            // تظهر البطاقات فقط في صفحة البحث أو إذا كان المستخدم يتابع نشاطات
-            if (activeSessions.length === 0) { container.innerHTML = ""; return; }
+        function addToSessions(newId) {
+            if (!activeSessions.includes(newId)) {
+                if (activeSessions.length >= 4) activeSessions.shift();
+                activeSessions.push(newId);
+                localStorage.setItem('sofygramSessions', JSON.stringify(activeSessions));
+            }
+        }
 
-            container.innerHTML = "";
-            activeSessions.forEach(sessionId => {
-                get(ref(db, 'users/' + sessionId)).then(snap => {
-                    const info = snap.val();
-                    if (info) {
-                        const card = document.createElement('div');
-                        card.className = 'mini-card';
-                        card.onclick = () => location.href = '?id=' + sessionId;
-                        card.innerHTML = `
-                            <div class="mc-close" onclick="removeSession(event, '${sessionId}')">×</div>
-                            <p class="mc-name">${info.name}</p>
-                            <div class="mc-num" id="num-${sessionId}">${info.currentNum || 0}</div>
-                        `;
-                        container.appendChild(card);
-                        // مزامنة حية للأرقام داخل البطاقات الصغيرة
-                        onValue(ref(db, `users/${sessionId}/currentNum`), s => {
-                            const n = document.getElementById(`num-${sessionId}`);
-                            if(n) n.innerText = s.val() || 0;
-                        });
-                    }
-                });
-            });
-        }
+        function renderMultiCards() {
+            const container = document.getElementById('multiSessionContainer');
+            container.innerHTML = "";
+            activeSessions.forEach(sid => {
+                get(ref(db, 'users/' + sid)).then(snap => {
+                    const u = snap.val(); if(!u) return;
+                    const card = document.createElement('div');
+                    card.className = 'mini-card';
+                    card.onclick = () => location.href = 'view.html?id=' + sid;
+                    card.innerHTML = `<div class="mc-close" onclick="removeSession(event,'${sid}')">×</div>
+                                      <p class="mc-name">${u.name}</p>
+                                      <div class="mc-num" id="n-${sid}">${u.currentNum || 0}</div>`;
+                    container.appendChild(card);
+                    onValue(ref(db, `users/${sid}/currentNum`), s => {
+                        const el = document.getElementById(`n-${sid}`); if(el) el.innerText = s.val() || 0;
+                    });
+                });
+            });
+        }
 
-        window.removeSession = (event, sessionId) => {
-            event.stopPropagation();
-            activeSessions = activeSessions.filter(id => id !== sessionId);
-            localStorage.setItem('sofygramSessions', JSON.stringify(activeSessions));
-            renderMultiCards();
-        };
+        window.removeSession = (e, sid) => {
+            e.stopPropagation();
+            activeSessions = activeSessions.filter(i => i !== sid);
+            localStorage.setItem('sofygramSessions', JSON.stringify(activeSessions));
+            renderMultiCards();
+        };
 
-        function startTracking(targetId) {
-            onValue(ref(db, 'users/' + targetId), (snap) => {
-                const info = snap.val(); if(!info) return;
-                const current = info.currentNum || 0;
-                document.getElementById('liveNumber').innerText = current;
-                document.getElementById('clinicName').innerText = info.name;
-                document.getElementById('statusTag').innerText = info.status || "--";
-                const noteBox = document.getElementById('liveNote');
-                if(info.note) { noteBox.innerText = info.note; noteBox.style.display = "block"; } else { noteBox.style.display = "none"; }
-                
-                const root = document.documentElement;
-                if(info.status?.includes("مفتوح")) root.style.setProperty('--glow', '#2ecc71');
-                else if(info.status?.includes("قريباً")) root.style.setProperty('--glow', '#f1c40f');
-                else root.style.setProperty('--glow', '#e74c3c');
-
-                if(isAlarmReady && document.getElementById('userTarget').value == current && current != 0) {
-                    triggerBilingualAlarm();
-                    isAlarmReady = false;
-                    document.getElementById('bellIcon').classList.remove('bell-active');
-                }
-            });
-        }
-
-        async function triggerBilingualAlarm() {
-            if ("vibrate" in navigator) { navigator.vibrate([500, 200, 500, 200, 500]); }
-            const msgAr = new SpeechSynthesisUtterance("أهلاً بكم في منصة صوفي غرام العالمية. حان دوركم الآن، يرجى التوجه حالاً. شكراً لكم.");
-            msgAr.lang = 'ar-SA'; window.speechSynthesis.speak(msgAr);
-            alert("🔔 صوفيگرام: حان دورك الآن!");
-        }
-
-        window.toggleAlarm = () => {
-            if(!document.getElementById('userTarget').value) return alert("يرجى إدخال رقمك 🔔");
-            isAlarmReady = !isAlarmReady;
-            document.getElementById('bellIcon').classList.toggle('bell-active');
-            window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
-        };
-    </script>
+        window.toggleAlarm = () => {
+            isAlarmReady = !isAlarmReady;
+            document.getElementById('bellIcon').classList.toggle('bell-active');
+        };
+    </script>
 </body>
 </html>
