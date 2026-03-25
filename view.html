@@ -3,64 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>عرض العيادة | صوفيگرام</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Sofygram Live | صوفيگرام المباشر</title>
     <style>
         body { background: #050a14; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
-        .card { background: #121212; padding: 30px; border-radius: 30px; border: 2px solid #ff4500; max-width: 400px; margin: auto; }
-        .btn-admin { background: none; border: 1px solid #444; color: #888; padding: 10px 20px; border-radius: 10px; cursor: pointer; margin-top: 50px; transition: 0.3s; }
-        .btn-admin:hover { color: #ff4500; border-color: #ff4500; }
+        .num-box { font-size: 100px; color: #ffd700; border: 3px solid #ffd700; display: inline-block; padding: 20px 50px; border-radius: 40px; margin: 20px 0; box-shadow: 0 0 20px #ffd700; }
+        .info-card { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 25px; border: 1px solid #222; max-width: 400px; margin: auto; }
+        .btn-map { background: #3498db; color: white; padding: 15px; border-radius: 15px; display: block; text-decoration: none; margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
-
-    <div class="card">
-        <h1 id="nameDisplay">جاري التحميل...</h1>
-        <p id="typeDisplay"></p>
-        <hr style="border: 0.5px solid #222;">
-        <p>هنا تظهر أرقام الحجز والمعلومات المباشرة</p>
+    <h1 id="name">...</h1>
+    <div id="status" style="font-weight:bold; font-size:18px;">--</div>
+    
+    <div class="num-box" id="num">0</div>
+    
+    <div class="info-card">
+        <p id="note" style="color:#ffd700; font-weight:bold;"></p>
+        <p id="times" style="font-size:14px; color:#aaa;"></p>
+        <a id="map" href="#" target="_blank" class="btn-map" style="display:none;">📍 فتح موقع النشاط في الخرائط</a>
     </div>
 
-    <button class="btn-admin" onclick="goToAdmin()">
-        <i class="fas fa-cog"></i> إدارة العيادة (للسكرتير)
-    </button>
+    <button onclick="goAdmin()" style="background:none; border:1px solid #333; color:#444; margin-top:40px; cursor:pointer; padding:5px 10px; border-radius:8px;">إدارة النشاط ⚙️</button>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
-            authDomain: "sofygramclinic.firebaseapp.com",
-            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
-            projectId: "sofygramclinic",
-            appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        // جلب الـ ID من الرابط
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get('id');
+        const firebaseConfig = { apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", authDomain: "sofygramclinic.firebaseapp.com", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com", projectId: "sofygramclinic", appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc" };
+        const app = initializeApp(firebaseConfig); const db = getDatabase(app);
+        const id = new URLSearchParams(window.location.search).get('id');
 
         if(id) {
-            onValue(ref(db, 'users/' + id), (snap) => {
-                const data = snap.val();
-                if(data) {
-                    document.getElementById('nameDisplay').innerText = data.name;
-                    document.getElementById('typeDisplay').innerText = data.type;
-                    
-                    // دالة الانتقال لصفحة السكرتير
-                    window.goToAdmin = () => {
-                        const p = prompt("أدخل كلمة مرور الإدارة:");
-                        if(p === data.pass) {
-                            // هنا الرابط يوديك للصفحة اللي سويناها (admin_panel.html)
-                            window.location.href = `admin_panel.html?id=${id}`;
-                        } else {
-                            alert("كلمة المرور غلط!");
-                        }
-                    };
-                }
+            onValue(ref(db, 'users/' + id), (s) => {
+                const d = s.val(); if(!d) return;
+                document.getElementById('name').innerText = d.name;
+                document.getElementById('num').innerText = d.currentNum || 0;
+                document.getElementById('status').innerText = d.status || "";
+                document.getElementById('note').innerText = d.note || "";
+                if(d.openTime) document.getElementById('times').innerText = "ساعات العمل: " + d.openTime + " إلى " + d.closeTime;
+                if(d.lat) { document.getElementById('map').style.display = "block"; document.getElementById('map').href = `https://www.google.com/maps?q=${d.lat},${d.lng}`; }
+                window.goAdmin = () => { if(prompt("رمز الإدارة:") === d.pass) location.href = "admin.html?id=" + id; else alert("خطأ!"); };
             });
         }
     </script>
