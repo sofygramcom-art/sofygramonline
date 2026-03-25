@@ -19,31 +19,47 @@
             max-width: 850px; margin: 30px auto; border: 1px solid #1e293b;
             box-shadow: 0 40px 80px rgba(0,0,0,0.8);
         }
-        .mic-btn { width: 100px; height: 100px; border-radius: 50%; background: #000; border: 4px solid var(--neon); color: white; font-size: 45px; cursor: pointer; box-shadow: 0 0 20px var(--neon); }
+        .mic-btn { width: 90px; height: 90px; border-radius: 50%; background: #000; border: 4px solid var(--neon); color: white; font-size: 40px; cursor: pointer; box-shadow: 0 0 20px var(--neon); }
         .mic-btn.active { animation: pulse-fire 1.2s infinite; background: var(--neon); }
         @keyframes pulse-fire { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
         .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; }
         select, input { width: 100%; padding: 18px; border-radius: 18px; background: #000; border: 1px solid #333; color: white; outline: none; box-sizing: border-box; }
 
-        /* قسم أصحاب الأعمال - التخفيض */
-        .business-card { 
-            background: linear-gradient(135deg, #121c2c 0%, #0a0f1a 100%); border: 2px solid var(--gold); 
-            border-radius: 35px; padding: 35px; max-width: 800px; margin: 50px auto; position: relative;
+        /* قسم الفيديوهات الجديد */
+        .video-section { max-width: 900px; margin: 50px auto; padding: 20px; }
+        .video-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        video { width: 100%; border-radius: 25px; border: 2px solid var(--gold); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2); }
+
+        /* قسم الاشتراك والتخفيض الكبير */
+        .big-register-card { 
+            background: linear-gradient(135deg, #121c2c 0%, #0a0f1a 100%); 
+            border: 3px solid var(--gold); border-radius: 40px; 
+            padding: 45px; max-width: 850px; margin: 60px auto; position: relative;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
         }
-        .discount-badge { position: absolute; top: -15px; left: 25px; background: red; color: white; padding: 8px 20px; border-radius: 12px; font-weight: bold; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        .discount-badge { 
+            position: absolute; top: -20px; right: 30px; background: red; color: white; 
+            padding: 10px 25px; border-radius: 15px; font-weight: bold; font-size: 20px; 
+            animation: bounce 1.5s infinite; 
+        }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        /* زر دخول السكرتير */
-        .admin-link { color: var(--gold); text-decoration: none; font-weight: bold; display: inline-block; margin-top: 20px; font-size: 14px; border-bottom: 1px solid var(--gold); }
+        .btn-register-now { 
+            background: var(--gold); color: #000; padding: 20px 60px; border-radius: 50px; 
+            text-decoration: none; font-weight: bold; font-size: 22px; display: inline-block; 
+            margin-top: 25px; transition: 0.3s; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+        .btn-register-now:hover { transform: scale(1.05); background: white; }
 
-        .btn-reg { background: var(--gold); color: #000; padding: 18px 45px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 20px; }
-        
+        .staff-login { margin-top: 30px; display: block; color: var(--gold); text-decoration: none; font-size: 15px; font-weight: bold; }
+
         #results { margin-top: 30px; text-align: right; max-width: 800px; margin: auto; }
         .res-card { background: #121c2c; padding: 20px; border-radius: 20px; margin-bottom: 12px; border-right: 6px solid var(--gold); cursor: pointer; }
         
-        footer { background: #000; padding: 40px; margin-top: 50px; }
-        .social a { color: #888; margin: 0 15px; font-size: 30px; }
+        footer { background: #000; padding: 50px; margin-top: 60px; border-top: 1px solid #1e293b; }
+        .social a { color: #888; margin: 0 20px; font-size: 35px; transition: 0.3s; }
+        .social a:hover { color: var(--gold); }
     </style>
 </head>
 <body onclick="playWelcome()">
@@ -51,30 +67,39 @@
 <div class="hero">
     <div class="logo-box"><img src="logo.png"></div>
     <h1 class="brand-title">SOFYGRAM</h1>
-    <div style="color:var(--gold); font-weight:bold; letter-spacing:3px;">صوفيگرام العالمية</div>
+    <div style="color:var(--gold); font-weight:bold; letter-spacing:5px;">صوفيگرام العالمية</div>
 
     <div class="search-engine">
         <div class="mic-box">
             <button id="micBtn" class="mic-btn" onclick="startSofyVoice()">🎙️</button>
-            <p style="color:var(--gold); margin-top:10px;">اضغط وتحدث (عراقي/عربي)</p>
+            <p style="color:var(--gold); margin-top:15px; font-weight: bold;">اضغط وتحدث (البحث الصوتي الذكي)</p>
         </div>
         <div class="grid-inputs">
             <select id="country"><option>العراق</option><option>الإمارات</option><option>السعودية</option><option>تركيا</option><option>أوروبا</option><option>غير ذلك</option></select>
             <select id="city"><option>النجف</option><option>كربلاء</option><option>بغداد</option><option>البصرة</option><option>بابل</option><option>أربيل</option><option>غير ذلك</option></select>
             <select id="category"><option>أطباء وعيادات</option><option>صيدليات</option><option>مطاعم</option><option>حلاقة</option><option>محاماة</option><option>غير ذلك</option></select>
-            <input type="text" id="manualSearch" placeholder="ابحث باسم النشاط...">
+            <input type="text" id="manualSearch" placeholder="ابحث باسم العيادة أو النشاط...">
         </div>
-        <button onclick="runSofySearch()" style="width:100%; padding:20px; margin-top:20px; background:var(--neon); color:white; border:none; border-radius:20px; font-weight:bold; cursor:pointer; font-size:20px;">انطلاق الآن 🚀</button>
+        <button onclick="runSofySearch()" style="width:100%; padding:22px; margin-top:20px; background:var(--gold); color:black; border:none; border-radius:20px; font-weight:bold; cursor:pointer; font-size:22px;">بحث الآن 🚀</button>
         <div id="results"></div>
     </div>
 
-    <div class="business-card">
+    <div class="video-section">
+        <h2 style="color:var(--gold); margin-bottom: 30px;">شاهد صوفيگرام في العمل 🛰️</h2>
+        <div class="video-container">
+            <video controls poster="logo.png"><source src="v1.MP4" type="video/mp4"></video>
+            <video controls poster="logo.png"><source src="v2.MP4" type="video/mp4"></video>
+            <video controls poster="logo.png"><source src="v3.MP4" type="video/mp4"></video>
+        </div>
+    </div>
+
+    <div class="big-register-card">
         <div class="discount-badge">تخفيض 50% لفترة محدودة</div>
-        <h2 style="color:var(--gold)">هل أنت صاحب نشاط تجاري أو طبي؟</h2>
-        <p>سجل الآن في المنصة العالمية لتنظيم الزخم وادارة السرا بذكاء.</p>
-        <a href="register2.html" class="btn-reg">سجل نشاطك الآن - Register</a>
+        <h2 style="color:var(--gold); font-size: 32px;">هل أنت صاحب نشاط تجاري أو طبي؟</h2>
+        <p style="font-size: 18px; color: #ccc;">انضم الآن لأكبر منصة تنظيم طوابير عالمية. خفف الزخم، نظم الحجوزات، وارتقِ بخدمتك إلى المستوى الرقمي.</p>
+        <a href="register2.html" class="btn-register-now">سجل نشاطك الآن - Register Now</a>
         <br>
-        <a href="staff.html" class="admin-link">دخول السكرتير أو صاحب النشاط 🔑</a>
+        <a href="staff.html" class="staff-login">🗝️ دخول السكرتير أو صاحب النشاط</a>
     </div>
 </div>
 
@@ -84,7 +109,7 @@
         <a href="https://instagram.com/sofygram.iq"><i class="fab fa-instagram"></i></a>
         <a href="https://t.me/sofygram"><i class="fab fa-telegram"></i></a>
     </div>
-    <p style="color:#555; margin-top:20px;">جميع الحقوق محفوظة لصالح منصة صوفيگرام العالمية © 2026</p>
+    <p style="color:#555; margin-top:30px;">جميع الحقوق محفوظة لصالح منصة صوفيگرام العالمية © 2026<br>sofygram.com</p>
 </footer>
 
 <script type="module">
