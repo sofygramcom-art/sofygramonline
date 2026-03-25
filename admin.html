@@ -8,152 +8,77 @@
     <style>
         :root { --fire: #ff4500; --bg: #050a14; --card: #121212; --glow: #00d2ff; }
         body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 15px; text-align: center; }
-        .admin-box { max-width: 450px; margin: auto; background: var(--card); padding: 20px; border-radius: 25px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        /* التحكم بالأرقام */
-        .num-display { font-size: 110px; font-weight: bold; margin: 5px 0; color: white; }
-        .btn-row { display: flex; justify-content: center; gap: 20px; margin-bottom: 25px; }
-        .circle-btn { width: 85px; height: 85px; border-radius: 50%; border: none; font-size: 45px; color: white; cursor: pointer; transition: 0.2s; }
-        .btn-plus { background: #2ecc71; box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4); }
-        .btn-minus { background: #e74c3c; box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4); }
-
-        /* الأقسام الإضافية */
-        .section { background: #1a1a2e; padding: 15px; border-radius: 20px; margin-top: 20px; border: 1px solid #222; text-align: right; }
-        label { display: block; margin-bottom: 8px; color: #aaa; font-size: 13px; }
-        
-        select, textarea { width: 100%; padding: 12px; border-radius: 12px; background: #000; color: white; border: 1px solid #444; outline: none; box-sizing: border-box; }
-        textarea { height: 60px; resize: none; font-family: sans-serif; }
-
-        /* التحكم بالوقت */
-        .time-row { display: flex; align-items: center; justify-content: space-between; background: #000; padding: 8px; border-radius: 12px; margin-bottom: 10px; }
-        .time-val { font-size: 22px; font-weight: bold; color: var(--glow); min-width: 40px; text-align: center; }
-        .small-btn { width: 35px; height: 35px; border-radius: 8px; border: none; background: #333; color: white; font-size: 18px; cursor: pointer; }
-        .ampm-btn { padding: 6px 12px; border-radius: 8px; background: var(--fire); border: none; color: white; font-weight: bold; cursor: pointer; font-size: 12px; }
-
-        .btn-full { width: 100%; padding: 14px; border-radius: 14px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        .btn-loc { background: #3498db; color: white; }
-        .btn-save { background: linear-gradient(45deg, var(--fire), #ff8c00); color: white; margin-top: 25px; box-shadow: 0 5px 15px rgba(255, 69, 0, 0.3); }
+        .admin-box { max-width: 450px; margin: auto; background: var(--card); padding: 20px; border-radius: 25px; border: 1px solid #333; }
+        .num { font-size: 110px; font-weight: bold; margin: 10px 0; }
+        .btn-row { display: flex; justify-content: center; gap: 20px; }
+        .circle-btn { width: 85px; height: 85px; border-radius: 50%; border: none; font-size: 45px; color: white; cursor: pointer; }
+        .sec { background: #1a1a2e; padding: 15px; border-radius: 20px; margin-top: 25px; border: 1px solid #222; text-align: right; }
+        input, select, textarea { width: 100%; padding: 12px; margin-top: 8px; border-radius: 12px; background: #000; color: white; border: 1px solid #444; box-sizing: border-box; }
+        .btn-full { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 16px; }
     </style>
 </head>
 <body>
 
 <div class="admin-box">
-    <h2 id="clinicTitle" style="color: var(--fire); margin-bottom: 20px;">تحميل...</h2>
-
-    <div class="num-display" id="currentNum">0</div>
+    <h2 id="activityTitle" style="color: var(--fire);">جاري تحميل الاسم...</h2>
+    
+    <div class="num" id="currentNum">0</div>
     <div class="btn-row">
-        <button class="circle-btn btn-plus" onclick="updateNum(1)">+</button>
-        <button class="circle-btn btn-minus" onclick="updateNum(-1)">-</button>
+        <button class="circle-btn" style="background:#2ecc71;" onclick="updateNum(1)">+</button>
+        <button class="circle-btn" style="background:#e74c3c;" onclick="updateNum(-1)">-</button>
     </div>
 
-    <div class="section">
-        <label>الحالة الحالية:</label>
+    <div class="sec">
+        <label>حالة النشاط الآن:</label>
         <select id="statusSelect">
-            <option value="مفتوح الآن ✅">مفتوح الآن ✅</option>
-            <option value="قريباً ⏳">قريباً ⏳</option>
-            <option value="مغلق حالياً ❌">مغلق حالياً ❌</option>
+            <option>مفتوح الآن ✅</option>
+            <option>قريباً ⏳</option>
+            <option>مغلق حالياً ❌</option>
         </select>
-        
-        <label style="margin-top:15px;">ملاحظة سريعة للجمهور:</label>
-        <textarea id="noteInput" placeholder="مثال: الطبيب في استراحة، أو العيادة مزدحمة.."></textarea>
+        <label style="display:block; margin-top:15px;">ملاحظة للزبائن:</label>
+        <textarea id="noteInput" placeholder="اكتب أي تنبيه للزبائن هنا..."></textarea>
     </div>
 
-    <div class="section">
-        <label>وقت الفتح:</label>
-        <div class="time-row">
-            <button class="small-btn" onclick="changeTime('open', -1)">-</button>
-            <span class="time-val" id="openDisp">4</span>
-            <button class="small-btn" onclick="changeTime('open', 1)">+</button>
-            <button class="ampm-btn" id="openAMPM" onclick="toggleAMPM('open')">مساءً</button>
+    <div class="sec">
+        <label>ساعات العمل والموقع:</label>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <input type="time" id="openT">
+            <input type="time" id="closeT">
         </div>
-
-        <label>وقت الإغلاق:</label>
-        <div class="time-row">
-            <button class="small-btn" onclick="changeTime('close', -1)">-</button>
-            <span class="time-val" id="closeDisp">10</span>
-            <button class="small-btn" onclick="changeTime('close', 1)">+</button>
-            <button class="ampm-btn" id="closeAMPM" onclick="toggleAMPM('close')">مساءً</button>
-        </div>
-
-        <button class="btn-full btn-loc" onclick="updateLoc()">
-            <i class="fas fa-map-marker-alt"></i> تحديث موقع العيادة (GPS)
-        </button>
-        <p id="locStatus" style="font-size: 11px; color: #2ecc71; margin: 5px 0 0;"></p>
+        <button class="btn-full" style="background:#3498db; color:white;" onclick="getLoc()">📍 تحديث موقع النشاط (GPS)</button>
     </div>
 
-    <button class="btn-full btn-save" onclick="saveAll()">حفظ ونشر التعديلات 🚀</button>
+    <button class="btn-full" style="background:linear-gradient(45deg, #ff4500, #ff8c00); color:white;" onclick="saveAll()">حفظ ونشر التعديلات 🚀</button>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
     import { getDatabase, ref, update, onValue } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
-        authDomain: "sofygramclinic.firebaseapp.com",
-        databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
-        projectId: "sofygramclinic",
-        appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
+    const firebaseConfig = { apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", authDomain: "sofygramclinic.firebaseapp.com", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com", projectId: "sofygramclinic", appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc" };
+    const app = initializeApp(firebaseConfig); const db = getDatabase(app);
     const userId = new URLSearchParams(window.location.search).get('id');
-    let currentData = {};
-    let times = { open: 4, close: 10 };
-    let ampm = { open: "مساءً", close: "مساءً" };
-    let coords = { lat: "", lng: "" };
+    let userData = {}; let lat = "", lng = "";
 
     if(userId) {
         onValue(ref(db, 'users/' + userId), (snap) => {
-            const d = snap.val(); if(!d) return;
-            currentData = d;
-            document.getElementById('currentNum').innerText = d.currentNum || 0;
-            document.getElementById('clinicTitle').innerText = d.name || "إدارة العيادة";
-            document.getElementById('statusSelect').value = d.status || "مغلق حالياً ❌";
-            document.getElementById('noteInput').value = d.note || "";
+            userData = snap.val(); if(!userData) return;
+            document.getElementById('currentNum').innerText = userData.currentNum || 0;
+            document.getElementById('activityTitle').innerText = userData.name || "لوحة التحكم";
+            document.getElementById('statusSelect').value = userData.status || "مغلق حالياً ❌";
+            document.getElementById('noteInput').value = userData.note || "";
         });
     }
 
-    window.updateNum = (val) => {
-        let n = (currentData.currentNum || 0) + val;
-        if(n < 0) n = 0;
-        update(ref(db, 'users/' + userId), { currentNum: n });
-    };
-
-    window.changeTime = (type, val) => {
-        times[type] += val;
-        if(times[type] > 12) times[type] = 1;
-        if(times[type] < 1) times[type] = 12;
-        document.getElementById(type + 'Disp').innerText = times[type];
-    };
-
-    window.toggleAMPM = (type) => {
-        ampm[type] = (ampm[type] === "مساءً") ? "صباحاً" : "مساءً";
-        document.getElementById(type + 'AMPM').innerText = ampm[type];
-    };
-
-    window.updateLoc = () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((pos) => {
-                coords.lat = pos.coords.latitude;
-                coords.lng = pos.coords.longitude;
-                document.getElementById('locStatus').innerText = "✅ تم تحديد الموقع!";
-            });
-        }
-    };
-
-    window.saveAll = () => {
-        if(!userId) return;
-        update(ref(db, 'users/' + userId), {
-            status: document.getElementById('statusSelect').value,
-            note: document.getElementById('noteInput').value,
-            openTime: `${times.open} ${ampm.open}`,
-            closeTime: `${times.close} ${ampm.close}`,
-            lat: coords.lat || currentData.lat || "",
-            lng: coords.lng || currentData.lng || ""
-        }).then(() => alert("عاش تدبيرك! تم التحديث بنجاح."));
-    };
+    window.updateNum = (v) => { let n = (userData.currentNum || 0) + v; update(ref(db, 'users/' + userId), { currentNum: n < 0 ? 0 : n }); };
+    window.getLoc = () => navigator.geolocation.getCurrentPosition(p => { lat = p.coords.latitude; lng = p.coords.longitude; alert("✅ تم تحديد الموقع!"); });
+    window.saveAll = () => update(ref(db, 'users/' + userId), { 
+        status: document.getElementById('statusSelect').value, 
+        note: document.getElementById('noteInput').value, 
+        openTime: document.getElementById('openT').value, 
+        closeTime: document.getElementById('closeT').value, 
+        lat: lat || userData.lat || "", lng: lng || userData.lng || "" 
+    }).then(() => alert("🚀 تم التحديث بنجاح!"));
 </script>
 </body>
 </html>
