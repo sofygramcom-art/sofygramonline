@@ -3,137 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram | صوفيگرام العراق 🇮🇶</title>
+    <title>لوحة التحكم الشاملة | صوفيگرام ⚙️</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --glow: #00d2ff; --bg: #050a14; --card: #121212; --fire: #ff4500; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; text-align: center; }
-        
-        /* اللوغو الناري */
-        header { padding: 30px 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-        .logo-wrap { position: relative; display: inline-block; padding: 15px; border-radius: 20px; border: 3px solid var(--fire); box-shadow: 0 0 20px var(--fire); animation: burn 1.5s infinite alternate; }
-        @keyframes burn { from { transform: scale(1); box-shadow: 0 0 15px var(--fire); } to { transform: scale(1.05); box-shadow: 0 0 35px #ff8c00; } }
-        .logo-text { font-size: 40px; font-weight: 900; margin: 0; color: white; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
-        .btn-reg { background: linear-gradient(45deg, #ff4500, #ff8c00); color: white; text-decoration: none; padding: 12px 25px; border-radius: 15px; font-weight: bold; margin-top: 10px; display: inline-block; }
-
-        /* البحث */
-        .search-sec { padding: 20px; }
-        .search-box { max-width: 650px; margin: 0 auto 25px auto; position: relative; }
-        .search-box input { width: 100%; padding: 18px 25px 18px 60px; border-radius: 25px; border: 2px solid #333; background: #000; color: white; font-size: 18px; outline: none; text-align: right; }
-        .search-box i { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); color: var(--glow); font-size: 22px; cursor: pointer; }
-
-        /* الفلاتر الرباعية */
-        .advanced-filters { max-width: 1000px; margin: 30px auto; background: var(--card); padding: 25px; border-radius: 30px; border: 1px solid #222; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-        select, .custom-input { padding: 12px; border-radius: 12px; border: 1px solid #333; background: #000; color: white; text-align: right; outline: none; font-size: 15px; }
-
-        /* البطاقات */
-        .results-area { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; max-width: 1200px; margin: auto; }
-        .res-card { background: var(--card); border-radius: 25px; padding: 25px; border: 1px solid #222; text-align: right; transition: 0.3s; cursor: pointer; position: relative; }
-        .res-card:hover { border-color: var(--glow); transform: translateY(-5px); }
-        .status-badge { position: absolute; top: 15px; left: 15px; font-size: 12px; padding: 5px 12px; border-radius: 10px; font-weight: bold; border: 1px solid currentColor; }
-        .phone-link { color: var(--glow); display: block; margin-top: 10px; font-size: 14px; text-decoration: none; }
+        :root { --fire: #ff4500; --bg: #050a14; --card: #121212; --glow: #00d2ff; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 15px; text-align: center; }
+        .admin-box { max-width: 450px; margin: auto; background: var(--card); padding: 20px; border-radius: 25px; border: 1px solid #333; }
+        .num { font-size: 110px; font-weight: bold; margin: 10px 0; }
+        .btn-row { display: flex; justify-content: center; gap: 20px; }
+        .circle-btn { width: 85px; height: 85px; border-radius: 50%; border: none; font-size: 45px; color: white; cursor: pointer; }
+        .sec { background: #1a1a2e; padding: 15px; border-radius: 20px; margin-top: 25px; border: 1px solid #222; text-align: right; }
+        input, select, textarea { width: 100%; padding: 12px; margin-top: 8px; border-radius: 12px; background: #000; color: white; border: 1px solid #444; box-sizing: border-box; }
+        .btn-full { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 16px; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo-wrap">
-            <h1 class="logo-text">صوفيگرام</h1>
+<div class="admin-box">
+    <h2 id="activityTitle" style="color: var(--fire);">جاري تحميل الاسم...</h2>
+    
+    <div class="num" id="currentNum">0</div>
+    <div class="btn-row">
+        <button class="circle-btn" style="background:#2ecc71;" onclick="updateNum(1)">+</button>
+        <button class="circle-btn" style="background:#e74c3c;" onclick="updateNum(-1)">-</button>
+    </div>
+
+    <div class="sec">
+        <label>حالة النشاط الآن:</label>
+        <select id="statusSelect">
+            <option>مفتوح الآن ✅</option>
+            <option>قريباً ⏳</option>
+            <option>مغلق حالياً ❌</option>
+        </select>
+        <label style="display:block; margin-top:15px;">ملاحظة للزبائن:</label>
+        <textarea id="noteInput" placeholder="اكتب أي تنبيه للزبائن هنا..."></textarea>
+    </div>
+
+    <div class="sec">
+        <label>ساعات العمل والموقع:</label>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <input type="time" id="openT">
+            <input type="time" id="closeT">
         </div>
-        <a href="register2.html" class="btn-reg">تسجيل نشاط جديد 🚀</a>
-    </header>
+        <button class="btn-full" style="background:#3498db; color:white;" onclick="getLoc()">📍 تحديث موقع النشاط (GPS)</button>
+    </div>
 
-    <section class="search-sec">
-        <div class="search-box">
-            <input type="text" id="nameQuery" placeholder="ابحث باسم الدكتور أو الصيدلية..">
-            <i class="fas fa-search" onclick="searchByName()"></i>
-        </div>
+    <button class="btn-full" style="background:linear-gradient(45deg, #ff4500, #ff8c00); color:white;" onclick="saveAll()">حفظ ونشر التعديلات 🚀</button>
+</div>
 
-        <div class="advanced-filters">
-            <select id="typeF">
-                <option value="">كل الأنشطة</option>
-                <option value="طبيب / عيادة">أطباء وعيادات</option>
-                <option value="صيدلية">صيدليات</option>
-                <option value="أسواق / سوبر ماركت">أسواق ومولات</option>
-                <option value="صائغ ذهب / مجوهرات">صياغ ذهب</option>
-            </select>
-            <select id="cityF">
-                <option value="">كل محافظات العراق</option>
-                <option value="بغداد">بغداد</option><option value="النجف">النجف</option><option value="كربلاء">كربلاء</option>
-                <option value="البصرة">البصرة</option><option value="بابل">بابل</option><option value="نينوى">نينوى</option>
-            </select>
-            <input type="text" id="areaF" class="custom-input" placeholder="اكتب المنطقة يدوياً">
-            <button onclick="searchAdvanced()" style="grid-column: 1/-1; background: var(--glow); color: black; border:none; padding:12px; border-radius:12px; font-weight:bold; cursor:pointer;">تطبيق البحث 🔍</button>
-        </div>
-    </section>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+    import { getDatabase, ref, update, onValue } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
-    <div class="results-area" id="resultsArea"></div>
+    const firebaseConfig = { apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", authDomain: "sofygramclinic.firebaseapp.com", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com", projectId: "sofygramclinic", appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc" };
+    const app = initializeApp(firebaseConfig); const db = getDatabase(app);
+    const userId = new URLSearchParams(window.location.search).get('id');
+    let userData = {}; let lat = "", lng = "";
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+    if(userId) {
+        onValue(ref(db, 'users/' + userId), (snap) => {
+            userData = snap.val(); if(!userData) return;
+            document.getElementById('currentNum').innerText = userData.currentNum || 0;
+            document.getElementById('activityTitle').innerText = userData.name || "لوحة التحكم";
+            document.getElementById('statusSelect').value = userData.status || "مغلق حالياً ❌";
+            document.getElementById('noteInput').value = userData.note || "";
+        });
+    }
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
-            authDomain: "sofygramclinic.firebaseapp.com",
-            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
-            projectId: "sofygramclinic",
-            appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        // الدالة العبقرية التي اقترحتها أنت
-        function render(list) {
-            const box = document.getElementById('resultsArea');
-            box.innerHTML = list.length ? "" : "<p style='color:#666;'>لم يتم العثور على نتائج..</p>";
-            list.forEach(u => {
-                let statusText = "مغلق";
-                let statusColor = "#e74c3c"; // أحمر
-
-                // الفحص الشامل (Boolean + String + Arabic)
-                if (u.isOpen === true || u.isOpen === "true" || u.isOpen === "مفتوح") {
-                    statusText = "مفتوح";
-                    statusColor = "#2ecc71"; // أخضر
-                }
-
-                box.innerHTML += `
-                    <div class="res-card" onclick="window.location.href='view.html?id=${u.id}'">
-                        <span class="status-badge" style="color:${statusColor}; border-color:${statusColor}">${statusText}</span>
-                        <h2 style="margin:0; color:var(--glow);">${u.name}</h2>
-                        <p style="margin:5px 0; font-size:15px; color:#ddd;">${u.type}</p>
-                        <p style="margin:0; font-size:13px; color:#888;">📍 ${u.city} - ${u.neighborhood || '---'}</p>
-                        ${u.phone ? `<a href="tel:${u.phone}" class="phone-link"><i class="fas fa-phone"></i> ${u.phone}</a>` : ''}
-                    </div>`;
-            });
-        }
-
-        window.searchByName = () => {
-            const q = document.getElementById('nameQuery').value.toLowerCase();
-            onValue(ref(db, 'users'), (s) => {
-                const data = s.val(); let matches = [];
-                for(let id in data) { if(data[id].active && data[id].name.toLowerCase().includes(q)) matches.push({id, ...data[id]}); }
-                render(matches);
-            }, {onlyOnce: true});
-        };
-
-        window.searchAdvanced = () => {
-            const t = document.getElementById('typeF').value;
-            const c = document.getElementById('cityF').value;
-            const a = document.getElementById('areaF').value.toLowerCase();
-            onValue(ref(db, 'users'), (s) => {
-                const data = s.val(); let matches = [];
-                for(let id in data) {
-                    const u = data[id]; if(!u.active) continue;
-                    let pass = true;
-                    if(t && u.type !== t) pass = false;
-                    if(c && u.city !== c) pass = false;
-                    if(a && !u.neighborhood?.toLowerCase().includes(a)) pass = false;
-                    if(pass) matches.push({id, ...u});
-                }
-                render(matches);
-            }, {onlyOnce: true});
-        };
-    </script>
+    window.updateNum = (v) => { let n = (userData.currentNum || 0) + v; update(ref(db, 'users/' + userId), { currentNum: n < 0 ? 0 : n }); };
+    window.getLoc = () => navigator.geolocation.getCurrentPosition(p => { lat = p.coords.latitude; lng = p.coords.longitude; alert("✅ تم تحديد الموقع!"); });
+    window.saveAll = () => update(ref(db, 'users/' + userId), { 
+        status: document.getElementById('statusSelect').value, 
+        note: document.getElementById('noteInput').value, 
+        openTime: document.getElementById('openT').value, 
+        closeTime: document.getElementById('closeT').value, 
+        lat: lat || userData.lat || "", lng: lng || userData.lng || "" 
+    }).then(() => alert("🚀 تم التحديث بنجاح!"));
+</script>
 </body>
 </html>
