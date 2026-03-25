@@ -4,78 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sofygram Global | صوفيگرام العالمية 🌍</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --main-orange: #ff8c00; --neon-glow: #ff4500; }
-        body { 
-            background-color: #050a14; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; padding: 0; overflow-x: hidden; text-align: center;
-        }
+        body { background-color: #050a14; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; text-align: center; }
 
-        /* خلفية فخمة */
-        .hero-section {
-            background: radial-gradient(circle at center, #1a2a44 0%, #050a14 100%);
-            padding: 60px 20px; min-height: 100vh;
-        }
+        .hero-section { background: radial-gradient(circle at center, #1a2a44 0%, #050a14 100%); padding: 40px 20px; }
+        .brand-name { font-size: 55px; font-weight: 900; margin: 0; text-shadow: 0 0 20px rgba(255, 140, 0, 0.6); }
+        .brand-sub { color: var(--main-orange); font-size: 16px; letter-spacing: 5px; font-weight: bold; }
 
-        /* اللوغو والاسم المشع */
-        .brand-container { margin-bottom: 40px; }
-        .brand-name { 
-            font-size: 65px; font-weight: 900; color: white; margin: 0;
-            text-shadow: 0 0 20px rgba(255, 140, 0, 0.6); letter-spacing: 2px;
-        }
-        .brand-sub { color: var(--main-orange); font-size: 18px; letter-spacing: 5px; margin-top: -10px; font-weight: bold; }
+        /* محرك البحث */
+        .search-engine { background: rgba(12, 18, 29, 0.9); border-radius: 40px; padding: 30px; max-width: 800px; margin: 30px auto; border: 1px solid #1e293b; }
+        .grid-search { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        select, input { width: 100%; padding: 15px; border-radius: 15px; background: #000; border: 1px solid #333; color: white; outline: none; box-sizing: border-box; }
+        .btn-launch { grid-column: span 2; background: linear-gradient(90deg, #ff8c00, #ff4500); color: white; border: none; padding: 18px; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 18px; }
 
-        /* كلمات وصفية */
-        .promo-text { font-size: 20px; color: #bbb; max-width: 600px; margin: 20px auto 40px; line-height: 1.6; }
+        /* قسم أصحاب الأعمال (الاشتراكات) */
+        .business-invite { 
+            background: linear-gradient(135deg, #121c2c 0%, #0a0f1a 100%); 
+            border: 2px solid var(--main-orange); border-radius: 30px; 
+            padding: 30px; max-width: 800px; margin: 40px auto; position: relative;
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.2);
+        }
+        .discount-tag { position: absolute; top: -15px; left: 20px; background: red; color: white; padding: 5px 15px; border-radius: 10px; font-weight: bold; animation: pulse 1s infinite; }
+        .btn-register { background: var(--main-orange); color: #000; padding: 15px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 15px; }
 
-        /* محرك البحث المتقدم */
-        .search-engine {
-            background: rgba(12, 18, 29, 0.8); border: 1px solid #1e293b;
-            border-radius: 40px; padding: 40px; max-width: 800px; margin: 0 auto;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-        }
+        /* قسم التعريف بالموقع */
+        .about-section { max-width: 800px; margin: 40px auto; padding: 20px; color: #bbb; line-height: 1.8; }
+        .feature-box { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .feature { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid #1e293b; }
 
-        /* المايك الفاخر (ستايل مطربين) */
-        .mic-wrapper { margin-bottom: 30px; }
-        .classic-mic {
-            width: 100px; height: 100px; border-radius: 50%;
-            background: linear-gradient(145deg, #222, #000);
-            border: 4px solid var(--main-orange); color: white;
-            font-size: 45px; cursor: pointer; transition: 0.5s;
-            box-shadow: 0 0 15px var(--neon-glow); position: relative;
-        }
-        .classic-mic.active { 
-            animation: pulse-fire 1.5s infinite; background: var(--neon-glow);
-            box-shadow: 0 0 40px var(--neon-glow);
-        }
-        @keyframes pulse-fire { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        /* أيقونة التواصل العائمة */
+        .contact-float { position: fixed; bottom: 30px; right: 30px; background: #25d366; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; color: white; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 5000; }
 
-        /* تنسيق الحقول */
-        .grid-search {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;
-        }
-        select, input {
-            width: 100%; padding: 18px; border-radius: 20px; background: #000;
-            border: 1px solid #333; color: white; font-size: 16px; outline: none; box-sizing: border-box;
-        }
-        input:focus, select:focus { border-color: var(--main-orange); box-shadow: 0 0 10px var(--main-orange); }
+        /* تذييل الصفحة Footer */
+        footer { background: #000; padding: 30px; margin-top: 50px; border-top: 1px solid #1e293b; }
+        .social-links a { color: #888; margin: 0 15px; font-size: 24px; text-decoration: none; transition: 0.3s; }
+        .social-links a:hover { color: var(--main-orange); }
 
-        .btn-launch {
-            grid-column: span 2; background: linear-gradient(90deg, #ff8c00, #ff4500);
-            color: white; border: none; padding: 20px; border-radius: 20px;
-            font-size: 20px; font-weight: bold; cursor: pointer; margin-top: 20px;
-            box-shadow: 0 10px 20px rgba(255, 69, 0, 0.4); transition: 0.3s;
-        }
-        .btn-launch:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255, 69, 0, 0.6); }
-
-        /* نتائج البحث */
-        #resultsArea { margin-top: 30px; text-align: right; }
-        .result-card {
-            background: #121c2c; padding: 20px; border-radius: 20px; margin-bottom: 15px;
-            border-right: 6px solid var(--main-orange); cursor: pointer;
-        }
-
-        @media (max-width: 600px) { .grid-search { grid-template-columns: 1fr; } .btn-launch { grid-column: span 1; } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @media (max-width: 600px) { .grid-search, .feature-box { grid-template-columns: 1fr; } .btn-launch { grid-column: span 1; } }
     </style>
 </head>
 <body>
@@ -83,126 +51,77 @@
 <div class="hero-section">
     <div class="brand-container">
         <h1 class="brand-name">SOFYGRAM</h1>
-        <div class="brand-sub">صوفيگرام العالمية</div>
+        <div class="brand-sub">منصة صوفيگرام العالمية</div>
     </div>
-
-    <p class="promo-text">
-        بصمة رقمية فريدة لإدارة الطوابير والانتظار. <br>
-        الحلول البرمجية الأكثر ابتكاراً في العراق والوطن العربي.
-    </p>
 
     <div class="search-engine">
-        <div class="mic-wrapper">
-            <button id="micBtn" class="classic-mic" onclick="startVoiceRec()">🎙️</button>
-            <p id="micStatus" style="color: var(--main-orange); font-weight: bold; margin-top: 15px;">اضغط للبحث الصوتي الذكي</p>
-        </div>
-
+        <h3 style="color:var(--main-orange)">🔎 ابحث عن نشاطك المفضل</h3>
         <div class="grid-search">
-            <select id="country">
-                <option value="">اختر الدولة</option>
-                <option>العراق</option><option>الإمارات</option><option>السعودية</option><option>الكويت</option>
-                <option>قطر</option><option>عُمان</option><option>الأردن</option><option>مصر</option>
-                <option>تركيا</option><option>إيران</option><option>أوروبا</option><option>أمريكا</option>
-            </select>
-
-            <select id="city">
-                <option value="">المحافظة / المدينة</option>
-                <option>النجف الأشرف</option><option>كربلاء المقدسة</option><option>بغداد</option>
-                <option>البصرة</option><option>بابل</option><option>الأنبار</option><option>أربيل</option>
-                <option>السليمانية</option><option>دهوك</option><option>كركوك</option><option>صلاح الدين</option>
-                <option>ديالى</option><option>واسط</option><option>ذي قار</option><option>ميسان</option>
-                <option>المثنى</option><option>القادسية</option><option>نينوى</option>
-            </select>
-
-            <select id="category">
-                <option value="">نوع النشاط</option>
-                <optgroup label="طبي">
-                    <option>أطباء وعيادات</option><option>صيدليات</option><option>مختبرات</option>
-                </optgroup>
-                <optgroup label="تجاري">
-                    <option>مطاعم وكافيهات</option><option>أسواق ومولات</option><option>حلاقة وتجميل</option>
-                </optgroup>
-                <optgroup label="خدمي">
-                    <option>محاماة</option><option>مكاتب تكسي</option>
-                </optgroup>
-            </select>
-
-            <input type="text" id="manualSearch" placeholder="ابحث باسم العيادة أو النشاط...">
-
-            <button class="btn-launch" onclick="executeGlobalSearch()">ابدأ رحلتك الآن 🚀</button>
+            <select id="country"><option>العراق</option><option>الإمارات</option><option>السعودية</option><option>تركيا</option><option>أوروبا</option></select>
+            <select id="city"><option>النجف الأشرف</option><option>كربلاء المقدسة</option><option>بغداد</option><option>البصرة</option><option>أربيل</option></select>
+            <input type="text" id="manualSearch" placeholder="اكتب اسم العيادة، الحلاق، أو المحل...">
+            <button class="btn-launch" onclick="executeGlobalSearch()">بحث سريع 🚀</button>
         </div>
-
         <div id="resultsArea"></div>
     </div>
+
+    <div class="business-invite">
+        <div class="discount-tag">تخفيض 50% لفترة محدودة</div>
+        <h2 style="color:var(--main-orange)">هل أنت صاحب نشاط تجاري أو طبي؟</h2>
+        <p>انضم الآن إلى المنصة الأسرع نمواً في العالم لتنظيم الحجوزات وتقليل الازدحام في منشأتك.</p>
+        <a href="register2.html" class="btn-register">سجل نشاطك الآن - Register Now</a>
+    </div>
+
+    <div class="about-section">
+        <h3>لماذا صوفيگرام؟</h3>
+        <p>صوفيگرام هو نظام ذكي يعمل على تخفيف الزخم البشري وتنظيم أدوار الانتظار إلكترونياً، مما يمنح العملاء حرية المتابعة من منازلهم.</p>
+        <div class="feature-box">
+            <div class="feature">🔹 <b>للأطباء:</b> تنظيم مراجعين وسهولة الإدارة.</div>
+            <div class="feature">🔹 <b>للحلاقين:</b> لا انتظار في المحل بعد اليوم.</div>
+            <div class="feature">🔹 <b>للمطاعم:</b> إدارة الطاولات والطلبات بذكاء.</div>
+            <div class="feature">🔹 <b>للمشتركين:</b> توفير الوقت والجهد.</div>
+        </div>
+    </div>
 </div>
+
+<div class="contact-float" onclick="alert('اتصل بنا مباشرة: 009647823842020')">
+    <i class="fas fa-phone"></i>
+</div>
+
+<footer>
+    <div class="social-links">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="https://t.me/sofygram"><i class="fab fa-telegram"></i></a>
+    </div>
+    <p style="margin-top:20px; color:#555; font-size:14px;">
+        جميع الحقوق محفوظة لصالح منصة صوفيگرام © 2026<br>
+        All Rights Reserved to <span style="color:var(--main-orange)">sofygram.com</span>
+    </p>
+</footer>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
     import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
-        authDomain: "sofygramclinic.firebaseapp.com",
-        databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
-        projectId: "sofygramclinic",
-        appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // دالة البحث الصوتي المتقدمة
-    window.startVoiceRec = () => {
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'ar-SA';
-        recognition.start();
-        const btn = document.getElementById('micBtn');
-        const status = document.getElementById('micStatus');
-        
-        btn.classList.add('active');
-        status.innerText = "جاري الاستماع لصوتك...";
-
-        recognition.onresult = (event) => {
-            let transcript = event.results[0][0].transcript;
-            transcript = transcript.replace(/[.؟?]/g, ""); // تنظيف النص
-            document.getElementById('manualSearch').value = transcript;
-            btn.classList.remove('active');
-            status.innerText = "تم التقاط: " + transcript;
-            executeGlobalSearch();
-        };
-
-        recognition.onerror = () => {
-            btn.classList.remove('active');
-            status.innerText = "أعد المحاولة مرة أخرى";
-        };
-    };
+    const firebaseConfig = { apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", authDomain: "sofygramclinic.firebaseapp.com", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com", projectId: "sofygramclinic", appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc" };
+    const app = initializeApp(firebaseConfig); const db = getDatabase(app);
 
     window.executeGlobalSearch = async () => {
-        const query = document.getElementById('manualSearch').value.toLowerCase();
-        const city = document.getElementById('city').value;
+        const q = document.getElementById('manualSearch').value.toLowerCase();
         const resDiv = document.getElementById('resultsArea');
-        
-        resDiv.innerHTML = "<p style='text-align:center;'>جاري استدعاء البيانات من السيرفر العالمي...</p>";
-        
+        resDiv.innerHTML = "جاري البحث...";
         const snapshot = await get(ref(db, 'users'));
-        const data = snapshot.val();
-        resDiv.innerHTML = "";
+        const data = snapshot.val(); resDiv.innerHTML = "";
 
         for(let id in data) {
-            const u = data[id];
-            const matchName = !query || (u.name && u.name.toLowerCase().includes(query));
-            const matchCity = !city || (u.city && u.city.includes(city));
-
-            if(matchName && matchCity) {
-                resDiv.innerHTML += `
-                    <div class="result-card" onclick="location.href='view.html?id=${id}'">
-                        <h3 style="color:var(--main-orange); margin:0;">${u.name}</h3>
-                        <p style="font-size:14px; color:#aaa; margin:5px 0;">📍 ${u.city || 'المدينة غير محددة'} - ${u.address || ''}</p>
-                        <p style="font-size:13px; color:#00d2ff;">📱 هاتف: ${u.phone || 'غير متوفر'}</p>
-                    </div>
-                `;
+            if(!q || (data[id].name && data[id].name.toLowerCase().includes(q))) {
+                resDiv.innerHTML += `<div onclick="location.href='view.html?id=${id}'" style="background:#121c2c; padding:15px; border-radius:15px; margin-top:10px; border-right:5px solid var(--main-orange); cursor:pointer; text-align:right;">
+                    <h4 style="margin:0; color:var(--main-orange)">${data[id].name}</h4>
+                    <p style="font-size:12px; color:#888; margin:5px 0;">📍 ${data[id].city || ''} - ${data[id].address || ''}</p>
+                </div>`;
             }
         }
-        if(resDiv.innerHTML === "") resDiv.innerHTML = "<p style='text-align:center; color:red;'>لم يتم العثور على نتائج في هذه المنطقة.</p>";
     };
 </script>
 
