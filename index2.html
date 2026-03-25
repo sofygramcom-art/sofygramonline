@@ -1,106 +1,142 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="main-html">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Online | Global Queue System</title>
+    <title>Sofygram Global Search | صوفيگرام العالمي 🌍</title>
     <style>
-        :root { --main-color: #2ecc71; --bg-color: #000; }
-        body { background: var(--bg-color); color: #fff; font-family: 'Segoe UI', sans-serif; text-align: center; transition: 0.3s; margin: 0; }
-        .lang-btn { position: absolute; top: 20px; left: 20px; background: #222; border: 1px solid var(--main-color); color: var(--main-color); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        body { background-color: #050a14; color: white; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; padding: 20px; }
+        .search-card { background: #0c121d; border-radius: 35px; padding: 30px; max-width: 500px; margin: auto; border: 1px solid #1e293b; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         
-        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
-        h1 { color: var(--main-color); font-size: 3.5rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
-        p { color: #888; font-size: 1.2rem; max-width: 700px; line-height: 1.6; }
-        
-        .search-box { background: #111; padding: 30px; border-radius: 25px; border: 1px solid #333; width: 90%; max-width: 450px; margin-top: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input { width: 85%; padding: 15px; border-radius: 12px; border: 1px solid var(--main-color); background: #000; color: #fff; text-align: center; font-size: 1.2rem; margin-bottom: 20px; }
-        
-        .btn-view { background: var(--main-color); color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 93%; font-size: 1.2rem; transition: 0.3s; }
-        .btn-view:hover { transform: scale(1.05); background: #27ae60; }
-        
-        .links { margin-top: 30px; }
-        .btn-reg { color: #f39c12; text-decoration: none; font-weight: bold; margin: 0 15px; border-bottom: 1px solid transparent; }
-        .btn-reg:hover { border-bottom: 1px solid #f39c12; }
-        
-        .footer { position: absolute; bottom: 20px; color: #444; font-size: 0.8rem; width: 100%; }
-        
-        /* التنسيق للغة الإنجليزية */
-        [lang="en"] { direction: ltr; text-align: center; }
+        /* تصميم المايك الناري */
+        .mic-container { margin-bottom: 25px; position: relative; display: inline-block; }
+        .mic-btn { 
+            width: 80px; height: 80px; border-radius: 50%; background: #00d2ff; border: none; 
+            font-size: 35px; cursor: pointer; transition: 0.4s; position: relative; z-index: 2;
+        }
+        .mic-btn.active { 
+            background: #ff4500; 
+            box-shadow: 0 0 20px #ff4500, 0 0 40px #ff4500; 
+            animation: fire-glow 1s infinite alternate;
+        }
+        @keyframes fire-glow { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+        /* الحقول المتطورة */
+        select, input { 
+            width: 95%; padding: 15px; margin: 8px 0; border-radius: 15px; 
+            background: #000; border: 1px solid #333; color: #fff; font-size: 16px; outline: none;
+        }
+        .btn-search { 
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5); color: white; 
+            border: none; padding: 18px; border-radius: 18px; width: 100%; 
+            font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 18px;
+        }
+        .result-item { 
+            background: #121212; border-right: 5px solid #00d2ff; padding: 15px; 
+            margin: 10px 0; border-radius: 15px; text-align: right; cursor: pointer;
+        }
     </style>
 </head>
-<body id="body-content">
+<body>
 
-    <button class="lang-btn" onclick="toggleLang()" id="lang-btn">English</button>
+    <div class="search-card">
+        <h2 style="color:#00d2ff;">صوفيگرام أونلاين 🛰️</h2>
+        <p style="font-size: 12px; color: #888;">النظام العالمي الأول لإدارة طوابير الانتظار</p>
 
-    <div class="hero">
-        <h1 id="title">صوفيگرام أونلاين</h1>
-        <p id="desc">النظام العالمي الأول لإدارة طوابير الانتظار والمناداة الذكية.</p>
-
-        <div class="search-box">
-            <h3 id="search-head">🔍 ابحث عن دورك الآن</h3>
-            <input type="text" id="search-id" placeholder="ادخل المعرف (Clinic ID)">
-            <button class="btn-view" id="view-btn" onclick="goToView()">مشاهدة الانتظار</button>
+        <div class="mic-container">
+            <button id="micBtn" class="mic-btn" onclick="startAdvancedVoice()">🎙️</button>
+            <p id="micStatus" style="font-size: 12px; color: #00d2ff; margin-top: 10px;">اضغط للتحدث (لهجة عراقية)</p>
         </div>
 
-        <div class="links">
-            <a href="register.html" class="btn-reg" id="reg-link">سجل عملك معنا (اشتراك عالمي)</a>
+        <div id="advancedForm">
+            <input type="text" id="manualInput" placeholder="اكتب اسم النشاط هنا...">
+            
+            <select id="provinceSelect">
+                <option value="">كل المحافظات</option>
+                <option>بغداد</option><option>النجف</option><option>كربلاء</option><option>البصرة</option>
+                <option>بابل</option><option>الأنبار</option><option>أربيل</option><option>السليمانية</option>
+                <option>دهوك</option><option>ديالى</option><option>ذي قار</option><option>صلاح الدين</option>
+                <option>كركوك</option><option>ميسان</option><option>المثنى</option><option>نينوى</option>
+                <option>القادسية</option><option>واسط</option>
+            </select>
+
+            <select id="categorySelect">
+                <option value="">كل الأنشطة</option>
+                <optgroup label="طبي">
+                    <option>أطباء وعيادات</option><option>صيدليات</option><option>مختبرات</option>
+                </optgroup>
+                <optgroup label="تجاري">
+                    <option>مطاعم وكافيهات</option><option>أسواق</option><option>تجميل وحلاقة</option>
+                </optgroup>
+            </select>
+
+            <button class="btn-search" onclick="runFinalSearch()">تطبيق الفلترة 🔎</button>
         </div>
-        
-        <div class="footer">
-            &copy; 2026 Sofygram Online Global System. All Rights Reserved.
-        </div>
+
+        <div id="results" style="margin-top:20px;"></div>
     </div>
 
-    <script>
-        let currentLang = 'ar';
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
-        const content = {
-            ar: {
-                title: "صوفيگرام أونلاين",
-                desc: "النظام العالمي الأول لإدارة طوابير الانتظار والمناداة الذكية.",
-                searchHead: "🔍 ابحث عن دورك الآن",
-                placeholder: "ادخل المعرف (ID)",
-                viewBtn: "مشاهدة الانتظار",
-                regLink: "سجل عملك معنا (اشتراك عالمي)",
-                btnText: "English"
-            },
-            en: {
-                title: "SOFYGRAM ONLINE",
-                desc: "The premier global system for intelligent queue management and calling.",
-                searchHead: "🔍 Search Your Turn",
-                placeholder: "Enter ID (e.g. alaa_clinic)",
-                viewBtn: "View Live Status",
-                regLink: "Register Your Business (Global Access)",
-                btnText: "العربية"
-            }
+        const firebaseConfig = { apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", authDomain: "sofygramclinic.firebaseapp.com", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com", projectId: "sofygramclinic", appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc" };
+        const app = initializeApp(firebaseConfig); const db = getDatabase(app);
+
+        // وظيفة الصوت الذكية (تنظيف النص + إطار ناري)
+        window.startAdvancedVoice = () => {
+            const mic = document.getElementById('micBtn');
+            const status = document.getElementById('micStatus');
+            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            
+            rec.lang = 'ar-IQ'; 
+            rec.start();
+            mic.classList.add('active');
+            status.innerText = "جاري الاستماع... (حجي عراقي)";
+
+            rec.onresult = (e) => {
+                let text = e.results[0][0].transcript;
+                // تنظيف النص من النقاط وعلامات الاستفهام
+                text = text.replace(/[.؟?]/g, ""); 
+                document.getElementById('manualInput').value = text;
+                mic.classList.remove('active');
+                status.innerText = "تم الالتقاط: " + text;
+                runFinalSearch(); // ابحث فوراً
+            };
+
+            rec.onerror = () => {
+                mic.classList.remove('active');
+                status.innerText = "أعد المحاولة..";
+            };
         };
 
-        function toggleLang() {
-            currentLang = currentLang === 'ar' ? 'en' : 'ar';
-            const html = document.getElementById('main-html');
-            const data = content[currentLang];
+        window.runFinalSearch = async () => {
+            const nameQ = document.getElementById('manualInput').value.toLowerCase();
+            const provQ = document.getElementById('provinceSelect').value;
+            const catQ = document.getElementById('categorySelect').value;
+            const resDiv = document.getElementById('results');
+            
+            resDiv.innerHTML = "جاري البحث عن العيادات...";
+            const snap = await get(ref(db, 'users'));
+            const data = snap.val();
+            resDiv.innerHTML = "";
 
-            html.setAttribute('lang', currentLang);
-            html.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
-
-            document.getElementById('title').innerText = data.title;
-            document.getElementById('desc').innerText = data.desc;
-            document.getElementById('search-head').innerText = data.searchHead;
-            document.getElementById('search-id').setAttribute('placeholder', data.placeholder);
-            document.getElementById('view-btn').innerText = data.viewBtn;
-            document.getElementById('reg-link').innerText = data.regLink;
-            document.getElementById('lang-btn').innerText = data.btnText;
-        }
-
-        function goToView() {
-            const id = document.getElementById('search-id').value.trim().toLowerCase();
-            if(id) {
-                window.location.href = "view.html?id=" + id;
-            } else {
-                alert(currentLang === 'ar' ? "يرجى كتابة المعرف!" : "Please enter an ID!");
+            for(let key in data) {
+                const u = data[key];
+                const matchName = !nameQ || (u.name && u.name.toLowerCase().includes(nameQ));
+                const matchProv = !provQ || (u.city && u.city.includes(provQ));
+                // هنا البحث مرن، إذا لقى النشاط بالوصف أو الاسم
+                if(matchName && matchProv) {
+                    resDiv.innerHTML += `
+                        <div class="result-item" onclick="location.href='view.html?id=${key}'">
+                            <h3 style="margin:0; color:#00d2ff;">⭐ ${u.name}</h3>
+                            <p style="margin:5px 0; font-size:12px; color:#aaa;">📍 ${u.city || 'النجف'} - ${u.address || 'حي سومر'}</p>
+                            <p style="margin:0; font-size:12px; color:#00d2ff;">📞 ${u.phone || '0780000000'}</p>
+                        </div>`;
+                }
             }
-        }
+            if(resDiv.innerHTML === "") resDiv.innerHTML = "لم يتم العثور على نتائج تطابق هذا البحث.";
+        };
     </script>
 </body>
 </html>
