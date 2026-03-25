@@ -1,19 +1,21 @@
-<div class="search-section" style="direction: rtl; text-align: center; padding: 20px;">
-    <input type="text" id="searchInput" placeholder="ابحث عن دكتور، صيدلية، أو محل..." 
-           style="width: 80%; padding: 15px; border-radius: 15px; border: 2px solid #ff4500; background: #000; color: #fff;">
-    <button onclick="performGlobalSearch()" 
-            style="margin-top: 10px; padding: 10px 30px; background: #ff4500; color: white; border: none; border-radius: 10px; cursor: pointer;">
+<div id="searchContainer" style="direction: rtl; text-align: center; padding: 20px; background: #050a14;">
+    <input type="text" id="searchInput" placeholder="ابحث عن (أمل، كوخ، زيد، باسم)..." 
+           style="width: 85%; padding: 15px; border-radius: 15px; border: 2px solid #ff4500; background: #000; color: #fff; font-size: 16px; outline: none;">
+    
+    <button onclick="runSearch()" 
+            style="margin-top: 15px; width: 90%; padding: 15px; background: #ff4500; color: white; border: none; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 17px;">
         بحث الآن 🔎
     </button>
 
-    <div id="searchResults" style="margin-top: 20px;"></div>
+    <div id="searchArea" style="margin-top: 20px;"></div>
 </div>
 
 <script type="module">
+    // استيراد مكتبات الفايربيس
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
     import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
-    // إعدادات الفايربيس مالتك (تأكد منها)
+    // إعدادات القاعدة الخاصة بك
     const firebaseConfig = {
         apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
         authDomain: "sofygramclinic.firebaseapp.com",
@@ -24,54 +26,48 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    window.performGlobalSearch = async () => {
-        const query = document.getElementById('searchInput').value.trim().toLowerCase();
-        const resultsDiv = document.getElementById('searchResults');
-        resultsDiv.innerHTML = "<p>جاري البحث عن النشاط...</p>";
+    window.runSearch = async () => {
+        const word = document.getElementById('searchInput').value.trim().toLowerCase();
+        const display = document.getElementById('searchArea');
+        display.innerHTML = "<p style='color: #aaa;'>جاري البحث...</p>";
 
-        if (!query) {
-            resultsDiv.innerHTML = "<p style='color: yellow;'>يرجى كتابة اسم للبحث</p>";
+        if (!word) {
+            display.innerHTML = "<p style='color: #ff4500;'>يرجى كتابة اسم للبحث</p>";
             return;
         }
 
         try {
-            const snapshot = await get(ref(db, 'users'));
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                let foundAny = false;
-                resultsDiv.innerHTML = ""; // تصفير النتائج القديمة
+            const snap = await get(ref(db, 'users'));
+            if (snap.exists()) {
+                const users = snap.val();
+                display.innerHTML = ""; // تصفير الشاشة
+                let count = 0;
 
-                for (let userId in data) {
-                    const user = data[userId];
-                    // البحث بالاسم (يتأكد إذا الاسم يحتوي على الكلمة المكتوبة)
-                    if (user.name && user.name.toLowerCase().includes(query)) {
-                        foundAny = true;
+                for (let key in users) {
+                    const u = users[key];
+                    // فحص إذا كان الاسم يحتوي على كلمة البحث
+                    if (u.name && u.name.toLowerCase().includes(word)) {
+                        count++;
                         
-                        // إنشاء كارت النتيجة مع الباركود ورابط الفيو
-                        resultsDiv.innerHTML += `
-                            <div class="result-card" onclick="location.href='view.html?id=${userId}'" 
-                                 style="background: #121212; border: 1px solid #333; padding: 15px; border-radius: 15px; margin-bottom: 10px; cursor: pointer; border-right: 5px solid #ff4500;">
-                                <h3 style="color: #ff4500; margin: 0;">${user.name}</h3>
-                                <p style="font-size: 12px; color: #aaa; margin: 5px 0;">الآيدي: ${userId}</p>
-                                <div style="margin-top: 10px;">
-                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://sofygram.com/view.html?id=${userId}" 
-                                         alt="QR Code" style="border: 2px solid #fff; border-radius: 5px;">
-                                </div>
-                                <p style="color: #00d2ff; font-size: 13px;">اضغط للمتابعة المباشرة 🛰️</p>
+                        // تصليح الرابط: encodeURIComponent يحول الفراغات لكود يفهمه المتصفح
+                        const link = "view.html?id=" + encodeURIComponent(key);
+                        
+                        display.innerHTML += `
+                            <div onclick="window.location.href='${link}'" 
+                                 style="background: #121212; border: 1px solid #333; padding: 15px; border-radius: 20px; margin-bottom: 12px; cursor: pointer; border-right: 6px solid #ff4500; text-align: right; transition: 0.3s;">
+                                <h3 style="color: #ff4500; margin: 0; font-size: 18px;">${u.name}</h3>
+                                <p style="color: #00d2ff; font-size: 13px; margin: 8px 0 0 0;">🛰️ اضغط لمتابعة السرا المباشر</p>
                             </div>
                         `;
                     }
                 }
 
-                if (!foundAny) {
-                    resultsDiv.innerHTML = "<p>عذراً، لم يتم العثور على نشاط بهذا الاسم</p>";
+                if (count === 0) {
+                    display.innerHTML = "<p style='color: yellow;'>لم يتم العثور على نتيجة بهذا الاسم</p>";
                 }
-            } else {
-                resultsDiv.innerHTML = "<p>قاعدة البيانات فارغة حالياً</p>";
             }
-        } catch (error) {
-            console.error(error);
-            resultsDiv.innerHTML = "<p>حدث خطأ في الاتصال بالقاعدة</p>";
+        } catch (e) {
+            display.innerHTML = "<p style='color: red;'>خطأ في الاتصال بالقاعدة</p>";
         }
     };
 </script>
