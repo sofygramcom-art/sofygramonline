@@ -1,182 +1,106 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="main-html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram | صوفيگرام العراق 🇮🇶</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Sofygram Online | Global Queue System</title>
     <style>
-        :root { --glow: #00d2ff; --bg: #050a14; --card: #121212; --fire: #ff4500; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; text-align: center; }
+        :root { --main-color: #2ecc71; --bg-color: #000; }
+        body { background: var(--bg-color); color: #fff; font-family: 'Segoe UI', sans-serif; text-align: center; transition: 0.3s; margin: 0; }
+        .lang-btn { position: absolute; top: 20px; left: 20px; background: #222; border: 1px solid var(--main-color); color: var(--main-color); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         
-        /* هيدر اللوغو الناري */
-        header { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 25px; }
-        .logo-wrap { position: relative; display: inline-block; padding: 20px; }
-        .logo-text { font-size: 50px; font-weight: 900; color: white; position: relative; z-index: 5; text-shadow: 0 0 10px rgba(255,255,255,0.5); margin: 0; letter-spacing: 2px; }
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        h1 { color: var(--main-color); font-size: 3.5rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        p { color: #888; font-size: 1.2rem; max-width: 700px; line-height: 1.6; }
         
-        .fire-ring { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 20px; 
-            border: 4px solid var(--fire); box-shadow: 0 0 25px var(--fire), inset 0 0 20px var(--fire);
-            animation: flame 1.2s infinite alternate; z-index: 1; }
-        @keyframes flame { from { box-shadow: 0 0 15px var(--fire); transform: scale(1); } to { box-shadow: 0 0 40px #ff8c00; transform: scale(1.05); } }
-
-        .btn-reg { background: linear-gradient(45deg, #ff4500, #ff8c00); color: white; text-decoration: none; padding: 15px 35px; border-radius: 20px; font-weight: bold; font-size: 18px; box-shadow: 0 5px 20px rgba(255, 69, 0, 0.4); transition: 0.3s; }
-        .btn-reg:hover { transform: scale(1.05); }
-
-        /* منطقة البحث */
-        .search-container { padding: 20px; }
-        .main-search { max-width: 750px; margin: 0 auto 30px auto; position: relative; }
-        .main-search input { width: 100%; padding: 20px 25px 20px 70px; border-radius: 30px; border: 2px solid #333; background: #000; color: white; font-size: 20px; outline: none; text-align: right; }
-        .main-search i { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); color: var(--glow); font-size: 28px; cursor: pointer; }
-
-        .mic-btn { width: 95px; height: 95px; background: var(--glow); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 40px; color: #000; cursor: pointer; border: 10px solid rgba(0,210,255,0.1); }
-        .mic-btn.listening { background: #ff4757; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
-        /* البحث الرباعي الشامل */
-        .filter-grid { max-width: 1100px; margin: 40px auto; background: var(--card); padding: 30px; border-radius: 35px; border: 1px solid #222; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
-        select, .area-input { padding: 15px; border-radius: 15px; border: 1px solid #333; background: #000; color: white; text-align: right; outline: none; font-size: 16px; width: 100%; box-sizing: border-box; }
-
-        /* نتائج البحث */
-        .results-grid { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 25px; max-width: 1300px; margin: auto; }
-        .card { background: var(--card); border-radius: 30px; padding: 30px; border: 1px solid #222; text-align: right; transition: 0.3s; cursor: pointer; position: relative; }
-        .card:hover { border-color: var(--glow); transform: translateY(-8px); box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
-        .status-badge { position: absolute; top: 20px; left: 20px; font-size: 13px; padding: 6px 14px; border-radius: 12px; font-weight: bold; border: 1px solid currentColor; }
-        .phone-txt { color: var(--glow); font-size: 16px; font-family: monospace; margin-top: 15px; display: block; }
+        .search-box { background: #111; padding: 30px; border-radius: 25px; border: 1px solid #333; width: 90%; max-width: 450px; margin-top: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input { width: 85%; padding: 15px; border-radius: 12px; border: 1px solid var(--main-color); background: #000; color: #fff; text-align: center; font-size: 1.2rem; margin-bottom: 20px; }
+        
+        .btn-view { background: var(--main-color); color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 93%; font-size: 1.2rem; transition: 0.3s; }
+        .btn-view:hover { transform: scale(1.05); background: #27ae60; }
+        
+        .links { margin-top: 30px; }
+        .btn-reg { color: #f39c12; text-decoration: none; font-weight: bold; margin: 0 15px; border-bottom: 1px solid transparent; }
+        .btn-reg:hover { border-bottom: 1px solid #f39c12; }
+        
+        .footer { position: absolute; bottom: 20px; color: #444; font-size: 0.8rem; width: 100%; }
+        
+        /* التنسيق للغة الإنجليزية */
+        [lang="en"] { direction: ltr; text-align: center; }
     </style>
 </head>
-<body>
+<body id="body-content">
 
-    <header>
-        <div class="logo-wrap">
-            <div class="fire-ring"></div>
-            <h1 class="logo-text">صوفيگرام</h1>
-        </div>
-        <a href="register2.html" class="btn-reg">تسجيل نشاط جديد 🚀</a>
-    </header>
+    <button class="lang-btn" onclick="toggleLang()" id="lang-btn">English</button>
 
-    <div class="search-container">
-        <div class="main-search">
-            <input type="text" id="nameInput" placeholder="ابحث باسم الطبيب، الصيدلية، أو المحل..">
-            <i class="fas fa-search" onclick="doSearchName()"></i>
+    <div class="hero">
+        <h1 id="title">صوفيگرام أونلاين</h1>
+        <p id="desc">النظام العالمي الأول لإدارة طوابير الانتظار والمناداة الذكية.</p>
+
+        <div class="search-box">
+            <h3 id="search-head">🔍 ابحث عن دورك الآن</h3>
+            <input type="text" id="search-id" placeholder="ادخل المعرف (Clinic ID)">
+            <button class="btn-view" id="view-btn" onclick="goToView()">مشاهدة الانتظار</button>
         </div>
 
-        <div class="mic-btn" id="micBtn" onclick="startVoice()">
-            <i class="fas fa-microphone"></i>
+        <div class="links">
+            <a href="register.html" class="btn-reg" id="reg-link">سجل عملك معنا (اشتراك عالمي)</a>
         </div>
-        <p id="micMsg" style="color:var(--glow); font-weight:bold; margin-top:15px;">اضغط للتحدث بصوتك</p>
-
-        <div class="filter-grid">
-            <select id="typeInp">
-                <option value="">كل الأنشطة</option>
-                <optgroup label="صحة وطب">
-                    <option value="طبيب / عيادة">أطباء وعيادات</option>
-                    <option value="صيدلية">صيدليات</option>
-                    <option value="مختبر طبي">مختبرات</option>
-                </optgroup>
-                <optgroup label="تجارة وتسوق">
-                    <option value="أسواق / سوبر ماركت">أسواق ومولات</option>
-                    <option value="صائغ ذهب / مجوهرات">صياغ ذهب</option>
-                    <option value="مطعم / كافيه">مطاعم وكافيهات</option>
-                </optgroup>
-                <optgroup label="خدمات أخرى">
-                    <option value="شركة برمجيات">شركات تقنية</option>
-                    <option value="مركز تجميل / صالون">حلاقة وتجميل</option>
-                </optgroup>
-            </select>
-
-            <select id="cityInp">
-                <option value="">كل العراق (18 محافظة)</option>
-                <option value="بغداد">بغداد</option><option value="النجف">النجف</option><option value="كربلاء">كربلاء</option>
-                <option value="البصرة">البصرة</option><option value="بابل">بابل</option><option value="الأنبار">الأنبار</option>
-                <option value="أربيل">أربيل</option><option value="ذي قار">ذي قار</option><option value="نينوى">نينوى</option>
-                <option value="ميسان">ميسان</option><option value="المثنى">المثنى</option><option value="القادسية">القادسية</option>
-                <option value="واسط">واسط</option><option value="صلاح الدين">صلاح الدين</option><option value="ديالى">ديالى</option>
-                <option value="كركوك">كركوك</option><option value="دهوك">دهوك</option><option value="السليمانية">السليمانية</option>
-            </select>
-
-            <input type="text" id="areaInp" class="area-input" placeholder="اكتب القضاء أو الحي يدوياً">
-            <button onclick="doSearchFull()" style="grid-column: 1/-1; background: var(--glow); color: black; border:none; padding:15px; border-radius:18px; font-weight:bold; cursor:pointer; font-size:18px;">بحث متقدم 🔍</button>
+        
+        <div class="footer">
+            &copy; 2026 Sofygram Online Global System. All Rights Reserved.
         </div>
     </div>
 
-    <div class="results-grid" id="resGrid"></div>
+    <script>
+        let currentLang = 'ar';
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
-            authDomain: "sofygramclinic.firebaseapp.com",
-            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com",
-            projectId: "sofygramclinic",
-            appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc"
+        const content = {
+            ar: {
+                title: "صوفيگرام أونلاين",
+                desc: "النظام العالمي الأول لإدارة طوابير الانتظار والمناداة الذكية.",
+                searchHead: "🔍 ابحث عن دورك الآن",
+                placeholder: "ادخل المعرف (ID)",
+                viewBtn: "مشاهدة الانتظار",
+                regLink: "سجل عملك معنا (اشتراك عالمي)",
+                btnText: "English"
+            },
+            en: {
+                title: "SOFYGRAM ONLINE",
+                desc: "The premier global system for intelligent queue management and calling.",
+                searchHead: "🔍 Search Your Turn",
+                placeholder: "Enter ID (e.g. alaa_clinic)",
+                viewBtn: "View Live Status",
+                regLink: "Register Your Business (Global Access)",
+                btnText: "العربية"
+            }
         };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
 
-        function draw(list) {
-            const container = document.getElementById('resGrid');
-            container.innerHTML = list.length ? "" : "<p style='color:#666;'>لم نجد نتائج تطابق بحثك..</p>";
-            list.forEach(u => {
-                // تصحيح فحص الحالة (Boolean أو String)
-                const open = (u.isOpen === true || u.isOpen === "true");
-                container.innerHTML += `
-                    <div class="card" onclick="window.location.href='view.html?id=${u.id}'">
-                        <span class="status-badge" style="color:${open?'#2ecc71':'#e74c3c'}">${open?'مفتوح':'مغلق'}</span>
-                        <h2 style="margin:0; color:var(--glow);">${u.name}</h2>
-                        <p style="margin:8px 0; font-size:16px;">${u.type}</p>
-                        <p style="margin:0; font-size:14px; color:#888;">📍 العراق - ${u.city} (${u.neighborhood || '---'})</p>
-                        ${u.phone ? `<span class="phone-txt"><i class="fas fa-phone-alt"></i> ${u.phone}</span>` : ''}
-                    </div>`;
-            });
+        function toggleLang() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            const html = document.getElementById('main-html');
+            const data = content[currentLang];
+
+            html.setAttribute('lang', currentLang);
+            html.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+
+            document.getElementById('title').innerText = data.title;
+            document.getElementById('desc').innerText = data.desc;
+            document.getElementById('search-head').innerText = data.searchHead;
+            document.getElementById('search-id').setAttribute('placeholder', data.placeholder);
+            document.getElementById('view-btn').innerText = data.viewBtn;
+            document.getElementById('reg-link').innerText = data.regLink;
+            document.getElementById('lang-btn').innerText = data.btnText;
         }
 
-        window.doSearchName = () => {
-            const q = document.getElementById('nameInput').value.toLowerCase();
-            onValue(ref(db, 'users'), (s) => {
-                const d = s.val(); let m = [];
-                for(let id in d) { if(d[id].active && d[id].name.toLowerCase().includes(q)) m.push({id, ...d[id]}); }
-                draw(m);
-            }, {onlyOnce: true});
-        };
-
-        window.doSearchFull = () => {
-            const t = document.getElementById('typeInp').value;
-            const c = document.getElementById('cityInp').value;
-            const a = document.getElementById('areaInp').value.toLowerCase();
-            onValue(ref(db, 'users'), (s) => {
-                const d = s.val(); let m = [];
-                for(let id in d) {
-                    const u = d[id]; if(!u.active) continue;
-                    let p = true;
-                    if(t && u.type !== t) p = false;
-                    if(c && u.city !== c) p = false;
-                    if(a && !u.neighborhood?.toLowerCase().includes(a)) p = false;
-                    if(p) m.push({id, ...u});
-                }
-                draw(m);
-            }, {onlyOnce: true});
-        };
-
-        window.startVoice = () => {
-            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            rec.lang = 'ar-IQ';
-            rec.onstart = () => document.getElementById('micBtn').classList.add('listening');
-            rec.onresult = (e) => {
-                const t = e.results[0][0].transcript.toLowerCase();
-                document.getElementById('micBtn').classList.remove('listening');
-                onValue(ref(db, 'users'), (s) => {
-                    const d = s.val(); let m = [];
-                    for(let id in d) {
-                        const target = `${d[id].name} ${d[id].city} ${d[id].neighborhood} ${d[id].type}`.toLowerCase();
-                        if(d[id].active && target.includes(t)) m.push({id, ...d[id]});
-                    }
-                    draw(m);
-                }, {onlyOnce: true});
-            };
-            rec.start();
-        };
+        function goToView() {
+            const id = document.getElementById('search-id').value.trim().toLowerCase();
+            if(id) {
+                window.location.href = "view.html?id=" + id;
+            } else {
+                alert(currentLang === 'ar' ? "يرجى كتابة المعرف!" : "Please enter an ID!");
+            }
+        }
     </script>
 </body>
 </html>
