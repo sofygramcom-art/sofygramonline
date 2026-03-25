@@ -6,118 +6,106 @@
     <title>Sofygram Global | صوفيگرام العالمية 🌍</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --gold: #ffd700; --neon-orange: #ff4500; --dark-bg: #050a14; }
-        body { background-color: var(--dark-bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; text-align: center; overflow-x: hidden; }
+        :root { --gold: #ffd700; --neon: #ff4500; --dark: #050a14; }
+        body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; text-align: center; overflow-x: hidden; }
 
-        /* الهيدر واللوغو الذهبي */
-        .hero-section { background: radial-gradient(circle at center, #1a2a44 0%, var(--dark-bg) 100%); padding: 40px 20px; }
-        .logo-box img { width: 200px; filter: drop-shadow(0 0 15px var(--gold)); margin-bottom: 10px; }
-        .brand-title { font-size: 60px; font-weight: 900; color: white; margin: 0; text-shadow: 0 0 30px var(--gold); letter-spacing: 3px; }
-        .brand-tagline { color: var(--gold); font-size: 18px; letter-spacing: 5px; font-weight: bold; }
+        /* الهيدر */
+        .hero { background: radial-gradient(circle at center, #1a2a44 0%, var(--dark) 100%); padding: 40px 20px; }
+        .logo-box img { width: 180px; filter: drop-shadow(0 0 15px var(--gold)); }
+        .brand-title { font-size: 55px; font-weight: 900; text-shadow: 0 0 30px var(--gold); margin: 10px 0; }
 
-        /* محرك البحث (المايك الناري) */
-        .search-container { 
-            background: rgba(12, 18, 29, 0.95); border-radius: 45px; padding: 40px; 
-            max-width: 900px; margin: 30px auto; border: 1px solid #1e293b;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.9); backdrop-filter: blur(15px);
+        /* المايك الناري */
+        .search-engine { 
+            background: rgba(12, 18, 29, 0.95); border-radius: 45px; padding: 35px; 
+            max-width: 850px; margin: 30px auto; border: 1px solid #1e293b;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8);
         }
-        .mic-box { margin-bottom: 30px; position: relative; }
         .mic-btn {
-            width: 110px; height: 110px; border-radius: 50%;
-            background: linear-gradient(145deg, #111, #000);
-            border: 4px solid var(--neon-orange); color: white;
-            font-size: 50px; cursor: pointer; transition: 0.4s; box-shadow: 0 0 20px var(--neon-orange);
+            width: 100px; height: 100px; border-radius: 50%;
+            background: #000; border: 4px solid var(--neon); color: white;
+            font-size: 45px; cursor: pointer; transition: 0.4s; box-shadow: 0 0 20px var(--neon);
         }
-        .mic-btn.active { animation: pulse-fire 1.2s infinite; background: var(--neon-orange); box-shadow: 0 0 60px var(--neon-orange); }
+        .mic-btn.active { animation: pulse-fire 1.2s infinite; background: var(--neon); box-shadow: 0 0 50px var(--neon); }
         @keyframes pulse-fire { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        /* شبكة الفلترة (4 حقول) */
-        .grid-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; }
+        /* الحقول الأربعة */
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; }
         select, input { 
-            width: 100%; padding: 18px; border-radius: 20px; background: #000; 
+            width: 100%; padding: 18px; border-radius: 18px; background: #000; 
             border: 1px solid #333; color: white; font-size: 16px; outline: none; box-sizing: border-box;
         }
-        .btn-search { 
-            grid-column: span 2; background: linear-gradient(90deg, #ff8c00, #ff4500); 
-            color: white; border: none; padding: 22px; border-radius: 20px; 
-            font-size: 22px; font-weight: bold; cursor: pointer; margin-top: 20px; box-shadow: 0 10px 30px rgba(255, 69, 0, 0.5);
-        }
 
-        /* الملاحظات الذهبية الأربعة */
-        .golden-notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; max-width: 900px; margin: 40px auto; padding: 0 20px; }
-        .note-card { background: rgba(255, 215, 0, 0.05); border: 1px solid var(--gold); padding: 20px; border-radius: 20px; font-size: 14px; color: var(--gold); font-weight: bold; }
+        /* الملاحظات الذهبية */
+        .golden-notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; max-width: 850px; margin: 30px auto; padding: 0 20px; }
+        .note { background: rgba(255, 215, 0, 0.05); border: 1px solid var(--gold); padding: 15px; border-radius: 15px; font-size: 13px; color: var(--gold); font-weight: bold; }
 
-        /* نتائج البحث (الشكل المطلوب) */
-        #results { margin-top: 40px; text-align: right; max-width: 850px; margin-left: auto; margin-right: auto; }
-        .res-card {
-            background: #121c2c; padding: 25px; border-radius: 25px; margin-bottom: 15px;
-            border-right: 8px solid var(--gold); cursor: pointer; transition: 0.3s;
-        }
-        .res-card h3 { color: var(--gold); margin: 0 0 10px 0; font-size: 24px; }
-        .res-card p { color: #00d2ff; margin: 5px 0; font-size: 15px; display: flex; align-items: center; gap: 10px; }
+        #results { margin-top: 30px; text-align: right; max-width: 800px; margin: auto; }
+        .res-card { background: #121c2c; padding: 20px; border-radius: 20px; margin-bottom: 12px; border-right: 6px solid var(--gold); cursor: pointer; }
 
-        /* تذييل الصفحة والسوشيال */
-        footer { background: #000; padding: 50px; margin-top: 60px; border-top: 2px solid #1e293b; }
-        .social-icons a { color: #999; margin: 0 20px; font-size: 35px; transition: 0.3s; }
-        .social-icons a:hover { color: var(--gold); transform: scale(1.2); }
+        footer { background: #000; padding: 40px; border-top: 1px solid #1e293b; margin-top: 50px; }
+        .social a { color: #888; margin: 0 15px; font-size: 30px; transition: 0.3s; }
+        .social a:hover { color: var(--gold); }
     </style>
 </head>
-<body>
+<body onclick="playWelcome()">
 
-<div class="hero-section">
-    <div class="logo-box"><img src="logo.png" alt="Sofygram"></div>
+<div class="hero">
+    <div class="logo-box"><img src="logo.png"></div>
     <h1 class="brand-title">SOFYGRAM</h1>
-    <div class="brand-tagline">المنصة العالمية لإدارة الانتظار الذكي</div>
+    <div style="color:var(--gold); font-weight:bold; letter-spacing:3px;">صوفيگرام العالمية</div>
 
-    <div class="search-container">
+    <div class="search-engine">
         <div class="mic-box">
             <button id="micBtn" class="mic-btn" onclick="startSofyVoice()">🎙️</button>
-            <p id="micStatus" style="color: var(--gold); margin-top: 15px; font-weight: bold;">اضغط للتحدث (عراقي / عربي)</p>
+            <p id="micStatus" style="color: var(--gold); margin-top: 10px; font-weight: bold;">اضغط للتحدث</p>
         </div>
 
-        <div class="grid-filters">
+        <div class="grid-inputs">
             <select id="country">
                 <option value="">اختر الدولة</option>
-                <option>العراق</option><option>الإمارات</option><option>السعودية</option><option>الكويت</option><option>قطر</option>
-                <option>الأردن</option><option>تركيا</option><option>إيران</option><option>أوروبا</option><option>أمريكا</option><option>غير ذلك</option>
+                <option>العراق</option><option>الإمارات</option><option>السعودية</option><option>الكويت</option>
+                <option>قطر</option><option>عُمان</option><option>الأردن</option><option>مصر</option>
+                <option>تركيا</option><option>إيران</option><option>أوروبا</option><option>أمريكا</option><option>غير ذلك</option>
             </select>
             <select id="city">
                 <option value="">المحافظة / المدينة</option>
-                <option>النجف</option><option>كربلاء</option><option>بغداد</option><option>البصرة</option><option>بابل</option>
-                <option>أربيل</option><option>السليمانية</option><option>نينوى</option><option>ذي قار</option><option>غير ذلك</option>
+                <option>النجف</option><option>كربلاء</option><option>بغداد</option><option>البصرة</option>
+                <option>بابل</option><option>الأنبار</option><option>أربيل</option><option>السليمانية</option>
+                <option>دهوك</option><option>ديالى</option><option>ذي قار</option><option>صلاح الدين</option>
+                <option>كركوك</option><option>ميسان</option><option>المثنى</option><option>نينوى</option>
+                <option>القادسية</option><option>واسط</option><option>غير ذلك</option>
             </select>
             <select id="category">
                 <option value="">نوع النشاط</option>
-                <option>أطباء وعيادات</option><option>صيدليات</option><option>مطاعم</option><option>حلاقة</option>
-                <option>محاماة</option><option>تكسي</option><option>صيانة</option><option>غير ذلك</option>
+                <option>أطباء وعيادات</option><option>صيدليات</option><option>مختبرات</option>
+                <option>مطاعم</option><option>كافيهات</option><option>حلاقة رجالية</option>
+                <option>صالون نسائي</option><option>مراكز تجميل</option><option>محاماة</option>
+                <option>تكسي</option><option>أسواق</option><option>مولات</option>
+                <option>صيانة موبايل</option><option>كهربائي</option><option>نجارة</option>
+                <option>حدادة</option><option>خياطة</option><option>معارض سيارات</option>
+                <option>فنادق</option><option>قاعات مناسبات</option><option>غير ذلك</option>
             </select>
             <input type="text" id="manualSearch" placeholder="ابحث باسم النشاط...">
-            <button class="btn-search" onclick="runSofySearch()">انطلاق 🚀</button>
         </div>
+        <button onclick="runSofySearch()" style="width:100%; padding:18px; margin-top:15px; background:var(--gold); color:black; border:none; border-radius:15px; font-weight:bold; cursor:pointer;">انطلاق 🚀</button>
         <div id="results"></div>
     </div>
 
     <div class="golden-notes">
-        <div class="note-card">🌟 تنظيم الطوابير عالمياً في العراق والخليج</div>
-        <div class="note-card">🕒 وداعاً للانتظار المزعج في العيادات والمحلات</div>
-        <div class="note-card">🛰️ متابعة فورية لدورك من أي مكان في العالم</div>
-        <div class="note-card">💎 تجربة مستخدم فاخرة وسهلة الاستخدام</div>
-    </div>
-
-    <div style="background: rgba(255,215,0,0.1); border: 2px solid var(--gold); border-radius: 30px; padding: 30px; max-width: 800px; margin: auto;">
-        <h2 style="color:var(--gold)">هل أنت صاحب نشاط؟ سجل الآن!</h2>
-        <p>خصم 50% لمشتركي الانطلاقة الأولى.</p>
-        <button onclick="location.href='register2.html'" style="background:var(--gold); border:none; padding:15px 40px; border-radius:50px; font-weight:bold; cursor:pointer;">سجل نشاطك الآن</button>
+        <div class="note">🌟 تنظيم الطوابير عالمياً</div>
+        <div class="note">🕒 وداعاً للانتظار المزعج</div>
+        <div class="note">🛰️ متابعة فورية لدورك</div>
+        <div class="note">💎 فخامة وسهولة استخدام</div>
     </div>
 </div>
 
 <footer>
-    <div class="social-icons">
+    <div class="social">
         <a href="https://facebook.com/sofygram" target="_blank"><i class="fab fa-facebook"></i></a>
         <a href="https://instagram.com/sofygram.iq" target="_blank"><i class="fab fa-instagram"></i></a>
         <a href="https://t.me/sofygram" target="_blank"><i class="fab fa-telegram"></i></a>
     </div>
-    <p style="color:#555">جميع الحقوق محفوظة لصالح منصة صوفيگرام العالمية © 2026</p>
+    <p style="color:#555; margin-top:20px;">جميع الحقوق محفوظة لصالح منصة صوفيگرام العالمية © 2026</p>
 </footer>
 
 <script type="module">
@@ -127,48 +115,43 @@
     const firebaseConfig = { apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", authDomain: "sofygramclinic.firebaseapp.com", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com", projectId: "sofygramclinic", appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc" };
     const app = initializeApp(firebaseConfig); const db = getDatabase(app);
 
+    let hasWelcomed = false;
+    window.playWelcome = () => {
+        if (hasWelcomed) return;
+        const msg = new SpeechSynthesisUtterance("أهلاً بك في منصة صوفي غرام العالمية، ماذا تحب أن تبحث؟ اضغط المايك وتحدث وساجده لك في ثواني");
+        msg.lang = 'ar-SA';
+        window.speechSynthesis.speak(msg);
+        hasWelcomed = true;
+    };
+
     window.startSofyVoice = () => {
         const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         rec.lang = 'ar-SA'; rec.start();
-        const btn = document.getElementById('micBtn');
-        btn.classList.add('active');
-        
+        const btn = document.getElementById('micBtn'); btn.classList.add('active');
         rec.onresult = (e) => {
             let t = e.results[0][0].transcript.replace(/[.؟?]/g, "");
             document.getElementById('manualSearch').value = t;
             btn.classList.remove('active');
-            runSofySearch(); // بحث أوتوماتيكي
+            runSofySearch();
         };
+        rec.onerror = () => btn.classList.remove('active');
     };
 
     window.runSofySearch = async () => {
         const q = document.getElementById('manualSearch').value.toLowerCase();
         const resDiv = document.getElementById('results');
-        resDiv.innerHTML = "جاري الاتصال بالسيرفر العالمي...";
+        resDiv.innerHTML = "جاري البحث...";
         const snap = await get(ref(db, 'users'));
         const data = snap.val(); resDiv.innerHTML = "";
-
         for(let id in data) {
-            const u = data[id];
-            if(!q || (u.name && u.name.toLowerCase().includes(q))) {
-                resDiv.innerHTML += `
-                    <div class="res-card" onclick="location.href='view.html?id=${id}'">
-                        <h3>${u.name}</h3>
-                        <p><i class="fas fa-map-marker-alt"></i> ${u.city || 'النجف'} - ${u.address || 'العنوان غير محدد'}</p>
-                        <p><i class="fas fa-phone"></i> ${u.phone || '0780000000'}</p>
-                    </div>`;
+            if(!q || (data[id].name && data[id].name.toLowerCase().includes(q))) {
+                resDiv.innerHTML += `<div class="res-card" onclick="location.href='view.html?id=${id}'">
+                    <h3 style="color:var(--gold);margin:0;">${data[id].name}</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> ${data[id].city || 'النجف'} - ${data[id].address || ''}</p>
+                    <p><i class="fas fa-phone"></i> ${data[id].phone || ''}</p>
+                </div>`;
             }
         }
-    };
-
-    // نظام التنبيه الصوتي (أصوات المترو)
-    window.triggerMetroAlarm = () => {
-        const synth = window.speechSynthesis;
-        const msgAr = new SpeechSynthesisUtterance("أهلاً بكم في منصة صوفي غرام العالمية. حان موعدكم الآن، يرجى التوجه حالاً. شكراً لكم.");
-        msgAr.lang = 'ar-SA'; msgAr.rate = 0.9;
-        const msgEn = new SpeechSynthesisUtterance("Welcome to Sofygram Global. It is your turn now, please proceed immediately. Thank you.");
-        msgEn.lang = 'en-US'; msgEn.rate = 1.0;
-        synth.speak(msgAr); synth.speak(msgEn);
     };
 </script>
 </body>
