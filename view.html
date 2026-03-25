@@ -3,33 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Live | صوفيگرام المباشر</title>
+    <title>عرض النشاط | صوفيگرام</title>
     <style>
         body { background: #050a14; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
-        .num-box { font-size: 100px; color: #ffd700; border: 3px solid #ffd700; display: inline-block; padding: 20px 50px; border-radius: 40px; margin: 20px 0; box-shadow: 0 0 20px #ffd700; }
-        .info-card { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 25px; border: 1px solid #222; max-width: 400px; margin: auto; }
-        .btn-map { background: #3498db; color: white; padding: 15px; border-radius: 15px; display: block; text-decoration: none; margin-top: 15px; font-weight: bold; }
+        .num-display { font-size: 100px; color: #ffd700; border: 3px solid #ffd700; display: inline-block; padding: 20px 50px; border-radius: 40px; margin: 20px 0; }
+        .card { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; max-width: 400px; margin: auto; }
+        .btn-map { background: #3498db; color: white; padding: 15px; border-radius: 15px; display: block; text-decoration: none; margin-top: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h1 id="name">...</h1>
-    <div id="status" style="font-weight:bold; font-size:18px;">--</div>
+    <h1 id="name">جاري التحميل...</h1>
+    <div id="status" style="font-weight:bold;">--</div>
     
-    <div class="num-box" id="num">0</div>
+    <div class="num-display" id="num">0</div>
     
-    <div class="info-card">
-        <p id="note" style="color:#ffd700; font-weight:bold;"></p>
+    <div class="card">
+        <p id="note" style="color:#ffd700;"></p>
         <p id="times" style="font-size:14px; color:#aaa;"></p>
-        <a id="map" href="#" target="_blank" class="btn-map" style="display:none;">📍 فتح موقع النشاط في الخرائط</a>
+        <a id="map" href="#" target="_blank" class="btn-map" style="display:none;">📍 فتح الموقع في الخرائط</a>
     </div>
 
-    <button onclick="goAdmin()" style="background:none; border:1px solid #333; color:#444; margin-top:40px; cursor:pointer; padding:5px 10px; border-radius:8px;">إدارة النشاط ⚙️</button>
+    <button onclick="goAdmin()" style="background:none; border:1px solid #333; color:#444; margin-top:50px; cursor:pointer; padding:5px;">إدارة النشاط ⚙️</button>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
         const firebaseConfig = { apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", authDomain: "sofygramclinic.firebaseapp.com", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com", projectId: "sofygramclinic", appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc" };
         const app = initializeApp(firebaseConfig); const db = getDatabase(app);
+        
         const id = new URLSearchParams(window.location.search).get('id');
 
         if(id) {
@@ -39,9 +40,14 @@
                 document.getElementById('num').innerText = d.currentNum || 0;
                 document.getElementById('status').innerText = d.status || "";
                 document.getElementById('note').innerText = d.note || "";
-                if(d.openTime) document.getElementById('times').innerText = "ساعات العمل: " + d.openTime + " إلى " + d.closeTime;
+                if(d.openTime) document.getElementById('times').innerText = "الدوام: " + d.openTime + " إلى " + d.closeTime;
                 if(d.lat) { document.getElementById('map').style.display = "block"; document.getElementById('map').href = `https://www.google.com/maps?q=${d.lat},${d.lng}`; }
-                window.goAdmin = () => { if(prompt("رمز الإدارة:") === d.pass) location.href = "admin.html?id=" + id; else alert("خطأ!"); };
+                
+                window.goAdmin = () => {
+                    const p = prompt("رمز الإدارة:");
+                    if(p === d.pass) window.location.href = "admin.html?id=" + id;
+                    else alert("الرمز خطأ!");
+                };
             });
         }
     </script>
