@@ -3,72 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Admin | لوحة تحكم صوفيگرام ⚙️</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Sofygram Admin | إدارة العيادة ⚡</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        :root { --gold: #ffd700; --neon-red: #ff4500; --bg: #050a14; }
-        body { background-color: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; text-align: center; }
+        :root { --glow: #ffd700; }
+        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; padding: 15px; margin: 0; }
+        .admin-card { background: #121212; padding: 25px; border-radius: 30px; max-width: 450px; margin: auto; border: 1px solid var(--glow); box-shadow: 0 0 25px rgba(255, 215, 0, 0.1); }
         
-        .admin-card { background: rgba(12, 18, 29, 0.95); border-radius: 35px; padding: 25px; max-width: 450px; margin: auto; border: 1px solid #1e293b; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        .logo img { width: 120px; filter: drop-shadow(0 0 10px var(--gold)); }
-
-        /* دليل المستخدم الصغير */
-        .guide-text { font-size: 12px; color: var(--gold); margin-bottom: 10px; font-weight: bold; background: rgba(255,215,0,0.1); padding: 5px; border-radius: 8px; display: inline-block; }
-
-        .status-box { margin: 20px 0; }
-        select { width: 100%; padding: 15px; border-radius: 15px; background: #000; border: 2px solid var(--gold); color: #fff; font-size: 18px; outline: none; text-align: center; }
-
-        .number-display { font-size: 100px; font-weight: bold; color: var(--gold); margin: 10px 0; text-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
-
+        /* شاشة الرقم الكبير */
+        .num-display { font-size: 110px; font-weight: bold; color: #fff; margin: 10px 0; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        
         /* أزرار التحكم */
-        .controls { display: flex; flex-direction: column; gap: 15px; align-items: center; }
-        .btn-plus { width: 100px; height: 100px; border-radius: 50%; background: var(--gold); color: #000; border: none; font-size: 50px; cursor: pointer; box-shadow: 0 0 20px var(--gold); font-weight: bold; }
-        .btn-reset { background: #ff4d4d; color: white; border: none; padding: 12px 30px; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        .btn-round { width: 85px; height: 85px; border-radius: 50%; border: none; font-size: 45px; cursor: pointer; color: white; margin: 10px; transition: 0.3s; }
+        .plus { background: #2ecc71; box-shadow: 0 0 15px #2ecc71; }
+        .minus { background: #e74c3c; box-shadow: 0 0 15px #e74c3c; }
+        .btn-round:active { transform: scale(0.9); }
 
-        .qr-box { margin-top: 25px; padding: 15px; background: #fff; border-radius: 20px; display: inline-block; }
-        .qr-box img { width: 150px; cursor: pointer; }
+        /* منطقة الأدوات السفلية (الباركود والتصفير) */
+        .tools-grid { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+        
+        /* قسم الباركود */
+        #qr-area { background: white; padding: 10px; border-radius: 12px; display: inline-block; }
+        .qr-container { text-align: right; width: 45%; }
+        .save-qr { background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 11px; margin-top: 8px; cursor: pointer; width: 100%; }
 
-        .note-input { width: 90%; padding: 12px; margin-top: 15px; border-radius: 10px; background: #111; border: 1px solid #333; color: #fff; text-align: center; }
+        /* قسم التصفير */
+        .reset-container { text-align: left; width: 45%; }
+        .btn-reset { background: none; color: #e74c3c; border: 1px solid #e74c3c; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 13px; cursor: pointer; width: 100%; transition: 0.3s; }
+        .btn-reset:hover { background: #e74c3c; color: white; }
+
+        input, textarea, select { width: 90%; padding: 12px; margin: 8px 0; border-radius: 12px; background: #1e293b; color: white; border: 1px solid #333; text-align: center; }
+        .btn-save { background: var(--glow); color: #000; border: none; padding: 15px; border-radius: 15px; font-weight: bold; width: 95%; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="admin-card">
-        <div class="logo"><img src="logo.png"></div>
-        <h2 id="clinicName" style="margin:10px 0; color:var(--gold);">لوحة التحكم</h2>
+    <div id="loginBox" class="admin-card">
+        <img src="logo.png" style="width:140px; margin-bottom:20px;">
+        <h2 style="color:var(--glow);">دخول السكرتارية 🔐</h2>
+        <input type="text" id="u" placeholder="اسم المستخدم">
+        <input type="password" id="p" placeholder="كلمة المرور">
+        <button onclick="login()" class="btn-save">دخول</button>
+    </div>
 
-        <div class="status-box">
-            <span class="guide-text">👈 اختار الحالة من هنا (مفتوح/مغلق)</span>
-            <select id="statusSelect" onchange="updateStatus()">
-                <option>مفتوح الآن</option>
-                <option>مغلق حالياً</option>
-                <option>قريباً</option>
-                <option>استراحة</option>
-            </select>
+    <div id="controlBox" class="admin-card" style="display:none;">
+        <h2 id="cName" style="color:var(--glow); margin:0;"></h2>
+        <div class="num-display" id="n">0</div>
+        
+        <div style="display:flex; justify-content:center;">
+            <button class="btn-round minus" onclick="ch(-1)">-</button>
+            <button class="btn-round plus" onclick="ch(1)">+</button>
         </div>
 
-        <div class="number-display" id="currentNum">0</div>
+        <select id="st">
+            <option value="🟢 مفتوح الآن | Open">🟢 مفتوح الآن</option>
+            <option value="🟡 قريباً | Soon">🟡 قريباً</option>
+            <option value="🔴 مغلق | Closed">🔴 مغلق</option>
+        </select>
+        <textarea id="nt" placeholder="اكتب ملاحظة للمراجعين..."></textarea>
+        <button onclick="upDetails()" class="btn-save">تحديث البيانات 🚀</button>
 
-        <div class="controls">
-            <span class="guide-text">➕ اضغط هنا لزيادة الرقم (دخول مراجع)</span>
-            <button class="btn-plus" onclick="changeNum(1)">+</button>
-            
-            <span class="guide-text">🔴 اضغط هنا لتصفير العداد عند انتهاء الدوام</span>
-            <button class="btn-reset" onclick="resetNum()">تصفير العداد</button>
-        </div>
+        <div class="tools-grid">
+            <div class="reset-container">
+                <button onclick="resetNum()" class="btn-reset">🔄 تصفير العداد<br>نهاية الدوام</button>
+            </div>
 
-        <input type="text" id="noteInput" class="note-input" placeholder="اكتب ملاحظة للمراجعين هنا..." onchange="updateNote()">
-
-        <div class="qr-section" style="margin-top:20px;">
-            <span class="guide-text">📸 اضغط الباركود للحفظ أو المشاركة</span>
-            <div class="qr-box" id="qrContainer">
-                </div>
+            <div class="qr-container">
+                <div id="qr-area"></div>
+                <button class="save-qr" onclick="downloadQR()">💾 حفظ الباركود</button>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+        import { getDatabase, ref, get, child, update, onValue } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY",
@@ -80,55 +90,59 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get('id');
+        let curUser = ""; let curNum = 0;
 
-        if (!id) {
-            alert("عذراً، لم يتم العثور على معرف النشاط!");
-        } else {
-            // تحميل البيانات ومزامنتها
-            onValue(ref(db, 'users/' + id), (snap) => {
-                const data = snap.val();
-                if (data) {
-                    document.getElementById('clinicName').innerText = data.name;
-                    document.getElementById('currentNum').innerText = data.currentNum || 0;
-                    document.getElementById('statusSelect').value = data.status || "مفتوح الآن";
-                    document.getElementById('noteInput').value = data.note || "";
+        window.login = () => {
+            const user = document.getElementById('u').value.trim();
+            const pass = document.getElementById('p').value.trim();
+            get(child(ref(db), `users/${user}`)).then((s) => {
+                if(s.exists() && s.val().password == pass) {
+                    if(!s.val().active) return alert("الحساب بانتظار التفعيل!");
+                    curUser = user;
+                    document.getElementById('loginBox').style.display = 'none';
+                    document.getElementById('controlBox').style.display = 'block';
                     
-                    // توليد الباركود
-                    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://sofygram.com/view.html?id=${id}`;
-                    document.getElementById('qrContainer').innerHTML = `<img src="${qrUrl}" onclick="downloadQR('${qrUrl}')" title="اضغط للحفظ">`;
-                }
-            });
-        }
+                    // توليد الباركود فوراً
+                    new QRCode(document.getElementById("qr-area"), {
+                        text: `https://sofygram.com/view.html?id=${curUser}`,
+                        width: 90, height: 90
+                    });
 
-        window.changeNum = (val) => {
-            const current = parseInt(document.getElementById('currentNum').innerText);
-            update(ref(db, 'users/' + id), { currentNum: current + val });
+                    onValue(ref(db, `users/${curUser}`), (snap) => {
+                        const d = snap.val(); curNum = d.currentNum || 0;
+                        document.getElementById('n').innerText = curNum;
+                        document.getElementById('cName').innerText = d.name;
+                        document.getElementById('nt').value = d.note || "";
+                        document.getElementById('st').value = d.status || "🟢 مفتوح الآن | Open";
+                    });
+                } else alert("بيانات خاطئة!");
+            });
+        };
+
+        window.ch = (v) => { 
+            curNum += v; if(curNum < 0) curNum = 0;
+            update(ref(db, `users/${curUser}`), { currentNum: curNum });
+        };
+
+        window.upDetails = () => {
+            update(ref(db, `users/${curUser}`), { status: document.getElementById('st').value, note: document.getElementById('nt').value })
+            .then(() => alert("تم التحديث ✅"));
         };
 
         window.resetNum = () => {
-            if(confirm("هل أنت متأكد من تصفير العداد؟")) {
-                update(ref(db, 'users/' + id), { currentNum: 0 });
+            if(confirm("⚠️ هل أنت متأكد من تصفير العداد لبدء دوام جديد؟")) {
+                update(ref(db, `users/${curUser}`), { currentNum: 0 });
             }
         };
 
-        window.updateStatus = () => {
-            const s = document.getElementById('statusSelect').value;
-            update(ref(db, 'users/' + id), { status: s });
-        };
-
-        window.updateNote = () => {
-            const n = document.getElementById('noteInput').value;
-            update(ref(db, 'users/' + id), { note: n });
-        };
-
-        window.downloadQR = (url) => {
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'Sofygram_QR.png';
-            link.click();
-            alert("جاري حفظ الباركود في جهازك...");
+        // وظيفة حفظ الباركود كصورة
+        window.downloadQR = () => {
+            html2canvas(document.querySelector("#qr-area")).then(canvas => {
+                let link = document.createElement('a');
+                link.download = `Sofygram-QR-${curUser}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            });
         };
     </script>
 </body>
