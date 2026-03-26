@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Master | الإدارة الملكية 👑</title>
+    <title>Sofygram Master | الإدارة المؤمنة 🛡️</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -13,9 +13,10 @@
         .master-card { background: var(--card); padding: 25px; border-radius: 30px; border: 1px solid rgba(255,215,0,0.2); box-shadow: 0 10px 40px rgba(0,0,0,0.6); margin-bottom: 20px; }
         .user-row { display: flex; justify-content: space-between; align-items: center; background: #1e2538; padding: 18px; border-radius: 20px; margin-bottom: 12px; border-right: 6px solid var(--glow); text-align: right; }
         .badge { background: var(--glow); color: #000; padding: 4px 10px; border-radius: 10px; font-size: 13px; font-weight: bold; }
-        .btn { border: none; padding: 10px 15px; border-radius: 12px; cursor: pointer; font-weight: bold; color: white; }
-        .btn-activate { background: #2ecc71; margin-left: 5px; }
-        .btn-delete { background: #e74c3c; }
+        .btn { border: none; padding: 10px 15px; border-radius: 12px; cursor: pointer; font-weight: bold; color: white; transition: 0.2s; }
+        .btn-activate { background: #2ecc71; margin-left: 5px; box-shadow: 0 4px 0 #27ae60; }
+        .btn-delete { background: #e74c3c; box-shadow: 0 4px 0 #c0392b; }
+        .btn:active { transform: translateY(2px); box-shadow: none; }
         input { width: 90%; padding: 15px; border-radius: 15px; border: 1px solid var(--glow); background: #000; color: #fff; text-align: center; margin-bottom: 15px; outline: none; }
     </style>
 </head>
@@ -23,20 +24,20 @@
 
     <div class="container">
         <div id="authBox" class="master-card">
-            <h2 style="color:var(--glow);">قفل الإدارة العليا 👑</h2>
-            <input type="password" id="mPass" placeholder="الرمز السري">
-            <button onclick="masterLogin()" class="btn btn-activate" style="width: 100%; padding: 15px; font-size: 18px;">دخول الملك 👑</button>
+            <h2 style="color:var(--glow);">دخول الإدارة المؤمن 🛡️</h2>
+            <input type="password" id="mPass" placeholder="الرمز السري الخاص بك">
+            <button onclick="masterLogin()" class="btn btn-activate" style="width: 100%; padding: 15px; font-size: 18px;">دخول آمن ✅</button>
         </div>
 
         <div id="masterBox" style="display:none;">
             <div class="master-card">
-                <h2 style="color:var(--glow);">لوحة التحكم بالعيادات 🏢</h2>
-                <input type="text" id="mSearch" placeholder="بحث عن عيادة..." onkeyup="filterUsers()" style="font-size: 15px;">
+                <h2 style="color:var(--glow); margin-bottom:10px;">لوحة التحكم بالعيادات 🏢</h2>
+                <input type="text" id="mSearch" placeholder="بحث عن عيادة..." onkeyup="filterUsers()" style="font-size: 15px; padding: 10px;">
             </div>
             
-            <div id="usersList">جاري التحميل...</div>
+            <div id="usersList">جاري تحميل البيانات...</div>
 
-            <button onclick="changeMasterPass()" style="background:none; border:1px solid #444; color:#888; padding:10px; border-radius:10px; margin-top:20px; cursor:pointer;">⚙️ تعيين رمز ماستر جديد</button>
+            <button onclick="changeMasterPass()" style="background:none; border:1px solid #444; color:#666; padding:8px; border-radius:10px; margin-top:20px; cursor:pointer; font-size:11px;">⚙️ تغيير الرمز السري مجدداً</button>
         </div>
     </div>
 
@@ -50,13 +51,16 @@
         window.masterLogin = async () => {
             const p = document.getElementById('mPass').value;
             const snap = await get(ref(db, 'admin_settings/masterHash'));
-            const hash = snap.val() || "e10adc3949ba59abbe56e057f20f883e"; // الافتراضي 123456
+            const storedHash = snap.val();
             
-            if (CryptoJS.MD5(p).toString() === hash || p === "123456") {
+            // التشفير والمقارنة (تم إلغاء الدخول بـ 123456 البرمجي)
+            if (storedHash && CryptoJS.MD5(p).toString() === storedHash) {
                 document.getElementById('authBox').style.display = 'none';
                 document.getElementById('masterBox').style.display = 'block';
                 loadUsers();
-            } else { alert("الرمز خطأ!"); }
+            } else { 
+                alert("الرمز غير صحيح! تم رصد محاولة دخول."); 
+            }
         };
 
         function loadUsers() {
@@ -72,7 +76,7 @@
                             <div>
                                 <b style="cursor:pointer" onclick="editName('${id}','${u.name}')">${u.name}</b> 
                                 <span class="badge">${days > 0 ? days + ' يوم' : 'منتهي'}</span><br>
-                                <small style="cursor:pointer" onclick="editPass('${id}','${u.password}')">🔑 الرمز: ${u.password || 'اضغط للتعيين'}</small>
+                                <small style="cursor:pointer" onclick="editPass('${id}','${u.password}')">🔑 الرمز: ${u.password || '---'}</small>
                             </div>
                             <div style="display:flex">
                                 <button class="btn btn-activate" onclick="setSub('${id}')">تفعيل</button>
@@ -88,19 +92,19 @@
             update(ref(db, `businesses/${id}`), { active: true, expiry: exp.toISOString() });
         };
 
-        window.editPass = (id, old) => { const n = prompt("الرمز الجديد للعيادة:", old); if(n) update(ref(db, `businesses/${id}`), { password: n }); };
-        window.editName = (id, old) => { const n = prompt("اسم العيادة الجديد:", old); if(n) update(ref(db, `businesses/${id}`), { name: n }); };
-        window.delUser = (id) => { if(confirm("حذف العيادة نهائياً؟")) remove(ref(db, `businesses/${id}`)); };
+        window.editPass = (id, old) => { const n = prompt("الرمز الجديد لهذه العيادة:", old); if(n) update(ref(db, `businesses/${id}`), { password: n }); };
+        window.editName = (id, old) => { const n = prompt("تعديل اسم العيادة:", old); if(n) update(ref(db, `businesses/${id}`), { name: n }); };
+        window.delUser = (id) => { if(confirm("حذف العيادة نهائياً من السيستم؟")) remove(ref(db, `businesses/${id}`)); };
 
         window.changeMasterPass = () => {
-            const n = prompt("أدخل رمز الماستر الجديد:");
-            if(n && n.length >= 4) {
+            const n = prompt("أدخل رمز الماستر الجديد (احفظه جيداً):");
+            if(n && n.length >= 6) {
                 const h = CryptoJS.MD5(n).toString();
                 set(ref(db, 'admin_settings/masterHash'), h).then(() => {
-                    alert("تم تغيير رمز الماستر بنجاح! سيتم إعادة تحميل الصفحة.");
+                    alert("تم تأمين المنصة بالرمز الجديد ✅");
                     location.reload();
                 });
-            } else { alert("الرمز قصير جداً!"); }
+            } else { alert("يجب أن يكون الرمز 6 مراتب على الأقل!"); }
         };
 
         window.filterUsers = () => {
