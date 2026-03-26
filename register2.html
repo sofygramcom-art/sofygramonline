@@ -6,14 +6,14 @@
     <title>Sofygram | التسجيل العالمي 🌐</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
-        :root { --glow: #00d2ff; --bg: #050a14; --card: #121212; }
+        :root { --glow: #ffd700; --bg: #050a14; --card: #121212; }
         body { background: var(--bg); color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
-        .reg-card { background: var(--card); padding: 30px; border-radius: 35px; max-width: 550px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 25px rgba(0, 210, 255, 0.15); }
+        .reg-card { background: var(--card); padding: 30px; border-radius: 35px; max-width: 550px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 25px rgba(255, 215, 0, 0.15); }
         h2 { color: var(--glow); margin-bottom: 25px; }
         label { display: block; text-align: right; margin: 10px 25px 5px 0; font-size: 14px; color: #aaa; }
-        input, select { padding: 15px; border-radius: 18px; border: 1px solid #333; background: #000; color: #fff; text-align: center; margin-bottom: 15px; width: 90%; font-size: 16px; outline: none; transition: 0.3s; box-sizing: border-box; }
+        input, select { padding: 15px; border-radius: 18px; border: 1px solid #333; background: #000; color: #fff; text-align: center; margin-bottom: 15px; width: 95%; font-size: 16px; outline: none; transition: 0.3s; box-sizing: border-box; }
         input:focus, select:focus { border-color: var(--glow); }
-        .btn-reg { background: linear-gradient(45deg, #00d2ff, #3a7bd5); color: white; padding: 18px; width: 95%; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 19px; margin-top: 20px; }
+        .btn-reg { background: linear-gradient(45deg, #ffd700, #ff8c00); color: black; padding: 18px; width: 95%; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 19px; margin-top: 20px; }
         .hidden { display: none !important; }
         optgroup { color: var(--glow); background: #1a1a1a; }
     </style>
@@ -26,7 +26,7 @@
         <label>اسم النشاط التجاري:</label>
         <input type="text" id="name" placeholder="مثلاً: شركة الصقر / عيادة الأمل">
         
-        <label>فئة النشاط (الفخمة):</label>
+        <label>فئة النشاط:</label>
         <select id="type">
             <option value="">-- اختر الفئة --</option>
             <optgroup label="القطاع الطبي">
@@ -53,15 +53,7 @@
             <option value="السعودية">السعودية</option>
             <option value="الإمارات">الإمارات</option>
             <option value="الكويت">الكويت</option>
-            <option value="قطر">قطر</option>
-            <option value="الأردن">الأردن</option>
-            <option value="مصر">مصر</option>
-            <option value="سوريا">سوريا</option>
-            <option value="لبنان">لبنان</option>
             <option value="تركيا">تركيا</option>
-            <option value="إيران">إيران</option>
-            <option value="أوروبا">أوروبا</option>
-            <option value="أمريكا">أمريكا</option>
             <option value="دولة أخرى">دولة أخرى</option>
         </select>
         <input type="text" id="countryInput" class="hidden" placeholder="اكتب اسم الدولة">
@@ -97,7 +89,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const iraqCities = ["بغداد", "النجف", "كربلاء", "البصرة", "بابل", "الأنبار", "أربيل", "ذي قار", "نينوى", "ميسان", "المثنى", "القادسية", "واسط", "صلاح الدين", "ديالى", "كركوك", "دهوك", "السليمانية"];
+        const iraqCities = ["النجف", "كربلاء", "بغداد", "البصرة", "بابل", "الأنبار", "أربيل", "نينوى", "ميسان", "ذي قار", "واسط", "صلاح الدين", "ديالى", "كركوك", "المثنى", "القادسية", "دهوك", "السليمانية"];
 
         window.updateLocation = () => {
             const country = document.getElementById('country').value;
@@ -117,7 +109,7 @@
             }
         };
 
-        window.updateLocation(); // تشغيل فوري
+        window.updateLocation();
 
         window.register = () => {
             const name = document.getElementById('name').value;
@@ -132,12 +124,23 @@
 
             if(!name || !type || !user || !pass || !phone || !city) return alert("أكمل جميع الحقول!");
 
+            // نظام التوجيه الذكي
+            const urlParams = new URLSearchParams(window.location.search);
+            const planType = urlParams.get('type'); // يقرأ هل القادم من الذهبي أم الفضي
+
             set(ref(db, 'users/' + user), {
                 name, type, phone, country, city,
                 neighborhood: document.getElementById('neighborhood').value,
-                password: pass, active: false, regDate: new Date().toISOString()
+                password: pass, active: false, regDate: new Date().toISOString(),
+                currentNum: 0, status: "مفتوح الآن"
             }).then(() => {
-                window.location.href = `pay.html?user=${user}&name=${encodeURIComponent(name)}`;
+                // إذا كان جاي من زر الطبي الذهبي يروح لـ pay20
+                if (planType === 'gold') {
+                    window.location.href = `pay20.html?user=${user}`;
+                } else {
+                    // إذا كان جاي من زر النشاط الفضي يروح لـ pay (15 ألف)
+                    window.location.href = `pay.html?user=${user}`;
+                }
             });
         };
     </script>
