@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Staff | لوحة المعاونين 👥</title>
+    <title>Sofygram Staff | لوحة الطاقم 👥</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { background: #050a14; color: white; font-family: sans-serif; text-align: center; padding: 10px; }
@@ -16,7 +16,6 @@
     </style>
 </head>
 <body>
-
     <div id="auth" class="card">
         <h2>دخول المعاونين 👤</h2>
         <input type="text" id="user" placeholder="الاسم">
@@ -25,9 +24,9 @@
     </div>
 
     <div id="box" class="card" style="display:none;">
-        <h2 id="welcome">أهلاً بك أيها المعاون</h2>
-        <input type="text" id="search" placeholder="ابحث..." onkeyup="filter()">
-        <div id="list"></div>
+        <h2 id="welcome">لوحة المعاون</h2>
+        <input type="text" id="search" placeholder="ابحث عن مشترك..." onkeyup="filter()">
+        <div id="list">جاري التحميل...</div>
     </div>
 
     <script type="module">
@@ -46,18 +45,17 @@
                 myRole = s.val().role;
                 document.getElementById('auth').style.display = 'none';
                 document.getElementById('box').style.display = 'block';
-                document.getElementById('welcome').innerText = "لوحة المعاون " + (myRole === 'gold' ? 'الذهبي' : myRole === 'silver' ? 'الفضي' : 'البرونزي');
                 load();
-            } else { alert("خطأ في البيانات!"); }
+            } else { alert("خطأ في بيانات الدخول!"); }
         };
 
         function load() {
             onValue(ref(db, 'users'), (snap) => {
                 const data = snap.val(); const div = document.getElementById('list'); div.innerHTML = "";
-                for(let id in data) {
+                if(!data) return;
+                Object.keys(data).reverse().forEach(id => {
                     const u = data[id];
-                    // حماية الخصوصية للبرونزي
-                    let phoneDisplay = (myRole === 'bronze') ? u.phone.substring(0,5) + "****" : u.phone;
+                    let phoneDisplay = (myRole === 'bronze') ? (u.phone ? u.phone.substring(0,5) + "****" : "مخفي") : (u.phone || "لا يوجد");
                     div.innerHTML += `
                         <div class="user-row" data-name="${u.name.toLowerCase()}">
                             <div>
@@ -65,17 +63,17 @@
                                 <small>${phoneDisplay}</small>
                             </div>
                             <div>
-                                <button class="btn btn-f ${myRole === 'bronze' ? 'hidden' : ''}" onclick="setSub('${id}', 30)">شهر</button>
+                                <button class="btn btn-f ${myRole === 'bronze' ? 'hidden' : ''}" onclick="setSub('${id}', 30)">تفعيل شهر</button>
                                 <button class="btn btn-t" onclick="setSub('${id}', 3)">3 أيام</button>
                             </div>
                         </div>`;
-                }
+                });
             });
         }
 
         window.setSub = (id, d) => {
             const exp = new Date(); exp.setDate(exp.getDate() + d);
-            update(ref(db, `users/${id}`), { active: true, expiryDate: exp.toISOString() }).then(() => alert("تم ✅"));
+            update(ref(db, `users/${id}`), { active: true, expiryDate: exp.toISOString() }).then(() => alert("تم التفعيل ✅"));
         };
 
         window.filter = () => {
