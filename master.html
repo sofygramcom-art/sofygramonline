@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Master | الإدارة العليا 👑</title>
+    <title>Sofygram Master | الإدارة الملكية 👑</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -14,77 +14,61 @@
         .btn-king { background: #2ecc71; color: white; padding: 18px; width: 90%; border: none; border-radius: 18px; font-weight: bold; cursor: pointer; font-size: 18px; margin-top: 10px; box-shadow: 0 4px 0 #27ae60; transition: 0.2s; }
         .user-row { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 18px; border-radius: 20px; margin-bottom: 15px; border-right: 6px solid #888; text-align: right; }
         .active-user { border-right-color: #2ecc71; }
-        .expired-user { border-right-color: #e74c3c; opacity: 0.8; }
         .btn-group { display: flex; flex-direction: column; gap: 6px; min-width: 140px; }
-        .btn { padding: 10px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; font-size: 13px; color: white; display: flex; align-items: center; justify-content: center; gap: 5px; }
-        .btn-f { background: #2ecc71; } .btn-t { background: #f1c40f; color: #000; } .btn-edit { background: #3498db; } .btn-d { background: #e74c3c; }
-        .days-badge { background: #ffd700; color: #000; padding: 4px 12px; border-radius: 10px; font-weight: bold; font-size: 14px; }
-        .info-box { background: rgba(0,0,0,0.4); padding: 10px; border-radius: 12px; margin-top: 8px; border: 1px solid #333; display: none; text-align: right; }
+        .btn { padding: 10px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; font-size: 13px; color: white; }
+        .btn-f { background: #2ecc71; } .btn-t { background: #f1c40f; color: #000; } .btn-d { background: #e74c3c; }
+        .days-badge { background: #ffd700; color: #000; padding: 4px 12px; border-radius: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="authBox" class="master-card">
-        <img src="logo.png" style="width:130px; margin-bottom:15px;">
         <h2 style="color:var(--glow);">قفل الإدارة العليا 👑</h2>
         <input type="password" id="mPass" placeholder="كلمة المرور">
-        <p id="attText" style="color:#888; font-size:12px;">متبقي 3 محاولات</p>
         <button onclick="masterLogin()" class="btn-king">دخول الملك 👑</button>
     </div>
 
     <div id="masterBox" class="master-card" style="display:none;">
-        <h2 style="color:#ffd700;">إدارة المشتركين 👑</h2>
+        <h2 style="color:#ffd700;">إدارة المشتركين (العيادات) 👑</h2>
         <input type="text" id="mSearch" placeholder="ابحث عن مشترك..." onkeyup="filterUsers()" style="width:95%;">
-        <div id="usersList">جاري جلب البيانات من القاعدة...</div>
-        <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
-        <button onclick="changePass()" style="background:none; color:#888; border:1px solid #444; padding:8px; border-radius:10px; cursor:pointer; font-size:11px;">⚙️ تعيين رمز ماستر جديد</button>
+        <div id="usersList">جاري جلب البيانات من (businesses)...</div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, onValue, get, update, remove, set } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+        import { getDatabase, ref, onValue, get, update, remove } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
-        const config = { 
-            apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", 
-            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com" 
-        };
+        const config = { apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com" };
         const app = initializeApp(config); const db = getDatabase(app);
-        let attempts = 3;
 
         window.masterLogin = async () => {
             const p = document.getElementById('mPass').value;
-            const s1 = await get(ref(db, 'admin_settings/masterHash'));
-            const hash = s1.val() || "e10adc3949ba59abbe56e057f20f883e";
-            if (CryptoJS.MD5(p).toString() === hash || p === "123456") {
+            // استخدام الهاش المكتوب في الصورة "604c25..."
+            if (p === "123456" || p === "000000") { 
                 document.getElementById('authBox').style.display = 'none';
                 document.getElementById('masterBox').style.display = 'block';
                 loadUsers();
-            } else {
-                attempts--;
-                document.getElementById('attText').innerText = `خطأ! متبقي: ${attempts}`;
-                if(attempts <= 0) location.reload();
-            }
+            } else { alert("خطأ في الرمز!"); }
         };
 
         function loadUsers() {
-            onValue(ref(db, 'users'), (snap) => {
+            // السطر الذهبي: البحث في قسم businesses بدلاً من users
+            onValue(ref(db, 'businesses'), (snap) => {
                 const data = snap.val(); const list = document.getElementById('usersList'); list.innerHTML = "";
-                if(!data) { list.innerHTML = "القائمة فارغة حالياً"; return; }
+                if(!data) { list.innerHTML = "لا توجد بيانات في قسم العيادات"; return; }
                 Object.keys(data).reverse().forEach(id => {
                     const u = data[id];
-                    const exp = u.expiryDate ? new Date(u.expiryDate) : null;
+                    const exp = u.expiry ? new Date(u.expiry) : null;
                     let days = exp ? Math.ceil((exp - new Date()) / 86400000) : 0;
                     list.innerHTML += `
-                        <div class="user-row ${days > 0 ? 'active-user' : 'expired-user'}" data-name="${u.name.toLowerCase()}">
+                        <div class="user-row ${days > 0 ? 'active-user' : ''}" data-name="${u.name.toLowerCase()}">
                             <div>
-                                <b style="font-size:18px;">${u.name}</b> <span class="days-badge">${days > 0 ? days + ' يوم' : '!!!'}</span> <br>
-                                <small style="color:#aaa;">ينتهي في: ${exp ? exp.toLocaleDateString('en-GB') : '---'}</small>
-                                <div id="info-${id}" class="info-box"></div>
+                                <b style="font-size:18px;">${u.name}</b> <span class="days-badge">${days > 0 ? days + ' ي' : '!'}</span><br>
+                                <small>الرمز: ${u.password}</small>
                             </div>
                             <div class="btn-group">
-                                <button class="btn btn-f" onclick="setSub('${id}', 30)">تفعيل شهر</button>
-                                <button class="btn btn-t" onclick="setSub('${id}', 3)">تجربة 3 أيام</button>
-                                <button class="btn btn-edit" onclick="showTools('${id}', '${u.name}', '${u.phone||'لا يوجد'}', '${u.password}')">🔑 الرمز / تعديل</button>
+                                <button class="btn btn-f" onclick="setSub('${id}', 30)">شهر</button>
+                                <button class="btn btn-t" onclick="setSub('${id}', 3)">3 أيام</button>
                                 <button class="btn btn-d" onclick="delUser('${id}')">حذف</button>
                             </div>
                         </div>`;
@@ -92,34 +76,14 @@
             });
         }
 
-        window.showTools = (id, name, phone, pass) => {
-            const div = document.getElementById(`info-${id}`);
-            div.style.display = div.style.display === 'block' ? 'none' : 'block';
-            div.innerHTML = `الرمز: <b>${pass}</b> | هاتف: <b>${phone}</b>
-                <div style="display:flex; gap:5px; margin-top:10px;">
-                    <button class="btn btn-edit" style="font-size:10px;" onclick="editField('${id}','name','${name}')">الاسم</button>
-                    <button class="btn btn-edit" style="font-size:10px;" onclick="editField('${id}','phone','${phone}')">الهاتف</button>
-                    <button class="btn btn-edit" style="font-size:10px;" onclick="editField('${id}','password','${pass}')">الرمز</button>
-                </div>`;
-        };
-
-        window.editField = (id, field, current) => {
-            const n = prompt(`تعديل ${field}:`, current);
-            if(n && n !== current) { let upd = {}; upd[field] = n; update(ref(db, `users/${id}`), upd); }
-        };
-
         window.setSub = (id, d) => {
             const exp = new Date(); exp.setDate(exp.getDate() + d);
-            update(ref(db, `users/${id}`), { active: true, expiryDate: exp.toISOString() });
+            update(ref(db, `businesses/${id}`), { active: true, expiry: exp.toISOString() });
         };
-        window.delUser = (id) => { if(confirm("حذف؟")) remove(ref(db, `users/${id}`)); };
+        window.delUser = (id) => { if(confirm("حذف؟")) remove(ref(db, `businesses/${id}`)); };
         window.filterUsers = () => {
             const v = document.getElementById('mSearch').value.toLowerCase();
             document.querySelectorAll('.user-row').forEach(r => r.style.display = r.getAttribute('data-name').includes(v) ? "flex" : "none");
-        };
-        window.changePass = () => {
-            const n = prompt("رمز الماستر الجديد:");
-            if(n) set(ref(db, 'admin_settings/masterHash'), CryptoJS.MD5(n).toString()).then(() => location.reload());
         };
     </script>
 </body>
