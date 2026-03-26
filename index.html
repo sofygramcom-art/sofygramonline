@@ -13,7 +13,7 @@
         .logo-box img { width: 140px; filter: drop-shadow(0 0 15px var(--gold)); }
         .brand-title { font-size: 50px; font-weight: 900; text-shadow: 0 0 30px var(--gold); margin: 5px 0; }
 
-        /* محرك البحث */
+        /* محرك البحث السريع */
         .search-engine { 
             background: rgba(12, 18, 29, 0.95); border-radius: 40px; padding: 25px; 
             max-width: 900px; margin: 20px auto; border: 1px solid #1e293b;
@@ -31,7 +31,7 @@
         select, input { width: 100%; padding: 15px; border-radius: 15px; background: #000; border: 1px solid #333; color: white; font-size: 15px; outline: none; box-sizing: border-box; }
         .btn-main-search { grid-column: span 2; background: var(--gold); color: black; padding: 18px; border-radius: 15px; font-weight: bold; font-size: 18px; cursor: pointer; border: none; margin-top: 10px; }
 
-        /* نتائج البحث المحدثة */
+        /* نتائج البحث */
         #results { margin-top: 30px; text-align: right; max-width: 850px; margin: auto; padding: 0 15px; }
         .res-item { 
             background: #121c2c; padding: 20px; border-radius: 25px; margin-bottom: 15px; 
@@ -48,7 +48,7 @@
             color: var(--gold); font-size: 13px; font-weight: bold;
         }
 
-        /* الملاحظات الذهبية */
+        /* الملاحظات الذهبية الأربعة */
         .golden-notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; max-width: 900px; margin: 30px auto; padding: 0 15px; }
         .note-card { background: rgba(255, 215, 0, 0.05); border: 1px solid var(--gold); padding: 15px; border-radius: 18px; font-size: 13px; color: var(--gold); font-weight: bold; }
 
@@ -64,6 +64,7 @@
         footer { margin-top: 40px; padding-bottom: 30px; }
         .social a { color: #666; margin: 0 15px; font-size: 28px; transition: 0.3s; }
         .social a:hover { color: var(--gold); }
+        .copy-text { color:#444; font-size: 12px; margin-top: 15px; }
     </style>
 </head>
 <body onclick="playWelcome()">
@@ -86,13 +87,31 @@
                 <option value="السعودية">السعودية 🇸🇦</option>
                 <option value="الإمارات">الإمارات 🇦🇪</option>
                 <option value="الكويت">الكويت 🇰🇼</option>
+                <option value="قطر">قطر 🇶🇦</option>
+                <option value="مصر">مصر 🇪🇬</option>
+                <option value="عُمان">عُمان 🇴🇲</option>
+                <option value="الأردن">الأردن 🇯🇴</option>
+                <option value="لبنان">لبنان 🇱🇧</option>
+                <option value="سوريا">سوريا 🇸🇾</option>
                 <option value="تركيا">تركيا 🇹🇷</option>
+                <option value="إيران">إيران 🇮🇷</option>
                 <option value="أمريكا">أمريكا 🇺🇸</option>
+                <option value="أوروبا">أوروبا 🇪🇺</option>
+                <option value="غير ذلك">غير ذلك</option>
             </select>
-            <select id="city"><option value="">اختر المحافظة</option></select>
+            <select id="city"><option value="">اختر المحافظة/المدينة</option></select>
             <select id="category">
                 <option value="">نوع النشاط</option>
-                <option>أطباء وعيادات</option><option>صيدليات</option><option>مطاعم وكافيهات</option><option>حلاقة وتجميل</option><option>صاغة ومجوهرات</option><option>غير ذلك</option>
+                <optgroup label="طبي">
+                    <option>أطباء وعيادات</option><option>صيدليات</option><option>مختبرات</option><option>مراكز تجميل</option>
+                </optgroup>
+                <optgroup label="تجاري">
+                    <option>مطاعم وكافيهات</option><option>أسواق ومولات</option><option>صاغة ومجوهرات</option><option>حلاقة رجالية</option><option>صالون نسائي</option><option>تجهيزات غذائية</option>
+                </optgroup>
+                <optgroup label="خدمي">
+                    <option>محاماة واستشارات</option><option>مكاتب تكسي</option><option>صيانة موبايل</option><option>كهربائي</option><option>نجارة</option><option>حدادة</option>
+                </optgroup>
+                <option>غير ذلك</option>
             </select>
             <input type="text" id="manualSearch" placeholder="ابحث باسم الدكتور أو العيادة أو النشاط...">
             <button class="btn-main-search" onclick="runSofySearch()">ابحث الآن 🚀</button>
@@ -122,11 +141,17 @@
         </div>
     </div>
 
+    <div style="margin-top: 30px;">
+        <a href="admin.html" style="color:var(--gold); text-decoration:none; font-weight:bold; font-size:14px; border-bottom:1px solid var(--gold); padding-bottom:2px;">🗝️ دخول السكرتير أو صاحب النشاط</a>
+    </div>
+
     <footer class="social">
-        <a href="https://facebook.com/sofygram"><i class="fab fa-facebook"></i></a>
-        <a href="https://instagram.com/sofygram.iq"><i class="fab fa-instagram"></i></a>
-        <a href="https://t.me/sofygram"><i class="fab fa-telegram"></i></a>
-        <p style="color:#444; font-size: 12px; margin-top: 15px;">جميع الحقوق محفوظة لصالح منصة صوفيگرام العالمية © 2026</p>
+        <div class="social-links">
+            <a href="https://facebook.com/sofygram"><i class="fab fa-facebook"></i></a>
+            <a href="https://instagram.com/sofygram.iq"><i class="fab fa-instagram"></i></a>
+            <a href="https://t.me/sofygram"><i class="fab fa-telegram"></i></a>
+        </div>
+        <p class="copy-text">جميع الحقوق محفوظة لصالح منصة صوفيگرام العالمية © 2026</p>
     </footer>
 </div>
 
@@ -138,14 +163,25 @@
 
     const locations = {
         "العراق": ["النجف", "كربلاء", "بغداد", "البصرة", "بابل", "الأنبار", "أربيل", "السليمانية", "دهوك", "ديالى", "ذي قار", "صلاح الدين", "كركوك", "ميسان", "المثنى", "نينوى", "القادسية", "واسط"],
-        "السعودية": ["الرياض", "جدة", "مكة"], "الإمارات": ["دبي", "أبوظبي"], "أمريكا": ["نيويورك", "ميشيغان"]
+        "السعودية": ["الرياض", "جدة", "مكة", "المدينة", "الدمام", "الخبر", "أبها"],
+        "الإمارات": ["دبي", "أبوظبي", "الشارقة", "عجمان", "رأس الخيمة"],
+        "الكويت": ["العاصمة", "حولي", "الفروانية", "الجهراء", "الأحمدي"],
+        "قطر": ["الدوحة", "الريان", "الوكرة"],
+        "مصر": ["القاهرة", "الإسكندرية", "الجيزة", "المنصورة"],
+        "أمريكا": ["نيويورك", "ميشيغان", "كاليفورنيا", "تكساس", "فلوريدا", "شيكاغو"],
+        "تركيا": ["إسطنبول", "أنقرة", "أنطاليا", "بورصة"],
+        "إيران": ["طهران", "مشهد", "أصفهان", "شيراز"],
+        "أوروبا": ["لندن", "باريس", "برلين", "روما", "مدريد"]
     };
 
     window.loadCities = () => {
         const country = document.getElementById('country').value;
         const citySelect = document.getElementById('city');
-        citySelect.innerHTML = '<option value="">اختر المحافظة</option>';
-        if(locations[country]) locations[country].forEach(c => citySelect.innerHTML += `<option value="${c}">${c}</option>`);
+        citySelect.innerHTML = '<option value="">اختر المحافظة/المدينة</option>';
+        if(locations[country]) {
+            locations[country].forEach(c => citySelect.innerHTML += `<option value="${c}">${c}</option>`);
+        }
+        citySelect.innerHTML += '<option value="غير ذلك">غير ذلك</option>';
     };
 
     let hasWelcomed = false;
@@ -166,6 +202,7 @@
             document.getElementById('micBtn').classList.remove('active');
             runSofySearch();
         };
+        rec.onerror = () => document.getElementById('micBtn').classList.remove('active');
     };
 
     window.runSofySearch = async () => {
@@ -183,7 +220,6 @@
             const matchCity = !cityQ || u.city === cityQ;
 
             if(matchName && matchCity) {
-                // جلب الملاحظات والحي (neighborhood)
                 const area = u.neighborhood ? u.neighborhood : "المنطقة غير محددة";
                 const currentNote = u.note ? u.note : "";
 
