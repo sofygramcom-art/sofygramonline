@@ -11,13 +11,14 @@
         body { background: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
         .master-card { background: #121212; padding: 25px; border-radius: 35px; max-width: 650px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 25px rgba(255, 215, 0, 0.2); }
         input, select { padding: 15px; border-radius: 15px; border: 1px solid var(--glow); background: #000; color: #fff; text-align: center; margin: 10px; width: 85%; font-size: 18px; outline: none; }
-        .btn-king { background: #2ecc71; color: white; padding: 18px; width: 90%; border: none; border-radius: 18px; font-weight: bold; cursor: pointer; font-size: 18px; margin-top: 10px; transition: 0.2s; }
+        .btn-king { background: #2ecc71; color: white; padding: 18px; width: 90%; border: none; border-radius: 18px; font-weight: bold; cursor: pointer; font-size: 18px; margin-top: 10px; box-shadow: 0 4px 0 #27ae60; transition: 0.2s; }
         .user-row { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 18px; border-radius: 20px; margin-bottom: 15px; border-right: 6px solid #888; text-align: right; }
         .active-user { border-right-color: #2ecc71; }
         .btn-group { display: flex; flex-direction: column; gap: 6px; min-width: 140px; }
         .btn { padding: 10px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; font-size: 13px; color: white; }
         .btn-f { background: #2ecc71; } .btn-t { background: #f1c40f; color: #000; } .btn-edit { background: #3498db; } .btn-d { background: #e74c3c; }
         .staff-section { background: #000; border: 1px dashed var(--glow); padding: 20px; border-radius: 25px; margin-top: 30px; display: none; }
+        .info-box { background: rgba(0,0,0,0.4); padding: 10px; border-radius: 12px; margin-top: 8px; border: 1px solid #333; display: none; text-align: right; }
     </style>
 </head>
 <body>
@@ -31,22 +32,23 @@
     <div id="masterBox" class="master-card" style="display:none;">
         <h2 style="color:#ffd700;">إدارة الصلاحيات والبيانات 👑</h2>
         <input type="text" id="mSearch" placeholder="ابحث عن مشترك..." onkeyup="filterUsers()" style="width:95%;">
-        <div id="usersList">جاري التحميل...</div>
-
-        <hr style="border:0; border-top:1px solid #333; margin:30px 0;">
         
-        <button onclick="toggleStaff()" style="background:#e67e22; color:white; padding:15px; border-radius:15px; border:none; width:95%; font-weight:bold; cursor:pointer; margin-bottom:10px;">إدارة المعاونين (الطاقم) 👥</button>
+        <div id="usersList">جاري تحميل المشتركين...</div>
+
+        <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
+        
+        <button onclick="toggleStaff()" style="background:#e67e22; color:white; padding:15px; border-radius:15px; border:none; width:95%; font-weight:bold; cursor:pointer; margin-bottom:10px;">👥 إدارة المعاونين (الطاقم)</button>
         
         <div id="staffSection" class="staff-section">
             <h3>إضافة معاون جديد</h3>
             <input type="text" id="sName" placeholder="اسم المعاون">
             <input type="password" id="sPass" placeholder="رمز المعاون">
             <select id="sRole">
-                <option value="gold">معاون ذهبي (كل الصلاحيات)</option>
+                <option value="gold">معاون ذهبي (صلاحيات واسعة)</option>
                 <option value="silver">معاون فضي (يومي/شهري)</option>
-                <option value="bronze">معاون برونزي (يومي فقط)</option>
+                <option value="bronze">معاون برونزي (يومي فقط + خصوصية)</option>
             </select>
-            <button onclick="addStaff()" class="btn-king">إضافة ✅</button>
+            <button onclick="addStaff()" class="btn-king">حفظ المعاون ✅</button>
             <div id="staffList" style="margin-top:20px; text-align:right;"></div>
         </div>
 
@@ -57,7 +59,13 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
         import { getDatabase, ref, onValue, get, update, remove, set } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
-        const config = { apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", authDomain: "sofygramclinic.firebaseapp.com", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com", projectId: "sofygramclinic", appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc" };
+        const config = { 
+            apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", 
+            authDomain: "sofygramclinic.firebaseapp.com", 
+            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com", 
+            projectId: "sofygramclinic", 
+            appId: "1:207475452149:web:3f0fbbcc1419bf9e6b7dbc" 
+        };
         const app = initializeApp(config); const db = getDatabase(app);
 
         window.masterLogin = async () => {
@@ -74,7 +82,7 @@
         function loadUsers() {
             onValue(ref(db, 'users'), (snap) => {
                 const data = snap.val(); const list = document.getElementById('usersList'); list.innerHTML = "";
-                if(!data) return;
+                if(!data) { list.innerHTML = "لا يوجد مشتركين حالياً"; return; }
                 Object.keys(data).reverse().forEach(id => {
                     const u = data[id];
                     const exp = u.expiryDate ? new Date(u.expiryDate) : null;
@@ -82,13 +90,14 @@
                     list.innerHTML += `
                         <div class="user-row ${days > 0 ? 'active-user' : ''}" data-name="${u.name.toLowerCase()}">
                             <div>
-                                <b>${u.name}</b> <span style="background:gold;color:black;padding:2px 8px;border-radius:8px;">${days > 0 ? days + ' ي' : '!'}</span><br>
-                                <small>${u.phone || 'بدون هاتف'}</small>
+                                <b style="font-size:18px;">${u.name}</b> <span style="background:gold;color:black;padding:2px 8px;border-radius:10px; font-weight:bold;">${days > 0 ? days + ' يوم' : 'منتهي'}</span><br>
+                                <small style="color:#aaa;">الرقم: ${u.phone || 'لا يوجد'}</small>
+                                <div id="info-${id}" class="info-box"></div>
                             </div>
                             <div class="btn-group">
                                 <button class="btn btn-f" onclick="setSub('${id}', 30)">تفعيل شهري ✅</button>
                                 <button class="btn btn-t" onclick="setSub('${id}', 3)">تفعيل تجريبي 🔑</button>
-                                <button class="btn btn-edit" onclick="editUser('${id}', '${u.name}', '${u.phone}', '${u.password}')">🔑 الرمز / تعديل</button>
+                                <button class="btn btn-edit" onclick="showTools('${id}', '${u.name}', '${u.phone}', '${u.password}')">🔑 الرمز / تعديل</button>
                                 <button class="btn btn-d" onclick="delUser('${id}')">حذف</button>
                             </div>
                         </div>`;
@@ -96,12 +105,24 @@
             });
         }
 
-        window.editUser = (id, name, phone, pass) => {
-            const nName = prompt("تعديل الاسم:", name);
-            const nPhone = prompt("تعديل الهاتف:", phone);
-            const nPass = prompt("تعديل الباسوورد:", pass);
-            if(confirm("تأكيد التعديلات؟")) {
-                update(ref(db, `users/${id}`), { name: nName, phone: nPhone, password: nPass });
+        window.showTools = (id, name, phone, pass) => {
+            const div = document.getElementById(`info-${id}`);
+            if(div.style.display === 'block') { div.style.display = 'none'; return; }
+            div.innerHTML = `
+                <div style="font-size:14px; margin-bottom:10px;">الرمز الحالي: <b style="color:gold;">${pass}</b></div>
+                <div style="display:flex; gap:5px;">
+                    <button class="btn btn-edit" style="font-size:10px;" onclick="editField('${id}', 'name', '${name}')">الاسم</button>
+                    <button class="btn btn-edit" style="font-size:10px;" onclick="editField('${id}', 'phone', '${phone}')">الهاتف</button>
+                    <button class="btn btn-edit" style="font-size:10px;" onclick="editField('${id}', 'password', '${pass}')">الرمز</button>
+                </div>`;
+            div.style.display = 'block';
+        };
+
+        window.editField = (id, field, current) => {
+            const n = prompt(`تعديل ${field}:`, current);
+            if(n && n !== current) {
+                let upd = {}; upd[field] = n;
+                update(ref(db, `users/${id}`), upd).then(() => alert("تم التحديث ✅"));
             }
         };
 
@@ -115,20 +136,28 @@
             const pass = document.getElementById('sPass').value;
             const role = document.getElementById('sRole').value;
             if(name && pass) {
-                set(ref(db, 'staff/' + name), { name, pass, role }).then(() => alert("تم ✅"));
-            }
+                set(ref(db, 'staff/' + name), { name, pass, role }).then(() => {
+                    alert("تمت إضافة المعاون بنجاح ✅");
+                    document.getElementById('sName').value = ""; document.getElementById('sPass').value = "";
+                });
+            } else { alert("يرجى ملء كافة الحقول"); }
         };
 
         function loadStaff() {
             onValue(ref(db, 'staff'), (snap) => {
-                const data = snap.val(); const div = document.getElementById('staffList'); div.innerHTML = "<h4>المعاونين الحاليين:</h4>";
+                const data = snap.val(); const div = document.getElementById('staffList'); 
+                div.innerHTML = "<h4 style='color:gold;'>قائمة الطاقم:</h4>";
+                if(!data) return;
                 for(let id in data) {
-                    div.innerHTML += `<p>👤 ${id} (${data[id].role}) <button onclick="delStaff('${id}')" style="color:red; background:none; border:none; cursor:pointer;">حذف</button></p>`;
+                    div.innerHTML += `<div style="border-bottom:1px solid #333; padding:5px; display:flex; justify-content:space-between;">
+                        <span>👤 ${id} (${data[id].role})</span>
+                        <button onclick="delStaff('${id}')" style="color:red; background:none; border:none; cursor:pointer;">حذف</button>
+                    </div>`;
                 }
             });
         }
 
-        window.delStaff = (id) => { if(confirm("حذف المعاون؟")) remove(ref(db, 'staff/' + id)); };
+        window.delStaff = (id) => { if(confirm("هل أنت متأكد من حذف هذا المعاون؟")) remove(ref(db, 'staff/' + id)); };
         window.setSub = (id, d) => {
             const exp = new Date(); exp.setDate(exp.getDate() + d);
             update(ref(db, `users/${id}`), { active: true, expiryDate: exp.toISOString() }).then(() => alert("تم التفعيل ✅"));
@@ -137,7 +166,7 @@
             const n = prompt("رمز الماستر الجديد:");
             if(n) set(ref(db, 'admin_settings/masterHash'), CryptoJS.MD5(n).toString()).then(() => location.reload());
         };
-        window.delUser = (id) => { if(confirm("حذف؟")) remove(ref(db, `users/${id}`)); };
+        window.delUser = (id) => { if(confirm("هل تريد حذف هذا المشترك نهائياً؟")) remove(ref(db, `users/${id}`)); };
         window.filterUsers = () => {
             const v = document.getElementById('mSearch').value.toLowerCase();
             document.querySelectorAll('.user-row').forEach(r => r.style.display = r.getAttribute('data-name').includes(v) ? "flex" : "none");
