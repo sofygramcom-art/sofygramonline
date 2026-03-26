@@ -7,57 +7,58 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --gold: #ffd700; --neon: #ff4500; --dark: #050a14; }
-        body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; text-align: center; overflow-x: hidden; }
+        body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; text-align: center; }
 
-        .hero { background: radial-gradient(circle at center, #1a2a44 0%, var(--dark) 100%); padding: 40px 20px; }
-        .logo-box img { width: 160px; filter: drop-shadow(0 0 15px var(--gold)); }
-        .brand-title { font-size: 50px; font-weight: 900; text-shadow: 0 0 25px var(--gold); margin: 10px 0; letter-spacing: 2px; }
+        .hero { background: radial-gradient(circle at center, #1a2a44 0%, var(--dark) 100%); padding: 50px 20px; }
+        .logo-box img { width: 180px; filter: drop-shadow(0 0 15px var(--gold)); }
+        .brand-title { font-size: 55px; font-weight: 900; text-shadow: 0 0 30px var(--gold); margin: 10px 0; }
 
         /* محرك البحث */
         .search-engine { 
-            background: rgba(12, 18, 29, 0.95); border-radius: 40px; padding: 30px; 
-            max-width: 850px; margin: 25px auto; border: 1px solid #1e293b;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            background: rgba(12, 18, 29, 0.95); border-radius: 45px; padding: 35px; 
+            max-width: 850px; margin: 30px auto; border: 1px solid #1e293b;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8);
         }
         .mic-btn { width: 90px; height: 90px; border-radius: 50%; background: #000; border: 4px solid var(--neon); color: white; font-size: 40px; cursor: pointer; box-shadow: 0 0 20px var(--neon); }
         .mic-btn.active { animation: pulse-fire 1.2s infinite; background: var(--neon); }
         @keyframes pulse-fire { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-        select, input { width: 100%; padding: 15px; border-radius: 15px; background: #000; border: 1px solid #333; color: white; outline: none; box-sizing: border-box; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; }
+        select, input { width: 100%; padding: 18px; border-radius: 18px; background: #000; border: 1px solid #333; color: white; outline: none; box-sizing: border-box; }
 
-        /* قسم الفيديوهات التوضيحية */
-        .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; max-width: 900px; margin: 40px auto; padding: 0 15px; }
-        .v-card { border-radius: 20px; overflow: hidden; border: 2px solid var(--gold); background: #000; }
-        video { width: 100%; display: block; }
+        /* قسم الفيديوهات الجديد */
+        .video-section { max-width: 900px; margin: 50px auto; padding: 20px; }
+        .video-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        video { width: 100%; border-radius: 25px; border: 2px solid var(--gold); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2); }
 
-        /* العرض الذهبي (الاشتراك) */
-        .mega-offer { 
-            background: linear-gradient(145deg, #1a2a44, #050a14); 
+        /* قسم الاشتراك والتخفيض الكبير */
+        .big-register-card { 
+            background: linear-gradient(135deg, #121c2c 0%, #0a0f1a 100%); 
             border: 3px solid var(--gold); border-radius: 40px; 
-            padding: 40px 20px; max-width: 850px; margin: 50px auto; position: relative;
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
+            padding: 45px; max-width: 850px; margin: 60px auto; position: relative;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
         }
-        .badge-50 { 
-            position: absolute; top: -25px; left: 50%; transform: translateX(-50%); 
-            background: red; color: white; padding: 10px 30px; border-radius: 15px; 
-            font-weight: bold; font-size: 22px; animation: glow-red 1s infinite alternate;
+        .discount-badge { 
+            position: absolute; top: -20px; right: 30px; background: red; color: white; 
+            padding: 10px 25px; border-radius: 15px; font-weight: bold; font-size: 20px; 
+            animation: bounce 1.5s infinite; 
         }
-        @keyframes glow-red { from { box-shadow: 0 0 10px red; } to { box-shadow: 0 0 25px red; } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        .btn-register-mega { 
-            background: var(--gold); color: #000; padding: 20px 50px; border-radius: 50px; 
-            text-decoration: none; font-weight: bold; font-size: 24px; display: inline-block; 
-            margin-top: 25px; box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
-            transition: 0.3s;
+        .btn-register-now { 
+            background: var(--gold); color: #000; padding: 20px 60px; border-radius: 50px; 
+            text-decoration: none; font-weight: bold; font-size: 22px; display: inline-block; 
+            margin-top: 25px; transition: 0.3s; box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
         }
-        .btn-register-mega:hover { transform: scale(1.05); background: #fff; }
+        .btn-register-now:hover { transform: scale(1.05); background: white; }
 
-        #results { margin-top: 25px; text-align: right; max-width: 800px; margin: auto; }
-        .res-card { background: #121c2c; padding: 18px; border-radius: 20px; margin-bottom: 10px; border-right: 6px solid var(--gold); cursor: pointer; }
+        .staff-login { margin-top: 30px; display: block; color: var(--gold); text-decoration: none; font-size: 15px; font-weight: bold; }
+
+        #results { margin-top: 30px; text-align: right; max-width: 800px; margin: auto; }
+        .res-card { background: #121c2c; padding: 20px; border-radius: 20px; margin-bottom: 12px; border-right: 6px solid var(--gold); cursor: pointer; }
         
-        footer { background: #000; padding: 40px; border-top: 1px solid #1e293b; margin-top: 50px; }
-        .social a { color: #888; margin: 0 15px; font-size: 30px; transition: 0.3s; }
+        footer { background: #000; padding: 50px; margin-top: 60px; border-top: 1px solid #1e293b; }
+        .social a { color: #888; margin: 0 20px; font-size: 35px; transition: 0.3s; }
         .social a:hover { color: var(--gold); }
     </style>
 </head>
@@ -66,39 +67,39 @@
 <div class="hero">
     <div class="logo-box"><img src="logo.png"></div>
     <h1 class="brand-title">SOFYGRAM</h1>
-    <div style="color:var(--gold); font-weight:bold; letter-spacing:4px;">صوفيگرام العالمية</div>
-
-    <div class="video-grid">
-        <div class="v-card"><video controls preload="metadata"><source src="v1.MP4" type="video/mp4"></video></div>
-        <div class="v-card"><video controls preload="metadata"><source src="v2.MP4" type="video/mp4"></video></div>
-        <div class="v-card"><video controls preload="metadata"><source src="v3.MP4" type="video/mp4"></video></div>
-    </div>
+    <div style="color:var(--gold); font-weight:bold; letter-spacing:5px;">صوفيگرام العالمية</div>
 
     <div class="search-engine">
         <div class="mic-box">
             <button id="micBtn" class="mic-btn" onclick="startSofyVoice()">🎙️</button>
-            <p style="color:var(--gold); margin-top:10px; font-weight:bold;">البحث الصوتي الذكي</p>
+            <p style="color:var(--gold); margin-top:15px; font-weight: bold;">اضغط وتحدث (البحث الصوتي الذكي)</p>
         </div>
         <div class="grid-inputs">
-            <select id="country"><option>العراق</option><option>الإمارات</option><option>تركيا</option><option>غير ذلك</option></select>
-            <select id="city"><option>النجف</option><option>كربلاء</option><option>بغداد</option><option>البصرة</option></select>
-            <select id="category"><option>أطباء وعيادات</option><option>صيدليات</option><option>مطاعم</option><option>حلاقة</option></select>
-            <input type="text" id="manualSearch" placeholder="اكتب اسم النشاط هنا...">
+            <select id="country"><option>العراق</option><option>الإمارات</option><option>السعودية</option><option>تركيا</option><option>أوروبا</option><option>غير ذلك</option></select>
+            <select id="city"><option>النجف</option><option>كربلاء</option><option>بغداد</option><option>البصرة</option><option>بابل</option><option>أربيل</option><option>غير ذلك</option></select>
+            <select id="category"><option>أطباء وعيادات</option><option>صيدليات</option><option>مطاعم</option><option>حلاقة</option><option>محاماة</option><option>غير ذلك</option></select>
+            <input type="text" id="manualSearch" placeholder="ابحث باسم العيادة أو النشاط...">
         </div>
-        <button onclick="runSofySearch()" style="width:100%; padding:20px; margin-top:15px; background:var(--gold); color:black; border:none; border-radius:15px; font-weight:bold; cursor:pointer; font-size:20px;">بحث الآن 🚀</button>
+        <button onclick="runSofySearch()" style="width:100%; padding:22px; margin-top:20px; background:var(--gold); color:black; border:none; border-radius:20px; font-weight:bold; cursor:pointer; font-size:22px;">بحث الآن 🚀</button>
         <div id="results"></div>
     </div>
 
-    <div class="mega-offer">
-        <div class="badge-50">عرض الانطلاقة: خصم 50%</div>
-        <h2 style="color:var(--gold); font-size: 30px; margin-top: 10px;">هل أنت صاحب عيادة أو نشاط تجاري؟</h2>
-        <p style="font-size: 18px; color: #ccc; line-height: 1.6;">
-            كن جزءاً من المستقبل الرقمي ونظّم عملك بذكاء. <br> 
-            اشترك الآن واستمتع بنظام إدارة الطوابير العالمي بأقل سعر.
-        </p>
-        <a href="register2.html" class="btn-register-mega">اشترك الآن واحصل على التخفيض 🚀</a>
-        <br><br>
-        <a href="staff.html" style="color: var(--gold); text-decoration: none; font-size: 14px;">🗝️ دخول السكرتير أو صاحب النشاط</a>
+    <div class="video-section">
+        <h2 style="color:var(--gold); margin-bottom: 30px;">شاهد صوفيگرام في العمل 🛰️</h2>
+        <div class="video-container">
+            <video controls poster="logo.png"><source src="v1.MP4" type="video/mp4"></video>
+            <video controls poster="logo.png"><source src="v2.MP4" type="video/mp4"></video>
+            <video controls poster="logo.png"><source src="v3.MP4" type="video/mp4"></video>
+        </div>
+    </div>
+
+    <div class="big-register-card">
+        <div class="discount-badge">تخفيض 50% لفترة محدودة</div>
+        <h2 style="color:var(--gold); font-size: 32px;">هل أنت صاحب نشاط تجاري أو طبي؟</h2>
+        <p style="font-size: 18px; color: #ccc;">انضم الآن لأكبر منصة تنظيم طوابير عالمية. خفف الزخم، نظم الحجوزات، وارتقِ بخدمتك إلى المستوى الرقمي.</p>
+        <a href="register2.html" class="btn-register-now">سجل نشاطك الآن - Register Now</a>
+        <br>
+        <a href="staff.html" class="staff-login">🗝️ دخول السكرتير أو صاحب النشاط</a>
     </div>
 </div>
 
@@ -108,7 +109,7 @@
         <a href="https://instagram.com/sofygram.iq"><i class="fab fa-instagram"></i></a>
         <a href="https://t.me/sofygram"><i class="fab fa-telegram"></i></a>
     </div>
-    <p style="color:#555; margin-top:20px;">جميع الحقوق محفوظة لصالح منصة صوفيگرام العالمية © 2026</p>
+    <p style="color:#555; margin-top:30px;">جميع الحقوق محفوظة لصالح منصة صوفيگرام العالمية © 2026<br>sofygram.com</p>
 </footer>
 
 <script type="module">
