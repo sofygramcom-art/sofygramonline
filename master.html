@@ -3,66 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Master | الدخول المباشر 👑</title>
+    <title>Sofygram Master | الإدارة الملكية 👑</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --glow: #ffd700; }
-        body { background: #050a14; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
-        .master-card { background: #121212; padding: 25px; border-radius: 35px; max-width: 650px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 25px rgba(255, 215, 0, 0.2); }
-        input { padding: 15px; border-radius: 15px; border: 1px solid var(--glow); background: #000; color: #fff; text-align: center; margin: 10px; width: 85%; font-size: 18px; outline: none; }
-        .btn-king { background: #2ecc71; color: white; padding: 18px; width: 90%; border: none; border-radius: 18px; font-weight: bold; cursor: pointer; font-size: 18px; margin-top: 10px; box-shadow: 0 4px 0 #27ae60; }
-        .user-row { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 18px; border-radius: 20px; margin-bottom: 15px; border-right: 6px solid #2ecc71; text-align: right; }
+        :root { --glow: #ffd700; --bg: #0a0f1d; --card: #161c2d; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 15px; }
+        .container { max-width: 600px; margin: auto; }
+        .master-card { background: var(--card); padding: 25px; border-radius: 25px; border: 1px solid rgba(255,215,0,0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 20px; }
+        .user-row { display: flex; justify-content: space-between; align-items: center; background: #1e2538; padding: 15px; border-radius: 18px; margin-bottom: 12px; border-right: 5px solid var(--glow); transition: 0.3s; }
+        .user-info { text-align: right; }
+        .user-info b { font-size: 18px; color: #fff; display: block; }
+        .user-info small { color: #8b9bb4; font-size: 13px; }
+        .badge { background: var(--glow); color: #000; padding: 2px 8px; border-radius: 8px; font-size: 12px; font-weight: bold; margin-right: 5px; }
+        .btn-group { display: flex; gap: 8px; }
+        .btn { border: none; padding: 10px 15px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 14px; color: white; transition: 0.2s; }
+        .btn-activate { background: #2ecc71; box-shadow: 0 4px 0 #27ae60; }
+        .btn-delete { background: #e74c3c; box-shadow: 0 4px 0 #c0392b; }
+        .btn:active { transform: translateY(3px); box-shadow: none; }
+        input { width: 90%; padding: 15px; border-radius: 15px; border: 1px solid var(--glow); background: #000; color: #fff; text-align: center; font-size: 18px; margin-bottom: 15px; outline: none; }
     </style>
 </head>
 <body>
 
-    <div id="authBox" class="master-card">
-        <h2 style="color:var(--glow);">قفل الإدارة الملكية 👑</h2>
-        <input type="password" id="mPass" placeholder="أدخل الرمز الخاص بك">
-        <button onclick="masterLogin()" class="btn-king">دخول الملك 👑</button>
-    </div>
+    <div class="container">
+        <div id="authBox" class="master-card">
+            <h2 style="color:var(--glow);">دخول الإدارة 👑</h2>
+            <input type="password" id="mPass" placeholder="الرمز السري">
+            <button onclick="masterLogin()" class="btn btn-activate" style="width: 100%; padding: 18px;">دخول الملك 👑</button>
+        </div>
 
-    <div id="masterBox" class="master-card" style="display:none;">
-        <h2 style="color:#ffd700;">قائمة العيادات والاشتراكات 👑</h2>
-        <div id="usersList">جاري جلب البيانات...</div>
+        <div id="masterBox" style="display:none;">
+            <div class="master-card" style="padding: 15px;">
+                <h2 style="color:var(--glow); margin-bottom:10px;">لوحة العيادات 🏢</h2>
+                <input type="text" id="mSearch" placeholder="بحث عن عيادة..." onkeyup="filterUsers()" style="width: 93%; font-size: 15px; padding: 10px;">
+            </div>
+            <div id="usersList">جاري ترتيب العيادات...</div>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+        import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
         const config = { apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com" };
         const app = initializeApp(config); const db = getDatabase(app);
 
         window.masterLogin = () => {
             const p = document.getElementById('mPass').value;
-            // تم تعديل الشرط ليقبل رمزك أياً كان (مؤقتاً) للدخول وإصلاح الرمز
-            if (p === "123456" || p === "000000" || p === "2026") { 
+            if (p === "123456" || p === "2026") {
                 document.getElementById('authBox').style.display = 'none';
                 document.getElementById('masterBox').style.display = 'block';
                 loadUsers();
-            } else { alert("خطأ في الرمز!"); }
+            } else { alert("الرمز غير صحيح"); }
         };
 
         function loadUsers() {
             onValue(ref(db, 'businesses'), (snap) => {
                 const data = snap.val(); const list = document.getElementById('usersList'); list.innerHTML = "";
-                if(!data) { list.innerHTML = "لا توجد عيادات مسجلة"; return; }
+                if(!data) { list.innerHTML = "لا يوجد بيانات"; return; }
+                
                 Object.keys(data).reverse().forEach(id => {
                     const u = data[id];
+                    const exp = u.expiry ? new Date(u.expiry) : null;
+                    let days = exp ? Math.ceil((exp - new Date()) / 86400000) : 0;
+                    
                     list.innerHTML += `
-                        <div class="user-row">
-                            <div><b>${u.name}</b><br><small>الرمز: ${u.password}</small></div>
-                            <button style="background:#2ecc71; color:white; border:none; padding:8px; border-radius:10px;" onclick="setSub('${id}')">تفعيل شهر</button>
+                        <div class="user-row" data-name="${u.name.toLowerCase()}">
+                            <div class="user-info">
+                                <b>${u.name} ${days > 0 ? '<span class="badge">'+days+' يوم</span>' : '<span class="badge" style="background:#e74c3c; color:#fff;">منتهي</span>'}</b>
+                                <small><i class="fas fa-key"></i> الرمز: ${u.password || '---'}</small>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-activate" onclick="setSub('${id}')">تفعيل</button>
+                                <button class="btn btn-delete" onclick="delUser('${id}')"><i class="fas fa-trash"></i></button>
+                            </div>
                         </div>`;
                 });
             });
         }
+
         window.setSub = (id) => {
             const exp = new Date(); exp.setDate(exp.getDate() + 30);
-            update(ref(db, `businesses/${id}`), { active: true, expiry: exp.toISOString() });
-            alert("تم التمديد بنجاح ✅");
+            update(ref(db, `businesses/${id}`), { active: true, expiry: exp.toISOString() })
+            .then(() => alert("تم التمديد 30 يوم بنجاح ✅"));
+        };
+
+        window.delUser = (id) => { if(confirm("هل أنت متأكد من حذف هذه العيادة؟")) remove(ref(db, `businesses/${id}`)); };
+
+        window.filterUsers = () => {
+            const v = document.getElementById('mSearch').value.toLowerCase();
+            document.querySelectorAll('.user-row').forEach(r => r.style.display = r.getAttribute('data-name').includes(v) ? "flex" : "none");
         };
     </script>
 </body>
