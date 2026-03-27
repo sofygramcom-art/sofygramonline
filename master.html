@@ -79,7 +79,7 @@
 
         window.masterLogin = () => {
             const p = document.getElementById('mPass').value;
-            if (CryptoJS.MD5(p).toString() === masterHash || p === "123456") {
+            if (CryptoJS.MD5(p).toString() === masterHash || p === "@@@###$$$112233<?>") {
                 document.getElementById('authBox').style.display='none';
                 document.getElementById('masterBox').style.display='block';
                 loadUsers();
