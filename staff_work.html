@@ -3,24 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram | لوحة المعاونين 🛠️</title>
+    <title>Sofygram | لوحة المعاونين الماركة 🛠️</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --glow: #2ecc71; --bg: #050a14; }
+        :root { --glow: #2ecc71; --gold: #ffd700; --bg: #050a14; }
         body { background: var(--bg); color: white; font-family: sans-serif; text-align: center; padding: 10px; margin: 0; }
-        .card { background: #121212; padding: 20px; border-radius: 30px; max-width: 600px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 20px rgba(46, 204, 113, 0.2); }
-        .user-row { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 15px; border-radius: 20px; margin-bottom: 12px; border-right: 5px solid var(--glow); text-align: right; }
-        .btn { padding: 10px 15px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; font-size: 13px; color: white; display: flex; align-items: center; gap: 5px; }
+        .card { background: #121212; padding: 20px; border-radius: 30px; max-width: 650px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 20px rgba(46, 204, 113, 0.2); }
+        
+        /* عداد العيادات العلوي */
+        .stats-bar { background: rgba(255, 215, 0, 0.1); border: 1px solid var(--gold); padding: 10px; border-radius: 15px; margin-bottom: 20px; color: var(--gold); font-weight: bold; font-size: 14px; }
+
+        .user-row { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 18px; border-radius: 20px; margin-bottom: 15px; border-right: 6px solid var(--glow); text-align: right; }
+        .expired-row { border-right-color: #e74c3c; opacity: 0.9; }
+
+        .btn { padding: 10px 15px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; font-size: 13px; color: white; display: flex; align-items: center; gap: 5px; width: 100%; justify-content: center; }
         .btn-active { background: #2ecc71; }
         .btn-test { background: #f1c40f; color: #000; }
-        .btn-wa { background: #25d366; }
+        .btn-wa { background: #25d366; text-decoration: none; }
+        
+        .days-badge { background: var(--gold); color: #000; padding: 4px 10px; border-radius: 8px; font-weight: bold; font-size: 12px; margin-right: 5px; }
         input { width: 90%; padding: 14px; border-radius: 15px; border: 1px solid var(--glow); background: #000; color: #fff; text-align: center; margin-bottom: 20px; outline: none; }
     </style>
 </head>
 <body>
     <div class="card">
+        <div class="stats-bar">
+            📊 إجمالي العيادات المسجلة: <span id="totalClinics">0</span>
+        </div>
+
         <h2 style="color:var(--glow);">قسم تفعيل وصيانة العيادات 🛠️</h2>
         <input type="text" id="mSearch" placeholder="ابحث عن اسم العيادة..." onkeyup="filterUsers()">
+        
         <div id="usersList">جاري تحميل البيانات...</div>
     </div>
 
@@ -33,18 +46,28 @@
 
         onValue(ref(db, 'users'), (snap) => {
             const data = snap.val(); const list = document.getElementById('usersList'); list.innerHTML = "";
-            if(!data) return;
-            Object.keys(data).reverse().forEach(id => {
-                const u = data[id];
+            if(!data) { document.getElementById('totalClinics').innerText = "0"; return; }
+            
+            let usersArr = [];
+            for(let id in data) { usersArr.push({id, ...data[id]}); }
+            document.getElementById('totalClinics').innerText = usersArr.length;
+            
+            // ترتيب الأحدث أولاً
+            usersArr.reverse().forEach(u => {
+                const expiry = u.expiryDate ? new Date(u.expiryDate) : null;
+                let daysLeft = expiry ? Math.ceil((expiry - new Date()) / (1000*60*60*24)) : 0;
+                
                 list.innerHTML += `
-                    <div class="user-row" data-name="${(u.name || '').toLowerCase()}">
-                        <div>
-                            <b>${u.name}</b><br>
-                            <small style="color:#aaa;">${u.phone || 'بدون هاتف'}</small>
+                    <div class="user-row ${daysLeft <= 0 ? 'expired-row' : ''}" data-name="${(u.name || '').toLowerCase()}">
+                        <div style="flex:1;">
+                            <b style="font-size:18px;">${u.name}</b> 
+                            <span class="days-badge">${daysLeft > 0 ? daysLeft + ' يوم' : '!!!'}</span><br>
+                            <small style="color:#aaa;">ينتهي: ${expiry ? expiry.toLocaleDateString('en-GB') : '---'}</small><br>
+                            <small style="color:var(--gold); font-size:11px;">هاتف: ${u.phone || 'لا يوجد'}</small>
                         </div>
-                        <div style="display:flex; flex-direction:column; gap:5px;">
-                            <button class="btn btn-active" onclick="setSub('${id}', 30)">تفعيل شهر</button>
-                            <button class="btn btn-test" onclick="setSub('${id}', 3)">تجربة 3 أيام</button>
+                        <div style="display:flex; flex-direction:column; gap:5px; min-width:120px;">
+                            <button class="btn btn-active" onclick="setSub('${u.id}', 30)">تفعيل شهر</button>
+                            <button class="btn btn-test" onclick="setSub('${u.id}', 3)">تجربة 3 أيام</button>
                             <a href="https://wa.me/${(u.phone || '').replace(/\D/g,'')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i> واتساب</a>
                         </div>
                     </div>`;
