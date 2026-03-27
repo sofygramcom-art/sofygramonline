@@ -69,7 +69,7 @@
         let curUser = ""; let curNum = 0;
 
         window.login = async () => {
-            const user = document.getElementById('u').value.trim();
+            const user = document.getElementById('u').value.trim().toLowerCase();
             const pass = document.getElementById('p').value.trim();
 
             if(!user || !pass) return alert("يرجى إدخال البيانات");
@@ -79,7 +79,7 @@
             const staffData = staffSnap.val();
             for(let id in staffData) {
                 if(staffData[id].name === user && staffData[id].password === pass) {
-                    sessionStorage.setItem('staff_auth', 'true'); // بطاقة الدخول
+                    sessionStorage.setItem('staff_auth', 'true');
                     sessionStorage.setItem('staff_name', user);
                     alert("أهلاً بك يا فريق الإدارة ✅");
                     location.href = 'staff_work.html';
@@ -87,23 +87,41 @@
                 }
             }
 
-            // فحص الطبيب
+            // فحص الطبيب/المشترك مع شرط التفعيل
             get(child(ref(db), `users/${user}`)).then((s) => {
-                if(s.exists() && s.val().password == pass) {
-                    curUser = user;
-                    document.getElementById('loginBox').style.display = 'none';
-                    document.getElementById('controlBox').style.display = 'block';
-                    new QRCode(document.getElementById("qr-area"), {
-                        text: `https://sofygram.com/view.html?id=${curUser}`,
-                        width: 80, height: 80
-                    });
-                    onValue(ref(db, `users/${curUser}`), (snap) => {
-                        const d = snap.val(); curNum = d.currentNum || 0;
-                        document.getElementById('n').innerText = curNum;
-                        document.getElementById('cName').innerText = d.name;
-                    });
-                } else alert("بيانات خاطئة!");
-            });
+                if(s.exists()) {
+                    const userData = s.val();
+                    if(userData.password == pass) {
+                        // الشرط الجديد: هل الحساب مفعل؟
+                        if(userData.active === true) {
+                            curUser = user;
+                            document.getElementById('loginBox').style.display = 'none';
+                            document.getElementById('controlBox').style.display = 'block';
+                            
+                            // توليد الباركود
+                            document.getElementById("qr-area").innerHTML = ""; // تنظيف قبل الإنشاء
+                            new QRCode(document.getElementById("qr-area"), {
+                                text: `https://sofygram.com/view.html?id=${curUser}`,
+                                width: 80, height: 80
+                            });
+
+                            onValue(ref(db, `users/${curUser}`), (snap) => {
+                                const d = snap.val(); curNum = d.currentNum || 0;
+                                document.getElementById('n').innerText = curNum;
+                                document.getElementById('cName').innerText = d.name;
+                                if(d.note) document.getElementById('nt').value = d.note;
+                                if(d.status) document.getElementById('st').value = d.status;
+                            });
+                        } else {
+                            alert("⚠️ عذراً، حسابك قيد المراجعة. يرجى الانتظار حتى يتم تفعيله من قبل الإدارة الملكية 👑");
+                        }
+                    } else {
+                        alert("رمز المرور خاطئ ❌");
+                    }
+                } else {
+                    alert("اسم المستخدم غير موجود ❌");
+                }
+            }).catch(e => alert("فشل الاتصال بالخادم"));
         };
 
         window.ch = (v) => { 
@@ -123,7 +141,7 @@
         window.downloadQR = () => {
             html2canvas(document.querySelector("#qr-area")).then(canvas => {
                 let link = document.createElement('a');
-                link.download = `Sofygram-QR.png`;
+                link.download = `Sofygram-QR-${curUser}.png`;
                 link.href = canvas.toDataURL();
                 link.click();
             });
