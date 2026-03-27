@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofygram | لوحة المندوب 🤝</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --rep-color: #9b59b6; --bg: #050a14; --card: #121c2c; }
+        body { background: var(--bg); color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
+        .rep-card { background: var(--card); padding: 25px; border-radius: 25px; max-width: 500px; margin: 15px auto; border: 1px solid var(--rep-color); }
+        input { padding: 14px; border-radius: 12px; border: 1px solid #444; background: #000; color: #fff; text-align: center; width: 85%; margin-bottom: 10px; }
+        .btn-go { background: var(--rep-color); color: white; border: none; padding: 12px; width: 88%; border-radius: 12px; cursor: pointer; font-weight: bold; }
+        .user-row { background: #1e293b; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; border-right: 4px solid var(--rep-color); }
+        .status { font-weight: bold; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <div id="loginBox" class="rep-card">
+        <h2 style="color:var(--rep-color);">دخول المندوب 🤝</h2>
+        <input type="text" id="rCode" placeholder="كود المندوب (M1)">
+        <input type="password" id="rPass" placeholder="كلمة المرور">
+        <button class="btn-go" onclick="repLogin()">دخول</button>
+    </div>
+
+    <div id="dataBox" class="rep-card" style="display:none;">
+        <h3 id="hTitle"></h3>
+        <div id="rList"></div>
+        <button onclick="location.reload()" style="background:none; border:none; color:#888; margin-top:15px;">تسجيل خروج</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com" };
+        const app = initializeApp(firebaseConfig); const db = getDatabase(app);
+
+        window.repLogin = async () => {
+            const code = document.getElementById('rCode').value.trim().toUpperCase();
+            const pass = document.getElementById('rPass').value.trim();
+            const snap = await get(ref(db, 'reps/' + code));
+            
+            if(snap.exists() && snap.val().password === pass) {
+                document.getElementById('loginBox').style.display='none';
+                document.getElementById('dataBox').style.display='block';
+                document.getElementById('hTitle').innerText = "زبائن المندوب: " + code;
+                loadData(code);
+            } else { alert("خطأ في البيانات!"); }
+        };
+
+        function loadData(code) {
+            onValue(ref(db, 'users'), (snap) => {
+                const data = snap.val(); const list = document.getElementById('rList'); list.innerHTML = "";
+                for(let id in data) {
+                    if(data[id].referredBy && data[id].referredBy.toUpperCase() === code) {
+                        list.innerHTML += `
+                            <div class="user-row">
+                                <span>${data[id].name}</span>
+                                <span class="status" style="color:${data[id].active ? '#2ecc71':'#e74c3c'}">
+                                    ${data[id].active ? 'مفعل ✅' : 'قيد الانتظار ⏳'}
+                                </span>
+                            </div>`;
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
