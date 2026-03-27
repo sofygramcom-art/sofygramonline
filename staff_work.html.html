@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofygram | لوحة المعاونين 🛠️</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --glow: #2ecc71; --bg: #050a14; }
+        body { background: var(--bg); color: white; font-family: sans-serif; text-align: center; padding: 10px; margin: 0; }
+        .card { background: #121212; padding: 20px; border-radius: 30px; max-width: 600px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 20px rgba(46, 204, 113, 0.2); }
+        .user-row { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 15px; border-radius: 20px; margin-bottom: 12px; border-right: 5px solid var(--glow); text-align: right; }
+        .btn { padding: 10px 15px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; font-size: 13px; color: white; display: flex; align-items: center; gap: 5px; }
+        .btn-active { background: #2ecc71; }
+        .btn-test { background: #f1c40f; color: #000; }
+        .btn-wa { background: #25d366; }
+        input { width: 90%; padding: 14px; border-radius: 15px; border: 1px solid var(--glow); background: #000; color: #fff; text-align: center; margin-bottom: 20px; outline: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 style="color:var(--glow);">قسم تفعيل وصيانة العيادات 🛠️</h2>
+        <input type="text" id="mSearch" placeholder="ابحث عن اسم العيادة..." onkeyup="filterUsers()">
+        <div id="usersList">جاري تحميل البيانات...</div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com" };
+        const app = initializeApp(firebaseConfig); const db = getDatabase(app);
+
+        onValue(ref(db, 'users'), (snap) => {
+            const data = snap.val(); const list = document.getElementById('usersList'); list.innerHTML = "";
+            if(!data) return;
+            Object.keys(data).reverse().forEach(id => {
+                const u = data[id];
+                list.innerHTML += `
+                    <div class="user-row" data-name="${(u.name || '').toLowerCase()}">
+                        <div>
+                            <b>${u.name}</b><br>
+                            <small style="color:#aaa;">${u.phone || 'بدون هاتف'}</small>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:5px;">
+                            <button class="btn btn-active" onclick="setSub('${id}', 30)">تفعيل شهر</button>
+                            <button class="btn btn-test" onclick="setSub('${id}', 3)">تجربة 3 أيام</button>
+                            <a href="https://wa.me/${(u.phone || '').replace(/\D/g,'')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i> واتساب</a>
+                        </div>
+                    </div>`;
+            });
+        });
+
+        window.setSub = (id, d) => {
+            const exp = new Date(); exp.setDate(exp.getDate() + d);
+            update(ref(db, `users/${id}`), { active: true, expiryDate: exp.toISOString() }).then(() => alert("تم التفعيل بنجاح ✅"));
+        };
+
+        window.filterUsers = () => {
+            const v = document.getElementById('mSearch').value.toLowerCase();
+            document.querySelectorAll('.user-row').forEach(r => r.style.display = r.getAttribute('data-name').includes(v) ? "flex" : "none");
+        };
+    </script>
+</body>
+</html>
