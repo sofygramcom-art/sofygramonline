@@ -82,12 +82,12 @@
             for(let id in staffData) {
                 if(staffData[id].name === user && staffData[id].password === pass) {
                     alert("أهلاً بك يا معاون صوفي غرام ✅");
-                    location.href = 'master.html'; // الموظف يذهب للوحة الماستر
+                    location.href = 'staff_work.html'; // يفتح لوحة العمل المحدودة
                     return;
                 }
             }
 
-            // 2. فحص دخول الطبيب/السكرتير (كما في الكود القديم)
+            // 2. فحص دخول الطبيب (عداد العيادة)
             get(child(ref(db), `users/${user}`)).then((s) => {
                 if(s.exists() && s.val().password == pass) {
                     if(!s.val().active) return alert("الحساب بانتظار التفعيل!");
