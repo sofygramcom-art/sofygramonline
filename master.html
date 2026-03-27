@@ -11,7 +11,6 @@
         body { background: var(--bg); color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
         .master-card { background: var(--card); padding: 25px; border-radius: 30px; max-width: 650px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
         
-        /* العدادات الجديدة */
         .stats-bar { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; font-weight: bold; }
         .stat-item { background: rgba(255, 215, 0, 0.1); border: 1px solid var(--glow); padding: 8px 15px; border-radius: 12px; font-size: 14px; color: var(--glow); }
 
@@ -30,6 +29,8 @@
         .staff-item { background: #000; padding: 12px; border-radius: 15px; margin: 10px 0; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
         .days-badge { background: var(--glow); color: #000; padding: 4px 10px; border-radius: 8px; font-weight: bold; font-size: 12px; }
         .assistant-tag { color: #2ecc71; font-size: 12px; margin-top: 5px; display: block; background: rgba(46, 204, 113, 0.1); padding: 5px; border-radius: 8px; }
+        .edit-panel { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 15px; margin-top: 10px; display: none; border: 1px solid #444; }
+        .btn-sm { padding: 5px; font-size: 11px; margin: 2px; flex: 1; }
     </style>
 </head>
 <body>
@@ -95,7 +96,9 @@
                 let usersArr = [];
                 for(let id in data) { usersArr.push({id, ...data[id]}); }
                 document.getElementById('countUsers').innerText = usersArr.length;
-                usersArr.reverse();
+
+                // الترتيب: الأحدث (بناءً على تاريخ التسجيل أو الإضافة) يظهر في الأعلى
+                usersArr.sort((a, b) => (b.regDate || 0) > (a.regDate || 0) ? 1 : -1);
 
                 usersArr.forEach(u => {
                     const expiry = u.expiryDate ? new Date(u.expiryDate) : null;
@@ -114,12 +117,12 @@
                                 <b style="font-size:18px;">${u.name}</b> <span class="days-badge">${daysLeft > 0 ? daysLeft + ' يوم' : '!!!'}</span><br>
                                 <small style="color:#aaa;">ينتهي: ${expiry ? expiry.toLocaleDateString('en-GB') : '---'}</small>
                                 ${assistantsHtml}
-                                <div id="info-${u.id}" style="display:none; color:var(--glow); margin-top:8px; font-size:14px; border-top:1px solid #333; padding-top:5px;"></div>
+                                <div id="info-${u.id}" class="edit-panel"></div>
                             </div>
                             <div class="btn-group">
                                 <button class="btn btn-f" onclick="setSub('${u.id}', 30)">تفعيل شهر</button>
                                 <button class="btn btn-t" onclick="setSub('${u.id}', 3)">تجربة 3 أيام</button>
-                                <button class="btn btn-p" onclick="managePass('${u.id}', '${u.name}', '${u.password}')">🔑 الرمز</button>
+                                <button class="btn btn-p" onclick="toggleEdit('${u.id}', '${u.name}', '${u.password}', '${u.phone || ''}')">🔑 تعديل البيانات</button>
                                 <button class="btn btn-h" onclick="showPhone('${u.id}', '${u.phone || 'لا يوجد'}')">📱 الهاتف</button>
                                 <button class="btn btn-d" onclick="delUser('${u.id}')">حذف</button>
                             </div>
@@ -128,12 +131,34 @@
             });
         }
 
+        window.toggleEdit = (id, name, pass, phone) => {
+            const div = document.getElementById(`info-${id}`);
+            if(div.style.display === 'block') { div.style.display = 'none'; return; }
+            div.innerHTML = `
+                <div style="display:flex; flex-wrap:wrap; gap:5px;">
+                    <button class="btn btn-edit btn-sm" style="background:#3498db" onclick="editField('${id}', 'name', '${name}')">تعديل الاسم</button>
+                    <button class="btn btn-edit btn-sm" style="background:#9b59b6" onclick="editField('${id}', 'password', '${pass}')">تعديل الرمز</button>
+                    <button class="btn btn-edit btn-sm" style="background:#e67e22" onclick="editField('${id}', 'phone', '${phone}')">تعديل الهاتف</button>
+                </div>
+                <div style="margin-top:5px; font-size:12px; color:#fff;">الرمز الحالي: <b>${pass}</b></div>
+            `;
+            div.style.display = 'block';
+        };
+
+        window.editField = (id, field, current) => {
+            const label = field === 'name' ? 'الاسم الجديد' : field === 'password' ? 'الرمز الجديد' : 'رقم الهاتف الجديد';
+            const n = prompt(`تعديل ${label}:`, current);
+            if(n !== null && n !== current) {
+                let upd = {}; upd[field] = n;
+                update(ref(db, `users/${id}`), upd).then(() => alert("تم التحديث بنجاح ✅"));
+            }
+        };
+
         function loadStaff() {
             onValue(ref(db, 'staff'), (snap) => {
                 const list = document.getElementById('staffList'); list.innerHTML = "";
                 const data = snap.val();
                 if(!data) { document.getElementById('countStaff').innerText = "0"; return; }
-                
                 let count = 0;
                 for(let id in data) {
                     count++;
@@ -167,11 +192,6 @@
             update(ref(db, `users/${id}`), { active: true, expiryDate: exp.toISOString() }).then(()=>alert("تم التفعيل ✅"));
         };
 
-        window.managePass = (id, name, curr) => {
-            const n = prompt(`رمز ${name} الحالي: [${curr}]\nتعديل الرمز إلى:`, curr);
-            if(n && n !== curr) update(ref(db, `users/${id}`), { password: n });
-        };
-
         window.showPhone = (id, ph) => {
             const div = document.getElementById(`info-${id}`);
             if(div.style.display === 'block') { div.style.display = 'none'; return; }
@@ -180,12 +200,10 @@
         };
 
         window.delUser = (id) => { if(confirm("حذف المشترك نهائياً؟")) remove(ref(db, `users/${id}`)); };
-        
         window.filterUsers = () => {
             const v = document.getElementById('mSearch').value.toLowerCase();
             document.querySelectorAll('.user-row').forEach(r => r.style.display = r.getAttribute('data-name').includes(v) ? "flex" : "none");
         };
-
         window.changePass = () => {
             const n = prompt("رمز الماستر الجديد:");
             if(n) { set(ref(db, 'admin_settings/masterHash'), CryptoJS.MD5(n).toString()).then(()=>location.reload()); }
