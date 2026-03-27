@@ -3,47 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Master V3 | الإدارة الشاملة 👑</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <title>Sofygram Master V3 | الإدارة 👑</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --glow: #ffd700; --bg: #050a14; --card: #121212; --rep: #9b59b6; }
+        :root { --glow: #ffd700; --bg: #050a14; --card: #121212; }
         body { background: var(--bg); color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
-        .master-card { background: var(--card); padding: 25px; border-radius: 30px; max-width: 650px; margin: 20px auto; border: 1px solid var(--glow); box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
-        input { padding: 14px; border-radius: 15px; border: 1px solid var(--glow); background: #000; color: #fff; text-align: center; margin: 10px; width: 85%; font-size: 16px; outline: none; }
-        .btn-king { background: #2ecc71; color: white; padding: 15px; width: 90%; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 18px; margin-top: 10px; }
-        .user-row { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 18px; border-radius: 20px; margin-bottom: 15px; border-right: 6px solid #888; text-align: right; }
+        .master-card { background: var(--card); padding: 25px; border-radius: 30px; max-width: 650px; margin: 20px auto; border: 1px solid var(--glow); }
+        input { padding: 12px; border-radius: 12px; border: 1px solid var(--glow); background: #000; color: #fff; text-align: center; margin: 10px; width: 85%; }
+        .btn-king { background: #2ecc71; color: white; padding: 12px; width: 90%; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .user-row { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 15px; border-radius: 15px; margin-bottom: 10px; border-right: 5px solid #888; text-align: right; }
         .active-user { border-right-color: #2ecc71; }
-        .ref-badge { background: rgba(155, 89, 182, 0.2); color: #d1adff; padding: 3px 8px; border-radius: 6px; font-size: 11px; border: 1px solid #9b59b6; margin-top: 5px; display: inline-block; }
-        .staff-section { margin-top: 40px; padding: 20px; border-top: 2px dashed #444; text-align: right; }
-        .item-box { background: #000; padding: 12px; border-radius: 15px; margin: 10px 0; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
-        .btn-group { display: flex; flex-direction: column; gap: 6px; min-width: 130px; }
-        .btn { padding: 8px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; color: white; }
+        .ref-tag { background: rgba(155, 89, 182, 0.2); color: #d1adff; padding: 2px 6px; border-radius: 5px; font-size: 11px; }
+        .staff-section { margin-top: 30px; padding: 15px; border-top: 1px dashed #444; text-align: right; }
+        .item-box { background: #000; padding: 10px; border-radius: 12px; margin: 5px 0; display: flex; justify-content: space-between; border: 1px solid #333; }
     </style>
 </head>
 <body>
 
     <div id="authBox" class="master-card">
-        <h2>قفل الإدارة الملكية 👑</h2>
-        <input type="password" id="mPass" placeholder="كلمة المرور">
-        <button onclick="masterLogin()" class="btn-king">دخول السيطرة</button>
+        <h2>دخول الإدارة 👑</h2>
+        <input type="password" id="mPass" placeholder="رمز الدخول">
+        <button onclick="masterLogin()" class="btn-king">دخول</button>
     </div>
 
     <div id="masterBox" class="master-card" style="display:none;">
-        <h2 style="color:var(--glow);">لوحة التحكم والأمان 👑</h2>
-        <input type="text" id="mSearch" placeholder="ابحث بالاسم أو كود المندوب..." onkeyup="filterUsers()">
+        <h2 style="color:var(--glow);">لوحة التحكم 👑</h2>
+        <input type="text" id="mSearch" placeholder="ابحث بالاسم أو المندوب..." onkeyup="filterUsers()">
         <div id="usersList">جاري التحميل...</div>
 
         <div class="staff-section">
-            <h3 style="color:#3498db;"><i class="fas fa-users-cog"></i> إدارة الموظفين</h3>
+            <h3 style="color:#3498db;">إدارة الموظفين</h3>
             <div id="staffList"></div>
-            <button onclick="addStaff()" style="background:#3498db; color:white; border:none; padding:10px; width:100%; border-radius:10px;">+ إضافة موظف</button>
+            <button onclick="addStaff()" style="background:#3498db; color:white; border:none; padding:8px; border-radius:8px; width:100%;">+ إضافة موظف</button>
         </div>
 
-        <div class="staff-section" style="border-top-color: var(--rep);">
-            <h3 style="color:var(--rep);"><i class="fas fa-handshake"></i> إدارة المناديب (Reps)</h3>
+        <div class="staff-section">
+            <h3 style="color:#9b59b6;">إدارة المناديب (Reps)</h3>
             <div id="repsList"></div>
-            <button onclick="addRep()" style="background:var(--rep); color:white; border:none; padding:10px; width:100%; border-radius:10px;">+ إضافة مندوب جديد</button>
+            <button onclick="addRep()" style="background:#9b59b6; color:white; border:none; padding:8px; border-radius:8px; width:100%;">+ إضافة مندوب</button>
         </div>
     </div>
 
@@ -51,19 +48,22 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, update, remove, push } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com" };
-        const app = initializeApp(firebaseConfig); const db = getDatabase(app);
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBqlRUshD3182zmliJrDUzBXQjL_eXSKtY", 
+            databaseURL: "https://sofygramclinic-default-rtdb.firebaseio.com" 
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
         window.masterLogin = () => {
             if(document.getElementById('mPass').value === "123456") {
                 document.getElementById('authBox').style.display='none';
                 document.getElementById('masterBox').style.display='block';
-                loadAll();
-            }
+                loadData();
+            } else { alert("رمز خطأ!"); }
         };
 
-        function loadAll() {
-            // تحميل المشتركين
+        function loadData() {
             onValue(ref(db, 'users'), (snap) => {
                 const data = snap.val(); const list = document.getElementById('usersList'); list.innerHTML = "";
                 for(let id in data) {
@@ -72,39 +72,35 @@
                         <div class="user-row ${u.active ? 'active-user' : ''}" data-info="${u.name.toLowerCase()} ${refCode.toLowerCase()}">
                             <div style="flex:1;">
                                 <b>${u.name}</b> <br>
-                                <span class="ref-badge">المندوب: ${refCode}</span>
+                                <span class="ref-tag">المندوب: ${refCode}</span>
                             </div>
-                            <div class="btn-group">
-                                <button class="btn" style="background:#2ecc71" onclick="setSub('${id}', 30)">تفعيل شهر</button>
-                                <button class="btn" style="background:#e74c3c" onclick="delUser('${id}')">حذف</button>
-                            </div>
+                            <button onclick="setSub('${id}')" style="background:#2ecc71; color:white; border:none; padding:5px 10px; border-radius:8px;">تفعيل</button>
+                            <button onclick="delItem('users/${id}')" style="background:#e74c3c; color:white; border:none; padding:5px 10px; border-radius:8px; margin-right:5px;">حذف</button>
                         </div>`;
                 }
             });
 
-            // تحميل الموظفين
             onValue(ref(db, 'staff'), (snap) => {
                 const list = document.getElementById('staffList'); list.innerHTML = "";
                 const data = snap.val();
                 for(let id in data) {
-                    list.innerHTML += `<div class="item-box"><span>${data[id].name} (${data[id].password})</span><button onclick="delItem('staff/${id}')">حذف</button></div>`;
+                    list.innerHTML += `<div class="item-box"><span>${data[id].name}</span><button onclick="delItem('staff/${id}')">حذف</button></div>`;
                 }
             });
 
-            // تحميل المناديب
             onValue(ref(db, 'reps'), (snap) => {
                 const list = document.getElementById('repsList'); list.innerHTML = "";
                 const data = snap.val();
                 for(let id in data) {
-                    list.innerHTML += `<div class="item-box"><span>كود: <b>${id}</b> | رمز: ${data[id].password}</span><button onclick="delItem('reps/${id}')">حذف</button></div>`;
+                    list.innerHTML += `<div class="item-box"><span>كود: ${id}</span><button onclick="delItem('reps/${id}')">حذف</button></div>`;
                 }
             });
         }
 
         window.addRep = () => {
-            const code = prompt("أدخل كود المندوب (مثلاً M1):").toUpperCase();
-            const pass = prompt("أدخل كلمة مرور المندوب:");
-            if(code && pass) set(ref(db, 'reps/' + code), { password: pass });
+            const code = prompt("كود المندوب (مثلاً M1):");
+            const pass = prompt("كلمة المرور:");
+            if(code && pass) set(ref(db, 'reps/' + code.toUpperCase()), { password: pass });
         };
 
         window.addStaff = () => {
@@ -112,13 +108,13 @@
             if(name && pass) push(ref(db, 'staff'), { name, password: pass });
         };
 
-        window.setSub = (id, days) => {
-            const exp = new Date(); exp.setDate(exp.getDate() + days);
+        window.setSub = (id) => {
+            const exp = new Date(); exp.setDate(exp.getDate() + 30);
             update(ref(db, `users/${id}`), { active: true, expiryDate: exp.toISOString() }).then(()=>alert("تم التفعيل"));
         };
 
-        window.delItem = (path) => { if(confirm("حذف؟")) remove(ref(db, path)); };
-        window.delUser = (id) => { if(confirm("حذف المشترك؟")) remove(ref(db, 'users/' + id)); };
+        window.delItem = (path) => { if(confirm("هل أنت متأكد؟")) remove(ref(db, path)); };
+
         window.filterUsers = () => {
             const v = document.getElementById('mSearch').value.toLowerCase();
             document.querySelectorAll('.user-row').forEach(r => r.style.display = r.getAttribute('data-info').includes(v) ? "flex" : "none");
