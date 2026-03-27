@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofygram Admin | إدارة العيادة ⚡</title>
+    <title>Sofygram Admin | دخول السيطرة 🔐</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -14,12 +14,10 @@
         .btn-round { width: 85px; height: 85px; border-radius: 50%; border: none; font-size: 45px; cursor: pointer; color: white; margin: 10px; transition: 0.3s; }
         .plus { background: #2ecc71; box-shadow: 0 0 15px #2ecc71; }
         .minus { background: #e74c3c; box-shadow: 0 0 15px #e74c3c; }
-        .tools-grid { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-        #qr-area { background: white; padding: 10px; border-radius: 12px; display: inline-block; }
-        .qr-container { text-align: right; width: 45%; }
-        .reset-container { text-align: left; width: 45%; }
         input, textarea, select { width: 90%; padding: 12px; margin: 8px 0; border-radius: 12px; background: #1e293b; color: white; border: 1px solid #333; text-align: center; }
         .btn-save { background: var(--glow); color: #000; border: none; padding: 15px; border-radius: 15px; font-weight: bold; width: 95%; cursor: pointer; margin-top: 10px; }
+        .tools-grid { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+        #qr-area { background: white; padding: 10px; border-radius: 12px; display: inline-block; }
     </style>
 </head>
 <body>
@@ -47,10 +45,10 @@
         <textarea id="nt" placeholder="اكتب ملاحظة للمراجعين..."></textarea>
         <button onclick="upDetails()" class="btn-save">تحديث البيانات 🚀</button>
         <div class="tools-grid">
-            <div class="reset-container">
+            <div style="text-align: left; width: 45%;">
                 <button onclick="resetNum()" style="background:none; color: #e74c3c; border: 1px solid #e74c3c; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%;">🔄 تصفير العداد</button>
             </div>
-            <div class="qr-container">
+            <div style="text-align: right; width: 45%;">
                 <div id="qr-area"></div>
                 <button style="background: #3498db; color: white; border: none; padding: 5px; border-radius: 5px; font-size: 11px; margin-top: 8px; cursor: pointer; width: 100%;" onclick="downloadQR()">💾 حفظ الباركود</button>
             </div>
@@ -76,36 +74,33 @@
 
             if(!user || !pass) return alert("يرجى إدخال البيانات");
 
-            // 1. فحص إذا كان الداخل موظف (Staff)
+            // فحص المعاون (Staff)
             const staffSnap = await get(ref(db, 'staff'));
             const staffData = staffSnap.val();
             for(let id in staffData) {
                 if(staffData[id].name === user && staffData[id].password === pass) {
-                    alert("أهلاً بك يا معاون صوفي غرام ✅");
-                    location.href = 'staff_work.html'; // يفتح لوحة العمل المحدودة
+                    sessionStorage.setItem('staff_auth', 'true'); // بطاقة الدخول
+                    sessionStorage.setItem('staff_name', user);
+                    alert("أهلاً بك يا فريق الإدارة ✅");
+                    location.href = 'staff_work.html';
                     return;
                 }
             }
 
-            // 2. فحص دخول الطبيب (عداد العيادة)
+            // فحص الطبيب
             get(child(ref(db), `users/${user}`)).then((s) => {
                 if(s.exists() && s.val().password == pass) {
-                    if(!s.val().active) return alert("الحساب بانتظار التفعيل!");
                     curUser = user;
                     document.getElementById('loginBox').style.display = 'none';
                     document.getElementById('controlBox').style.display = 'block';
-                    
                     new QRCode(document.getElementById("qr-area"), {
                         text: `https://sofygram.com/view.html?id=${curUser}`,
-                        width: 90, height: 90
+                        width: 80, height: 80
                     });
-
                     onValue(ref(db, `users/${curUser}`), (snap) => {
                         const d = snap.val(); curNum = d.currentNum || 0;
                         document.getElementById('n').innerText = curNum;
                         document.getElementById('cName').innerText = d.name;
-                        document.getElementById('nt').value = d.note || "";
-                        document.getElementById('st').value = d.status || "🟢 مفتوح الآن | Open";
                     });
                 } else alert("بيانات خاطئة!");
             });
@@ -122,15 +117,13 @@
         };
 
         window.resetNum = () => {
-            if(confirm("⚠️ هل أنت متأكد من تصفير العداد لبدء دوام جديد؟")) {
-                update(ref(db, `users/${curUser}`), { currentNum: 0 });
-            }
+            if(confirm("تصفير العداد؟")) update(ref(db, `users/${curUser}`), { currentNum: 0 });
         };
 
         window.downloadQR = () => {
             html2canvas(document.querySelector("#qr-area")).then(canvas => {
                 let link = document.createElement('a');
-                link.download = `Sofygram-QR-${curUser}.png`;
+                link.download = `Sofygram-QR.png`;
                 link.href = canvas.toDataURL();
                 link.click();
             });
