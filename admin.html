@@ -23,9 +23,9 @@
 <body>
 
     <div id="loginBox" class="admin-card">
-        <img src="logo.png" style="width:140px; margin-bottom:20px;">
+        <img src="logo.png" style="width:140px; margin-bottom:20px;" onerror="this.src='https://sofygram.com/logo.png'">
         <h2 style="color:var(--glow);">دخول الإدارة والسكرتارية 🔐</h2>
-        <input type="text" id="u" placeholder="اسم المستخدم أو الهاتف">
+        <input type="text" id="u" placeholder="اسم المستخدم (مثل: hf2026)">
         <input type="password" id="p" placeholder="كلمة المرور">
         <button onclick="login()" class="btn-save">دخول</button>
     </div>
@@ -69,59 +69,68 @@
         let curUser = ""; let curNum = 0;
 
         window.login = async () => {
-            const user = document.getElementById('u').value.trim().toLowerCase();
+            // تم حذف .toLowerCase() لضمان قبول جميع أنواع الحسابات
+            const user = document.getElementById('u').value.trim();
             const pass = document.getElementById('p').value.trim();
 
             if(!user || !pass) return alert("يرجى إدخال البيانات");
 
-            // فحص المعاون (Staff)
+            // 1. فحص المعاونين/المدراء (Staff)
             const staffSnap = await get(ref(db, 'staff'));
             const staffData = staffSnap.val();
-            for(let id in staffData) {
-                if(staffData[id].name === user && staffData[id].password === pass) {
-                    sessionStorage.setItem('staff_auth', 'true');
-                    sessionStorage.setItem('staff_name', user);
-                    alert("أهلاً بك يا فريق الإدارة ✅");
-                    location.href = 'staff_work.html';
-                    return;
+            if(staffData) {
+                for(let id in staffData) {
+                    if(staffData[id].name === user && staffData[id].password === pass) {
+                        sessionStorage.setItem('staff_auth', 'true');
+                        sessionStorage.setItem('staff_name', user);
+                        alert("أهلاً بك يا فريق الإدارة ✅");
+                        location.href = 'staff_work.html';
+                        return;
+                    }
                 }
             }
 
-            // فحص الطبيب/المشترك مع شرط التفعيل
+            // 2. فحص الأطباء والمشتركين (Users)
             get(child(ref(db), `users/${user}`)).then((s) => {
                 if(s.exists()) {
                     const userData = s.val();
                     if(userData.password == pass) {
-                        // الشرط الجديد: هل الحساب مفعل؟
-                        if(userData.active === true) {
+                        // تعديل شرط التفعيل ليكون أكثر مرونة
+                        if(userData.active === true || userData.active === "true") {
                             curUser = user;
                             document.getElementById('loginBox').style.display = 'none';
                             document.getElementById('controlBox').style.display = 'block';
                             
-                            // توليد الباركود
-                            document.getElementById("qr-area").innerHTML = ""; // تنظيف قبل الإنشاء
+                            // توليد الباركود بالرابط الجديد
+                            document.getElementById("qr-area").innerHTML = ""; 
                             new QRCode(document.getElementById("qr-area"), {
                                 text: `https://sofygram.com/view.html?id=${curUser}`,
                                 width: 80, height: 80
                             });
 
                             onValue(ref(db, `users/${curUser}`), (snap) => {
-                                const d = snap.val(); curNum = d.currentNum || 0;
-                                document.getElementById('n').innerText = curNum;
-                                document.getElementById('cName').innerText = d.name;
-                                if(d.note) document.getElementById('nt').value = d.note;
-                                if(d.status) document.getElementById('st').value = d.status;
+                                const d = snap.val(); 
+                                if(d) {
+                                    curNum = d.currentNum || 0;
+                                    document.getElementById('n').innerText = curNum;
+                                    document.getElementById('cName').innerText = d.name || "بدون اسم";
+                                    if(d.note) document.getElementById('nt').value = d.note;
+                                    if(d.status) document.getElementById('st').value = d.status;
+                                }
                             });
                         } else {
-                            alert("⚠️ عذراً، حسابك قيد المراجعة. يرجى الانتظار حتى يتم تفعيله من قبل الإدارة الملكية 👑");
+                            alert("⚠️ الحساب موجود ولكنه غير مفعل. يرجى تفعيله من لوحة الماستر.");
                         }
                     } else {
                         alert("رمز المرور خاطئ ❌");
                     }
                 } else {
-                    alert("اسم المستخدم غير موجود ❌");
+                    alert("اسم المستخدم غير موجود ❌ (تأكد من الحروف الكبيرة والصغيرة)");
                 }
-            }).catch(e => alert("فشل الاتصال بالخادم"));
+            }).catch(e => {
+                console.error(e);
+                alert("فشل الاتصال بالخادم");
+            });
         };
 
         window.ch = (v) => { 
