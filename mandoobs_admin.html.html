@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofygram | إدارة المندوبين 💼</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --glow: #2ecc71; --gold: #ffd700; --bg: #050a14; --card: #121c2c; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; padding: 15px; }
+        .admin-card { background: var(--card); padding: 25px; border-radius: 30px; max-width: 600px; margin: 20px auto; border: 1px solid var(--gold); box-shadow: 0 0 25px rgba(255, 215, 0, 0.15); }
+        
+        h2 { color: var(--gold); margin-bottom: 20px; }
+        .stats-bar { background: rgba(255, 215, 0, 0.1); border: 1px dashed var(--gold); padding: 15px; border-radius: 15px; margin-bottom: 25px; }
+        
+        /* تنسيق الحقول لتكون مرتبة */
+        .input-group { display: flex; gap: 10px; margin-bottom: 10px; justify-content: center; }
+        input { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #333; background: #000; color: #fff; text-align: center; font-size: 14px; outline: none; width: 95%; margin-bottom: 10px;}
+        input:focus { border-color: var(--gold); }
+        
+        .btn { padding: 12px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; font-size: 14px; width: 100%; margin-top: 10px; transition: 0.3s; }
+        .btn-add { background: linear-gradient(45deg, #2ecc71, #27ae60); color: white; }
+        .btn-pay { background: linear-gradient(45deg, var(--gold), #ff8c00); color: black; }
+        
+        .rep-item { background: #1e293b; padding: 15px; border-radius: 20px; margin-bottom: 15px; text-align: right; border-right: 5px solid var(--gold); position: relative; }
+        .rep-title { margin: 0 0 10px 0; color: var(--gold); font-size: 18px; display: flex; justify-content: space-between; align-items: center;}
+        .rep-details p { margin: 5px 0; font-size: 13px; color: #ccc; }
+        .highlight { color: #2ecc71; font-weight: bold; font-size: 16px; }
+        .debt { color: #e74c3c; font-weight: bold; font-size: 18px; }
+        
+        .btn-group { display: flex; gap: 5px; margin-top: 10px; }
+        .btn-action { flex: 1; padding: 8px; border-radius: 8px; border: none; color: white; font-weight: bold; cursor: pointer; font-size: 12px; }
+        
+        .contact-badge { display: inline-block; background: #333; padding: 5px 10px; border-radius: 8px; font-size: 12px; margin-top: 5px; color: #fff; text-decoration: none;}
+        .contact-badge:hover { background: #444; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-card">
+        <h2>إدارة المندوبين والحسابات 💼</h2>
+        
+        <div class="stats-bar">
+            <h3 style="margin-top:0; color: #fff;">إضافة أو تحديث مندوب ➕</h3>
+            <div class="input-group">
+                <input type="text" id="repId" placeholder="الرمز (مثال: M60)">
+                <input type="text" id="repPass" placeholder="كلمة المرور">
+            </div>
+            <input type="text" id="repName" placeholder="الاسم الكامل للمندوب (مثال: علي محمد)">
+            <input type="tel" id="repPhone" placeholder="رقم الهاتف (واتساب / زين كاش)">
+            <input type="text" id="repAddress" placeholder="المحافظة / العنوان">
+            
+            <button class="btn btn-add" onclick="addRep()">حفظ بيانات المندوب 🚀</button>
+        </div>
+
+        <h3 style="text-align: right; color: var(--gold); border-bottom: 1px solid #333; padding-bottom: 10px;">قائمة المندوبين والأرباح:</h3>
+        
+        <div id="repsList">
+            <p style="color: #888;">جاري جلب البيانات من السيرفر...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, onValue, update, set, remove } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3BtNZYPLaDTEjuh0AjMp43RzRQGALFBU",
+            authDomain: "sofygram-mobile-app.firebaseapp.com",
+            databaseURL: "https://sofygram-mobile-app-default-rtdb.firebaseio.com",
+            projectId: "sofygram-mobile-app",
+            storageBucket: "sofygram-mobile-app.firebasestorage.app",
+            messagingSenderId: "190753733711",
+            appId: "1:190753733711:web:0ce4a97a2878120ff37e3a"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let usersData = {};
+        let repsData = {};
+
+        onValue(ref(db, 'users'), (snapshot) => { usersData = snapshot.val() || {}; renderReps(); });
+        onValue(ref(db, 'mandoobs'), (snapshot) => { repsData = snapshot.val() || {}; renderReps(); });
+
+        window.addRep = () => {
+            let id = document.getElementById('repId').value.trim();
+            let pass = document.getElementById('repPass').value.trim();
+            let name = document.getElementById('repName').value.trim();
+            let phone = document.getElementById('repPhone').value.trim();
+            let address = document.getElementById('repAddress').value.trim();
+
+            if(!id || !pass) return alert("الرمز وكلمة المرور إجبارية!");
+            
+            let currentPaid = repsData[id] ? (repsData[id].paid_amount || 0) : 0;
+
+            set(ref(db, 'mandoobs/' + id), { 
+                password: pass, 
+                name: name || "بدون اسم",
+                phone: phone || "لا يوجد",
+                address: address || "لا يوجد",
+                paid_amount: currentPaid 
+            }).then(() => { 
+                alert("تم حفظ بيانات المندوب بنجاح! ✅"); 
+                document.querySelectorAll('input').forEach(i => i.value = ''); 
+            });
+        };
+
+        window.renderReps = () => {
+            let list = document.getElementById('repsList');
+            list.innerHTML = "";
+
+            if(Object.keys(repsData).length === 0) {
+                list.innerHTML = "<p style='color:#888;'>لا يوجد مندوبين مسجلين حتى الآن.</p>";
+                return;
+            }
+
+            for(let repId in repsData) {
+                let rep = repsData[repId];
+                let realName = rep.name && rep.name !== "بدون اسم" ? rep.name : repId;
+                
+                let greenDocsCount = 0;
+                for(let docId in usersData) {
+                    if(usersData[docId].mandoob_id === repId && usersData[docId].sub_status === 'شهري') greenDocsCount++;
+                }
+
+                let totalEarned = greenDocsCount * 5000;
+                let paid = rep.paid_amount || 0;
+                let balance = totalEarned - paid;
+
+                // رابط الواتساب الذكي
+                let waLink = rep.phone !== "لا يوجد" ? `<a href="https://wa.me/${rep.phone.replace(/\D/g,'')}" target="_blank" class="contact-badge" style="background:#25d366;"><i class="fab fa-whatsapp"></i> واتساب</a>` : '';
+
+                list.innerHTML += `
+                <div class="rep-item">
+                    <div class="rep-title">
+                        <span>👤 ${realName} <span style="font-size:12px; color:#888;">(${repId})</span></span>
+                        <span style="font-size:12px; color:#888;">رمز: ${rep.password}</span>
+                    </div>
+                    <div class="rep-details">
+                        <p><i class="fas fa-map-marker-alt" style="color:var(--gold);"></i> العنوان: ${rep.address || 'لا يوجد'}</p>
+                        <p><i class="fas fa-phone-alt" style="color:var(--gold);"></i> الهاتف: ${rep.phone || 'لا يوجد'} ${waLink}</p>
+                        <hr style="border:0; border-top:1px dashed #444; margin:8px 0;">
+                        <p>أطباء مفعلين (شهري): <span class="highlight">${greenDocsCount}</span> طبيب</p>
+                        <p>المستحقات المطلوبة للدفع الآن: <span class="debt">${balance.toLocaleString()}</span> دينار</p>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn-action" style="background: #3498db;" onclick="changePassword('${repId}')">🔑 تغيير الرمز</button>
+                        <button class="btn-action" style="background: #e74c3c;" onclick="deleteRep('${repId}')">🗑️ حذف</button>
+                    </div>
+
+                    ${balance > 0 ? `<button class="btn btn-pay" onclick="payRep('${repId}', ${balance})">💸 تسليم (${balance.toLocaleString()}) وتصفير الحساب</button>` : ``}
+                </div>`;
+            }
+        };
+
+        window.payRep = (repId, amountToPay) => {
+            if(confirm(`تأكيد: هل قمت بتحويل ${amountToPay} دينار للمندوب ${repId}؟`)) {
+                let currentPaid = repsData[repId].paid_amount || 0;
+                update(ref(db, 'mandoobs/' + repId), { paid_amount: currentPaid + amountToPay }).then(() => alert("تم التصفير بنجاح! ✅"));
+            }
+        };
+
+        window.changePassword = (repId) => {
+            let newPass = prompt(`أدخل كلمة المرور الجديدة للمندوب ${repId}:`);
+            if(newPass && newPass.trim() !== "") update(ref(db, 'mandoobs/' + repId), { password: newPass.trim() }).then(() => alert("تم التغيير بنجاح! ✅"));
+        };
+
+        window.deleteRep = (repId) => {
+            if(confirm(`⚠️ تحذير: هل أنت متأكد من حذف المندوب ${repId} نهائياً؟`)) remove(ref(db, 'mandoobs/' + repId));
+        };
+    </script>
+</body>
+</html>
